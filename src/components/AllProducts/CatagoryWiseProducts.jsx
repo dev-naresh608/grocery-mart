@@ -20,7 +20,6 @@ function CatagoryWiseProducts() {
       products = productsList.filter((p) => p.id === catagoryId);
       catagoryName = products[0].name;
       setCatName(catagoryName);
-      // console.log(catagoryName)
       products = products.map((p) => p.products);
       setSelectedCatagoryProduct(products);
     }

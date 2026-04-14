@@ -30,6 +30,7 @@ import {
   Route,
   RouterProvider,
 } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
 function App() {
   const router = createBrowserRouter(
@@ -40,7 +41,6 @@ function App() {
 
         <Route path="" element={<Home />}></Route>
 
-        {/* <Route path="" element={<Home productList="Naresh" />}></Route> */}
         <Route path="allproducts" element={<AllProducts />}></Route>
         <Route path="profile" element={<Profile />}>
           <Route path="personalinformation" element={<PersonalInfo />}></Route>

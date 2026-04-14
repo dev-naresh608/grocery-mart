@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../contexts/context";
-import defaultPP from "../../assets/pp.jpeg";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { PersonalInfo, Orders, Setting, Payments, Cart } from "../index";
+import { defaultPP, PersonalInfo, Orders, Setting, Payments, Cart } from "../index";
+
 
 function Profile() {
   const navigate = useNavigate();
@@ -40,8 +40,8 @@ function Profile() {
           <div className="p-3 text-center ">
             <div className="flex justify-center">
               <img
-                className="h-32 w-32 rounded-[50%]"
-                src={defaultPP}
+                className="h-32 w-32 rounded-[50%] border border-green-600"
+                src={currentUser.hasOwnProperty('imageUrl')? currentUser.imageUrl : defaultPP}
                 alt="profile picture"
               />
             </div>

@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import ProductBuyCard from "./ProductBuyCard";
-import {ProductContext} from "../../contexts/context";
+import { ProductContext } from "../../contexts/context";
 
 function SearchProduct() {
-  const { productsList } = useContext(ProductContext)
+  const { productsList } = useContext(ProductContext);
   const { searchValue } = useParams();
   const [totalProducts, setTotalProducts] = useState([]);
 
@@ -12,8 +12,8 @@ function SearchProduct() {
     const filteredProducts = productsList
       .map((product) => product.products)
       .flat()
-      .filter((p) =>  p.name.toLowerCase().includes(searchValue.toLowerCase()))
-      setTotalProducts(filteredProducts)
+      .filter((p) => p.name.toLowerCase().includes(searchValue.toLowerCase()));
+    setTotalProducts(filteredProducts);
   }, [searchValue]);
 
   return (
@@ -23,8 +23,18 @@ function SearchProduct() {
           Products
         </p>
         <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-5">
-          {totalProducts?.map((p,index) =>
-              <ProductBuyCard name={p.name} src ={p.src} price={p.price} id={p.id} key={index} />
+          {totalProducts.length === 0 ? (
+            <h2 className="text-3xl whitespace-nowrap">No Products Found !!</h2>
+          ) : (
+            totalProducts?.map((p, index) => (
+              <ProductBuyCard
+                name={p.name}
+                src={p.src}
+                price={p.price}
+                id={p.id}
+                key={index}
+              />
+            ))
           )}
         </div>
       </section>

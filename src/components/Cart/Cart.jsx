@@ -14,8 +14,7 @@ function Cart({ variant = "full" }) {
   const navigate = useNavigate();
   const isCompact = variant === "compact";
 
-  const { cartItems, setCartItems, cartLength, setCartLength } =
-    useContext(CartProductContext);
+  const { cartItems, setCartItems } = useContext(CartProductContext);
   const { address } = useContext(AddressContext);
 
   const { allOrderHistory, setAllOrderHistory } =
@@ -29,8 +28,7 @@ function Cart({ variant = "full" }) {
   const [finalPrice, setFinalPrice] = useState(0);
   const [taxPrice, setTaxPrice] = useState(0);
   const [shippingPrice, setShippingPrice] = useState(0);
-
-  let paymentMethod = "cashOnDelivery";
+  const [paymentMethod, setPaymentMethod] = useState("cashOnDelivery");
 
   let currentUserAddress = "";
   const isAddressAvailable = currentUser.hasOwnProperty("myAddress");
@@ -40,8 +38,6 @@ function Cart({ variant = "full" }) {
   }
 
   useEffect(() => {
-    setCartLength(cartItems?.length);
-
     if (cartItems?.length > 0) {
       const price = cartItems.reduce((acc, product) => {
         return acc + product.price * product.qty;
@@ -51,8 +47,13 @@ function Cart({ variant = "full" }) {
       const tax = (price * 0.02).toFixed(2);
       setTaxPrice(tax);
       setFinalPrice(price + price * 0.02);
+    } else {
+      setTotalPrice(0);
+      setTaxPrice(0);
+      setFinalPrice(0);
+      setShippingPrice(0);
     }
-  }, [cartItems, setCartItems, setCartLength, cartLength]);
+  }, [cartItems]);
 
   if (cartItems?.length === 0) {
     return (
@@ -71,7 +72,7 @@ function Cart({ variant = "full" }) {
   }
 
   const handlePaymentMethod = (e) => {
-    paymentMethod = e.target.value;
+    setPaymentMethod(e.target.value);
   };
 
   const onPlaceOrder = () => {
@@ -87,36 +88,32 @@ function Cart({ variant = "full" }) {
       let updateCurrentUser = {};
       const orderId = uuid();
 
-      if (isAddressAvailable) {
-        updateCurrentUser = {
-          ...currentUser,
-          myOrders: [
-            ...currentUser.myOrders,
-            {
-              items: cartItems,
-              priceDetails: orderPriceDetails,
-              paymentMethod: paymentMethod,
-              orderStatus: "pending",
-              orderId: orderId,
-            },
-          ],
-        };
-      } else {
-        updateCurrentUser = {
-          ...currentUser,
-          myAddress: address,
-          myOrders: [
-            {
-              items: cartItems,
-              priceDetails: orderPriceDetails,
-              paymentMethod: paymentMethod,
-              orderStatus: "pending",
-              orderId: orderId,
-            },
-          ],
-        };
-      }
-
+      updateCurrentUser = {
+        ...currentUser,
+        myOrders: currentUser.hasOwnProperty("myOrders")
+          ? [
+              ...currentUser.myOrders,
+              {
+                items: cartItems,
+                priceDetails: orderPriceDetails,
+                paymentMethod: paymentMethod,
+                orderStatus: "pending",
+                orderId: orderId,
+              },
+            ]
+          : [
+              {
+                items: cartItems,
+                priceDetails: orderPriceDetails,
+                paymentMethod: paymentMethod,
+                orderStatus: "pending",
+                orderId: orderId,
+              },
+            ],
+        myAddress: currentUser.hasOwnProperty("myAddress")
+          ? currentUser.myAddress
+          : address,
+      };
       setCurrentUser(updateCurrentUser);
 
       const data = userData.filter((u) => u.id !== currentUser.id);
@@ -126,8 +123,8 @@ function Cart({ variant = "full" }) {
       localStorage.setItem("localUserData", JSON.stringify(newUserData));
 
       const order = {
-        name: address.name,
-        phone: address.phone,
+        name: currentUser.myAddress.name,
+        phone: currentUser.myAddress.phone,
         email: currentUser.email,
         items: cartItems,
         priceDetails: orderPriceDetails,
@@ -136,17 +133,19 @@ function Cart({ variant = "full" }) {
         orderId: orderId,
       };
 
-      setAllOrderHistory([...allOrderHistory, order]);
+      let oldOrderHistory = JSON.parse(localStorage.getItem("allOrderHistory"));
+      const newOrderHistory = [...oldOrderHistory, order];
       localStorage.setItem(
         "allOrderHistory",
-        JSON.stringify([...allOrderHistory, order]),
+        JSON.stringify(newOrderHistory),
       );
-
+      setAllOrderHistory(newOrderHistory);
       toast.success("Order Placed Successfully");
-      setActiveTab("orders");
+
       setTimeout(() => {
-        setCartItems([]);
+        setActiveTab("orders");
         navigate("/profile/orderhistory");
+        setCartItems([]);
       }, 1000);
     }
   };
@@ -185,7 +184,7 @@ function Cart({ variant = "full" }) {
               </h2>
 
               <span className="text-indigo-600 text-sm">
-                {cartItems.length} items
+                {cartItems?.length || 0} items
               </span>
             </div>
 

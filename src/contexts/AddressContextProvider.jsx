@@ -10,9 +10,10 @@ function AddressContextProvider({ children }) {
     state: "",
     pincode: "",
   });
-
   return (
-    <AddressContext.Provider value={{address, setAddress}}>{children}</AddressContext.Provider>
+    <AddressContext.Provider value={{ address, setAddress }}>
+      {children}
+    </AddressContext.Provider>
   );
 }
 export default AddressContextProvider;

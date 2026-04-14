@@ -27,9 +27,7 @@ function AddressForm() {
       ...currentUser,
       myAddress: address,
     };
-    
     setCurrentUser(updateCurrentUser);
-
     const oldUserData = JSON.parse(localStorage.getItem("localUserData")) || [];
 
     let dataExceptCurrentUser = oldUserData.filter(

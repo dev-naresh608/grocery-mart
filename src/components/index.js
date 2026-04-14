@@ -35,7 +35,9 @@ import milkUrl from "../assets/catagory/milk.png"
 import coldDrinkUrl from "../assets/catagory/cold-drinks.png"
 import footerBannerUrl from "../assets/footer-banner.png";
 import shopingCartWithGroceryItems from "../assets/shopping-cart-with-grocery-items.png"
-export { fruitImgUrl, vegetableUrl, iceCreamUrl,waferUrl, milkUrl, coldDrinkUrl, footerBannerUrl, shopingCartWithGroceryItems}
+export {defaultPP, fruitImgUrl, vegetableUrl, iceCreamUrl,waferUrl, milkUrl, coldDrinkUrl, footerBannerUrl, shopingCartWithGroceryItems}
+
+import defaultPP from "../assets/pp.jpeg";
 
 //Products images url: 
 import Banana from "../assets/products/banana.png"

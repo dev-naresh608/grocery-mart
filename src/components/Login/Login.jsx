@@ -46,7 +46,7 @@ export default function Login() {
         setTimeout(() => {
           setIsLogin(true);
           navigate("/");
-        }, 1500);
+        }, 1000);
       } else {
         toast.error("Invalid credentials");
       }
@@ -86,7 +86,7 @@ export default function Login() {
             </Link>
           </p>
           <ToastContainer
-            autoClose={1000}
+            autoClose={400}
             pauseOnHover={false}
           ></ToastContainer>
         </form>

@@ -1,11 +1,14 @@
 import React, { useContext, useEffect } from "react";
-import { OrderHistoryContext, UserContext } from "../../contexts/context";
+import { CartProductContext, UserContext } from "../../contexts/context";
+import { toast, ToastContainer } from "react-toastify";
 
 function Orders() {
   const { currentUser, setActiveTab } = useContext(UserContext);
-
+  const { cartItems, setCartItems } = useContext(CartProductContext);
   const allOrderHistory = currentUser.myOrders;
+
   useEffect(() => setActiveTab("orders"), []);
+
   if (!allOrderHistory || allOrderHistory.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
@@ -18,14 +21,30 @@ function Orders() {
       </div>
     );
   }
+
+  const handleReorder = (order) => {
+    setCartItems(order.items);
+    toast.success(
+      "Items Are Added to Cart, Now You can order from cart successfully",
+    );
+  };
   return (
     <div
-      className="space-y-5  max-h-[90vh] overflow-y-auto 
+      className="space-y-5 max-h-[90vh] overflow-y-auto 
   [&::-webkit-scrollbar]:w-2
   [&::-webkit-scrollbar-track]:bg-gray-100
   [&::-webkit-scrollbar-thumb]:bg-gray-300
   [&::-webkit-scrollbar-thumb]:rounded-full"
     >
+      <div className="shadow-md rounded-2xl p-2">
+        <p className="text-xl text-gray-600">Total Orders</p>
+        <h3 className="text-xl font-semibold text-green-700">
+          {currentUser.myOrders?.length === undefined
+            ? "0"
+            : `${currentUser.myOrders?.length}`}
+        </h3>
+      </div>
+
       {allOrderHistory.map((order, index) => (
         <div
           key={index}
@@ -79,12 +98,16 @@ function Orders() {
               <p className="font-semibold">${order.priceDetails?.finalPrice}</p>
             </div>
 
-            <button className="text-sm text-indigo-600 hover:underline">
+            <button
+              onClick={() => handleReorder(order)}
+              className="text-sm text-indigo-600 hover:underline"
+            >
               Reorder
             </button>
           </div>
         </div>
       ))}
+    <ToastContainer autoClose={500} pauseOnHover draggable> </ToastContainer>
     </div>
   );
 }
