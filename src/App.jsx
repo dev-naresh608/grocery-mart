@@ -4,6 +4,7 @@ import {
   OrderHistoryContextProvider,
   ProductContextProvider,
   UserContextProvider,
+  WishlistContextProvider,
 } from "./contexts/context";
 
 import {
@@ -21,6 +22,9 @@ import {
   Signup,
   SearchProduct,
   AddressForm,
+  MyProducts,
+  AddProduct,
+  Wishlist,
 } from "./components/index";
 
 import {
@@ -31,6 +35,8 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import ProductList from "./components/Cart/ProductList";
+import SellerOrders from "./components/Profile/Seller/SellerOrders";
 
 function App() {
   const router = createBrowserRouter(
@@ -48,9 +54,14 @@ function App() {
           <Route path="payments" element={<PersonalInfo />}></Route>
           <Route path="setting" element={<Setting />}></Route>
           <Route path="cart" element={<Cart />}></Route>
+          <Route path="wishlist" element={<Wishlist />}></Route>
+          <Route path="myproducts" element={<MyProducts />}></Route>
         </Route>
         <Route path="cart" element={<Cart />}></Route>
         <Route path="addressform" element={<AddressForm />}></Route>
+        <Route path="seller/addproducts" element={<AddProduct />}></Route>
+        <Route path="seller/product-list" element={<MyProducts />}></Route>
+        <Route path="seller/orders" element={<SellerOrders />}></Route>
         <Route
           path="catagoryWiseProducts/:catagoryId"
           element={<CatagoryWiseProducts />}
@@ -70,7 +81,9 @@ function App() {
           <ProductContextProvider>
             <AddressContextProvider>
               <OrderHistoryContextProvider>
-                <RouterProvider router={router} />
+                <WishlistContextProvider>
+                  <RouterProvider router={router} />
+                </WishlistContextProvider>
               </OrderHistoryContextProvider>
             </AddressContextProvider>
           </ProductContextProvider>

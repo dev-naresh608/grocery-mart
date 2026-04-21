@@ -6,7 +6,7 @@ import { UserContext } from "../../contexts/context";
 export default function Login() {
   const navigate = useNavigate();
 
-  const { userData, setCurrentUser, setIsLogin } =
+  const { userData, setCurrentUser,setCurrentUserRole, setIsLogin } =
     useContext(UserContext);
 
   const [formData, setFormData] = useState({
@@ -35,13 +35,13 @@ export default function Login() {
       toast.warning("Please Enter data");
     } else {
       if (isValidUser) {
-        // setCurrentUser(formData)
         const currentUser = userData.find(
           (user) =>
             user.email === formData.email &&
             user.password === formData.password,
         );
         setCurrentUser(currentUser);
+        setCurrentUserRole(currentUser.role);
         toast.success("Login successful");
         setTimeout(() => {
           setIsLogin(true);
@@ -87,6 +87,7 @@ export default function Login() {
           </p>
           <ToastContainer
             autoClose={400}
+            position="bottom-right"
             pauseOnHover={false}
           ></ToastContainer>
         </form>

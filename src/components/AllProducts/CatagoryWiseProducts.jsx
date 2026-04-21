@@ -1,13 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import { ProductBuyCard } from "../index";
-import {ProductContext} from "../../contexts/context";
-
-
+import { GradientButton, ProductBuyCard } from "../index";
+import { ProductContext } from "../../contexts/context";
+import { ToastContainer } from "react-toastify";
 function CatagoryWiseProducts() {
-
-  const { productsList } = useContext(ProductContext)
+  const { productsList } = useContext(ProductContext);
   const { catagoryId } = useParams();
   const [selectedCatagoryProduct, setSelectedCatagoryProduct] = useState([]);
   const [catName, setCatName] = useState("");
@@ -28,20 +26,32 @@ function CatagoryWiseProducts() {
   return (
     <>
       <section className="p-10">
-        <p className="w-max rounded-2xl px-3 mb-5 text-xl font-semibold bg-gradient-to-r from-green-500 to-green-200">
+        <GradientButton componentType="p" className="mb-5 cursor-text">
           {catName}
-        </p>
+        </GradientButton>
+
         <div className="grid grid-cols-[repeat(auto-fill,minmax(220px,1fr))] gap-5">
+          <ToastContainer
+            autoClose={500}
+            closeOnClick
+            draggable
+            position="bottom-right"
+          />
           {selectedCatagoryProduct?.map((product) =>
             product?.map((p, index) => (
-              <ProductBuyCard name={p.name} src ={p.src} price={p.price} id={p.id} key={index} />
+              <ProductBuyCard
+                name={p.name}
+                src={p.src}
+                price={p.price}
+                id={p.id}
+                key={index}
+              />
             )),
           )}
         </div>
       </section>
     </>
   );
-
 }
 
 export default CatagoryWiseProducts;

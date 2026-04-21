@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import { ProductContext } from "../../contexts/context";
 import ProductImageLoader from "../AllProducts/ProductImageLoader";
+import GradientButton from "../GradientButton";
 
 function Catagory() {
   const { productsList } = useContext(ProductContext);
@@ -32,6 +33,9 @@ function Catagory() {
   return (
     <>
       <section className="pb-10 border w-[90vw] m-auto">
+       <div>
+           <GradientButton componentType="text" className="w-max mb-3 ">Catagories</GradientButton>
+       </div>
         <div className="grid sm:grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-5 text-center">
           {showCatagoriesAsScreen?.map((product, index) => (
             <Link
@@ -42,7 +46,7 @@ function Catagory() {
                 (index % 2 === 0 ? "bg-green-200" : "bg-yellow-200")
               }
             >
-              <div className="flex items-center justify-center">
+              <div className="flex items-center justify-center group">
                 {/* <img
                   src={product.src}
                   className="object-contain w-[120px] h-[120px]"
@@ -51,21 +55,21 @@ function Catagory() {
                 <ProductImageLoader src={product.src} alt={product.name} />
               </div>
               <div className="flex justify-center mb-3">
-                <p className="w-28">{product.name}</p>
+                <p className="w-28 font-semibold text-sm">{product.name}</p>
               </div>
             </Link>
           ))}
         </div>
         <div className="text-right mt-5">
-          <button
+          <GradientButton componentType="button" to="/allproducts"
             onClick={() => setShowAllCatagoryEnable((prev) => !prev)}
-            className="bg-gradient-to-r font-semibold from-green-600 to-green-300 px-3 py-1 rounded-2xl"
-            to="/allproducts"
           >
             {showCatBtnText}
-          </button>
+          </GradientButton>
         </div>
       </section>
+
+      
     </>
   );
 }

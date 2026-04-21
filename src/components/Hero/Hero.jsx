@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import heroBannerImg from "../../assets/fruit-basket.png";
 
-import {Catagory, Home} from '../index'
+import {Catagory, GradientButton, Home} from '../index'
 function Hero() {
 
   return (
@@ -18,14 +18,11 @@ function Hero() {
                 Foods at your <span className="font-semibold">Doorsteps</span>
               </h1>
             </div>
-            <div className="text-black ">
-              <p>Enjoy Healthy Food</p>
+            <div className="text-green-900 text-xl font-semibold">
+              <p>Enjoy Healthy Food.</p>
             </div>
             <div className="w-ma">
-              <Link 
-              className="bg-gradient-to-r font-semibold from-green-600 to-green-300 px-3 py-1 rounded-2xl whitespace-nowrap" to="/allproducts">
-                Start Shoping
-              </Link>
+              <GradientButton componentType="Link" to="/allproducts">Start Shoping</GradientButton>
             </div>
           </div>
 

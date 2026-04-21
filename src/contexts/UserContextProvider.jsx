@@ -8,13 +8,14 @@ function UserContextProvider({ children }) {
     password: "",
     id: "",
   });
-
-  const data = () => {
+  const [currentUserRole, setCurrentUserRole] = useState("customer");
+    const data = () => {
     return (
       JSON.parse(localStorage.getItem("localUserData")) || {
         username: "",
         email: "",
         password: "",
+        role: "",
         id: "",
       }
     );
@@ -31,6 +32,8 @@ function UserContextProvider({ children }) {
         setUserData,
         currentUser,
         setCurrentUser,
+        currentUserRole,
+        setCurrentUserRole,
         activeTab,
         setActiveTab,
         isLogin,

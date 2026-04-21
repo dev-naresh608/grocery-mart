@@ -13,7 +13,7 @@ function ProductImageLoader({ src, name }) {
           alt={name}
           loading="lazy"
           onLoad={() => setIsImageLoaded(true)}
-          className={`object-contain w-[120px] h-[120px] transition-opacity duration-300 ${isImageLoaded ? "opacity-100" : "opacity-0"} `}
+          className={`object-contain w-[120px] h-[120px] group-hover:scale-110 transition-all duration-300 ${isImageLoaded ? "opacity-100" : "opacity-0"} `}
         />
       </div>
     </>

@@ -15,8 +15,7 @@ function PersonalInfo() {
     currentUserAddress = `${currentUser.myAddress.name} ${currentUser.myAddress.phone} ${currentUser.myAddress.street} ${currentUser.myAddress.city} ${currentUser.myAddress.state}, ${currentUser.myAddress.pincode} `;
   }
 
-    useEffect(() => setActiveTab("personalinformation"), [])
-  
+  useEffect(() => setActiveTab("personalinformation"), []);
 
   const onDeleteAddress = () => {
     // setCurrentUser((prev) => delete prev.myAddress);
@@ -40,7 +39,7 @@ function PersonalInfo() {
 
   return (
     <>
-      <div className="w-full h-full max-w-4xl mx-auto bg-white shadow-md rounded-2xl p-6 space-y-6">
+      <div className="w-full h-full max-w-4xl mx-auto bg-white shadow-md rounded-2xl p-5 space-y-6">
         {/* Header */}
         <div>
           <h2 className="text-xl font-semibold">Personal Information</h2>
@@ -48,7 +47,7 @@ function PersonalInfo() {
         </div>
 
         {/* User Info */}
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
           <div className="bg-gray-100 p-4 rounded-xl">
             <p className="text-sm text-gray-500">Username</p>
             <h3 className="font-medium capitalize">{currentUser.username}</h3>
@@ -56,8 +55,15 @@ function PersonalInfo() {
 
           <div className="bg-gray-100 p-4 rounded-xl">
             <p className="text-sm text-gray-500">Email</p>
-            <h3 className="font-medium">{currentUser.email}</h3>
+            <h3 className="font-medium text-md">{currentUser.email}</h3>
           </div>
+
+          {currentUser.hasOwnProperty("phone") && (
+            <div className="bg-gray-100 p-4 rounded-xl">
+              <p className="text-sm text-gray-500">Phone</p>
+              <h3 className="font-medium">{currentUser.phone}</h3>
+            </div>
+          )}
         </div>
 
         {/* Order Count */}
@@ -65,15 +71,20 @@ function PersonalInfo() {
           <div>
             <p className="text-sm text-gray-600">Total Orders</p>
             <h3 className="text-xl font-semibold">
-              {currentUser.myOrders?.length === undefined
-                ? "0"
-                : `${currentUser.myOrders?.length}`}
+              {currentUser.role === "customer"
+                ? currentUser.myOrders?.length === undefined
+                  ? "0"
+                  : `${currentUser.myOrders?.length}`
+                : "seller"}
             </h3>
           </div>
           <button
             className="text-green-600 text-sm font-medium hover:underline"
             onClick={() => {
-              (setActiveTab("orders"), navigate("/profile/orderhistory"));
+              (setActiveTab("orders"),
+                currentUser.role === "customer"
+                  ? navigate("/profile/orderhistory")
+                  : navigate("/seller/orders"));
             }}
           >
             View Orders →

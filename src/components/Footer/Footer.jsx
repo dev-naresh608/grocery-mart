@@ -1,5 +1,9 @@
 import React from "react";
-import { footerBannerUrl, shopingCartWithGroceryItems } from "../index";
+import {
+  footerBannerUrl,
+  GradientButton,
+  shopingCartWithGroceryItems,
+} from "../index";
 
 function Footer() {
   return (
@@ -19,17 +23,18 @@ function Footer() {
                 </div>
                 <div>
                   <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Totam, fuga!
+                   Download our app for faster access, exclusive features, and a seamless experience.
                   </p>
                 </div>
-                <div className="bg-green-500 text-black w-max rounded-xl px-2 p-1 text-sm">
-                  <a
-                    href="https://play.google.com/store/apps/details?id=com.grofers.customerapp&hl=en_IN"
+                <div className="w-max rounded-xl px-2 p-1 text-sm">
+                  <GradientButton
+                  componentType="a"
+                    to="https://play.google.com/store/apps/details?id=com.grofers.customerapp&hl=en_IN"
+                    className="text-black text-lg"
                     target="_blank"
                   >
                     Download The App
-                  </a>
+                  </GradientButton>
                 </div>
               </div>
 
@@ -42,9 +47,9 @@ function Footer() {
 
           {/* lower  */}
           <div className="bg-[#efd565] sm:absolute rounded-2xl top-40 w-full">
-            <div className="flex items-center justify-center space-x-10 p-5 sm:pt-24 pb-10 px-6 ">
-              <div className=" h-36 w-36">
-                <img src={shopingCartWithGroceryItems} alt="" />
+            <div className="flex items-center justify-center space-x-10 p-5 sm:pt-24 md:pt-28 pb-10 px-6 ">
+              <div className="h-36 w-36">
+                <img src={shopingCartWithGroceryItems} alt="cart image" />
               </div>
               <div className="flex items-start space-x-7">
                 {/* <!-- About --> */}
@@ -89,8 +94,8 @@ function Footer() {
                 </div>
 
                 {/* <!-- Catagories --> */}
-                <div>
-                  <h2 className="font-semibold text-lg mb-4">Customer</h2>
+                <div className="hidden sm:block">
+                  <h2 className="font-semibold text-lg mb-4">Catagories</h2>
                   <ul className="space-y-2 text-sm text-gray-800">
                     <li>
                       <a
@@ -194,9 +199,9 @@ function Footer() {
               </div>
             </div>
             {/* copyright footer  */}
-            <div className="flex items-center justify-between px-20 bg-gray-100 h-10 text-green-700 font-semibold rounded-b-2xl">
-              <span>@2026 GroceryMart</span>
-              <span>grocerymart@outlook.com</span>
+            <div className="flex items-center justify-between px-5 sm:px-10 md:px-20 bg-gray-100 h-10 text-green-700 font-semibold rounded-b-2xl">
+              <span className="sm:text-md text-sm">@2026 GroceryMart</span>
+              <span className="text-sm sm:text-md">grocerymart@outlook.com</span>
             </div>
           </div>
         </div>

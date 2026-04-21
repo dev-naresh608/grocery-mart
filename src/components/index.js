@@ -11,7 +11,7 @@ import Orders from "./Profile/Orders"
 
 
 import Cart from "./Cart/Cart";
-import Catagory from './Catagory/Catagory'
+import Catagory from './Home/Catagory'
 import Home from "./Home/Home";
 import Login from "./Login/Login";
 import Signup from "./Signup/Signup";
@@ -22,9 +22,16 @@ import ProductBuyCard from "./AllProducts/ProductBuyCard";
 import SearchProduct from "./AllProducts/SearchProduct"
 import AddressForm from "./Address/AddressForm"
 import ProductImageLoader from "./AllProducts/ProductImageLoader"
+import Wishlist from "./Profile/Wishlist";
+import GradientButton from "./GradientButton";
+
+// seller 
+import SellerOrders from "./Profile/Seller/SellerOrders";
+import MyProducts from "./Profile/Seller/MyProducts";
+import AddProduct from "./Profile/Seller/AddProduct";
 
 export {Header, Footer, Hero, AllProducts, Layout, Profile,PersonalInfo, 
-Setting,Payments,Orders, Cart, Catagory, Home,Login, Signup, CatagoryWiseProducts, RatingStar, ProductBuyCard, SearchProduct, AddressForm, ProductImageLoader}
+Setting,Payments,Orders, Cart, Catagory, Home,Login, Signup, CatagoryWiseProducts, RatingStar, ProductBuyCard, SearchProduct, AddressForm, ProductImageLoader,Wishlist, MyProducts, AddProduct, GradientButton,}
 
 // image import export 
 import fruitImgUrl from "../assets/catagory/fruit.png";
@@ -59,5 +66,14 @@ import AlooSev from "../assets/products/aloo-sev.png"
 
 export { Banana, Apple, Chiku, CocaCola, Fanta, Grape, IceCream, Milk, ButterMilk, RedBull, Sprite, Lays, MasalaMasti, AmulCone, ChocolateCone, AlooSev}
 
+//why we are the best banner imagees: 
 
-//context import export
+import truckImgUrl from "../assets/delivery_truck.png"
+import leafImgUrl from "../assets/leaf_icon.png"
+import coinImgUrl from "../assets/coin_icon.png"
+import trustImgUrl from "../assets/trust_icon.png"
+import bottomBannerImageH from "../assets/bottom_banner_h.png"
+import bottomBannerImageV from "../assets/bottom_banner_v.png"
+import bottomBanner from "../assets/bottom_banner.png"
+
+export { truckImgUrl, leafImgUrl, coinImgUrl,trustImgUrl, bottomBannerImageH,bottomBannerImageV, bottomBanner,  }

@@ -28,7 +28,9 @@ function Orders() {
       "Items Are Added to Cart, Now You can order from cart successfully",
     );
   };
-  return (
+  
+ {
+  return currentUser.role === "customer" ?  (
     <div
       className="space-y-5 max-h-[90vh] overflow-y-auto 
   [&::-webkit-scrollbar]:w-2
@@ -109,7 +111,8 @@ function Orders() {
       ))}
     <ToastContainer autoClose={500} pauseOnHover draggable> </ToastContainer>
     </div>
-  );
+  ) : <p>you are seller</p>
+ }
 }
 
 export default Orders;

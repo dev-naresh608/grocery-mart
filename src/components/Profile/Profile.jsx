@@ -1,8 +1,16 @@
 import React, { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../contexts/context";
 import { Link, NavLink, useNavigate } from "react-router-dom";
-import { defaultPP, PersonalInfo, Orders, Setting, Payments, Cart } from "../index";
-
+import {
+  defaultPP,
+  PersonalInfo,
+  Orders,
+  Setting,
+  Payments,
+  Cart,
+  MyProducts,
+  Wishlist,
+} from "../index";
 
 function Profile() {
   const navigate = useNavigate();
@@ -12,6 +20,7 @@ function Profile() {
     setActiveTab,
     isLogin,
     setIsLogin,
+    setCurrentUserRole,
   } = useContext(UserContext);
 
   if (!isLogin) {
@@ -29,19 +38,47 @@ function Profile() {
       </>
     );
   }
-  if(activeTab == null){
-    setActiveTab('personalinformation')
+
+  if (activeTab == null) {
+    setActiveTab("personalinformation");
   }
+
+  const sections = [
+    {
+      name: "Personal Info",
+      icon: "👤",
+      tabToActive: "personalinformation",
+      to: "personalinformation",
+    },
+
+    {
+      name: "Settings",
+      icon: "⚙️",
+      tabToActive: "setting",
+      to: "setting",
+    },
+    {
+      name: "Payments",
+      icon: "💳",
+      tabToActive: "payments",
+      to: "payments",
+    },
+  ];
+
   return (
     <>
       <div className="min-h-[90vh] m-auto w-full bg-white shadow-md rounded-2xl p-6 sm:max-w-[95vw] sm:my-10 my-10 font-semibold grid sm:grid-cols-[40vh,1fr] space-x-5">
         {/* <div className="space-y-3 shadow-md rounded-2xl "> */}
-        <div className="w-full max-w-4xl mx-auto bg-white shadow-md rounded-2xl p-6 space-y-6">
-          <div className="p-3 text-center ">
+        <div className="w-full max-w-4xl mx-auto bg-white shadow-md rounded-2xl p-2 space-y-6">
+          <div className="text-center ">
             <div className="flex justify-center">
               <img
                 className="h-32 w-32 rounded-[50%] border border-green-600"
-                src={currentUser.hasOwnProperty('imageUrl')? currentUser.imageUrl : defaultPP}
+                src={
+                  currentUser.hasOwnProperty("imageUrl")
+                    ? currentUser.imageUrl
+                    : defaultPP
+                }
                 alt="profile picture"
               />
             </div>
@@ -53,81 +90,74 @@ function Profile() {
           </div>
           <div className="px-2">
             <ul className="">
-              <li
-                onClick={() => setActiveTab("personalinformation")}
-                className="cursor-pointer hover:text-green-600"
-              >
-                <NavLink
-                  to="personalinformation"
-                  className={({ isActive }) =>
-                    isActive ? "text-green-600" : ""
-                  }
+              {sections.map((s, i) => (
+                <li
+                  onClick={() => setActiveTab(s.tabToActive)}
+                  className="cursor-pointer hover:text-green-600"
                 >
-                  👤 Personal Info
-                </NavLink>
-              </li>
+                  <NavLink
+                    to={s.to}
+                    className={({ isActive }) =>
+                      isActive ? "text-green-600" : ""
+                    }
+                  >
+                    {s.icon} {s.name}
+                  </NavLink>
+                </li>
+              ))}
 
-              <li
-                onClick={() => setActiveTab("orders")}
-                className="cursor-pointer hover:text-green-600"
-              >
-                <NavLink
-                  to="orderhistory"
-                  className={({ isActive }) =>
-                    isActive ? "text-green-600" : ""
-                  }
-                >
-                  📦 Orders
-                </NavLink>
-              </li>
+              {currentUser.role === "customer" ? (
+                <>
+                  <li
+                    onClick={() => setActiveTab("cart")}
+                    className="cursor-pointer hover:text-green-600"
+                  >
+                    <NavLink
+                      to="cart"
+                      className={({ isActive }) =>
+                        isActive ? "text-green-600" : ""
+                      }
+                    >
+                      🛒 Cart
+                    </NavLink>
+                  </li>
+                  <li
+                    onClick={() => setActiveTab("wishlist")}
+                    className="cursor-pointer hover:text-green-600"
+                  >
+                    <NavLink
+                      to="wishlist"
+                      className={({ isActive }) =>
+                        isActive ? "text-green-600" : ""
+                      }
+                    >
+                      📜 Wishlist
+                    </NavLink>
+                  </li>
+                  <li
+                    onClick={() => setActiveTab("orders")}
+                    className="cursor-pointer hover:text-green-600"
+                  >
+                    <NavLink
+                      to="orderhistory"
+                      className={({ isActive }) =>
+                        isActive ? "text-green-600" : ""
+                      }
+                    >
+                      📦 Orders
+                    </NavLink>
+                  </li>
+                </>
+              ) : (
+                <></>
+              )}
 
-              <li
-                onClick={() => setActiveTab("payments")}
-                className="cursor-pointer hover:text-green-600"
-              >
-                <NavLink
-                  to="payments"
-                  className={({ isActive }) =>
-                    isActive ? "text-green-600" : ""
-                  }
-                >
-                  💳 Payments
-                </NavLink>
-              </li>
-
-              <li
-                onClick={() => setActiveTab("cart")}
-                className="cursor-pointer hover:text-green-600"
-              >
-                <NavLink
-                  to="cart"
-                  className={({ isActive }) =>
-                    isActive ? "text-green-600" : ""
-                  }
-                >
-                  🛒 Cart
-                </NavLink>
-              </li>
-
-              <li
-                onClick={() => setActiveTab("setting")}
-                className="cursor-pointer hover:text-green-600"
-              >
-                <NavLink
-                  to="setting"
-                  className={({ isActive }) =>
-                    isActive ? "text-green-600" : ""
-                  }
-                >
-                  ⚙️ Settings
-                </NavLink>
-              </li>
-
-              <li
+               <li
                 onClick={() => {
                   setIsLogin(false);
                   navigate("/login");
                   location.reload();
+                  setCurrentUserRole("customer");
                 }}
                 className="text-red-500 cursor-pointer"
               >
@@ -143,6 +173,8 @@ function Profile() {
           {activeTab === "orders" && <Orders />}
           {activeTab === "setting" && <Setting />}
           {activeTab === "cart" && <Cart />}
+          {activeTab === "wishlist" && <Wishlist />}
+          {activeTab === "myproducts" && <MyProducts />}
         </div>
       </div>
     </>

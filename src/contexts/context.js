@@ -13,7 +13,10 @@ import AddressContextProvider from "./AddressContextProvider"
 import OrderHistoryContext from "./OrderHistoryContext";
 import OrderHistoryContextProvider from "./OrderHistoryContextProvider"
 
-export { CartProductContext, CartProductContextProvider, UserContext, UserContextProvider, ProductContext, ProductContextProvider, AddressContext, AddressContextProvider, OrderHistoryContext, OrderHistoryContextProvider };
+import WishlistContext from "./WishlistContext";
+import WishlistContextProvider from "./WishlistContextProvider";
+
+export { CartProductContext, CartProductContextProvider, UserContext, UserContextProvider, ProductContext, ProductContextProvider, AddressContext, AddressContextProvider, OrderHistoryContext, OrderHistoryContextProvider, WishlistContext, WishlistContextProvider };
 
 
 // import UserContext from "./UserContext";
