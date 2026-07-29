@@ -1,10 +1,10 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const sessionSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "users",
+      ref: "User",
       required: [true, "User is required"],
     },
 
@@ -15,21 +15,25 @@ const sessionSchema = new mongoose.Schema(
 
     ip: {
       type: String,
-      required: [true, "IP address is required"],
+      default: "Not provided",
     },
 
     userAgent: {
       type: String,
-      required: [true, "User agent is required"],
+      default: "Not provided",
     },
     revoked: {
       type: Boolean,
       default: false,
     },
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
-const SessionModel = mongoose.model("sessions", sessionSchema);
+sessionSchema.index({ refreshTokenHash: 1 });
+sessionSchema.index({ user: 1 });
+
+const SessionModel =
+  mongoose.models.sessions || mongoose.model("sessions", sessionSchema);
 
 module.exports = { SessionModel };

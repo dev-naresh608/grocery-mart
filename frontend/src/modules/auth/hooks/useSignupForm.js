@@ -48,7 +48,6 @@ export function useSignupForm() {
     setIsPassVisible((prev) => !prev);
   };
 
-
   const buildPayload = () => {
     const base = {
       username: formData.username,
@@ -89,7 +88,7 @@ export function useSignupForm() {
 
     setLoading(true);
     try {
-      const {data} = await signupUserApi(payload);
+      const { data } = await signupUserApi(payload);
 
       if (data.success) {
         toast.success(`Signup successful`);

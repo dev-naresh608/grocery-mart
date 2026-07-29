@@ -4,236 +4,263 @@ const { Driver, createDriverSvc } = require("../driver/index");
 const { Seller, createSellerSvc } = require("../seller/index");
 const sessionSvc = require("./session.service");
 const mongoose = require("mongoose");
-
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const { config } = require("../../configs");
 
-const { config } = require("../../configs/");
-const user = require("../user/index");
+const sanitizeUser = (user) => ({
+  _id: user._id,
+  username: user.username,
+  email: user.email,
+  role: user.role,
+  phone: user.phone || "",
+  profile_picture: user.profile_picture || "",
+});
 
 const userSignupSvc = async (payload, ip, userAgent) => {
-  // Check if email already exists
   const isUserExist = await checkIsUserExistSvc(payload.email);
-
   if (isUserExist) {
     return {
       success: false,
-      message: "Email already exists",
+      message: "Email already registered",
     };
   }
 
-  // Hash Password
-  payload.password = await bcrypt.hash(payload.password, 12);
+  const hashedPassword = await bcrypt.hash(payload.password, 12);
+  const userPayload = { ...payload, password: hashedPassword };
 
-  // Create Session
-  const session = await mongoose.startSession();
+  const dbSession = await mongoose.startSession();
 
   try {
     let user;
     let accessToken;
     let refreshToken;
-    // Transaction Starts
-    await session.withTransaction(async () => {
-      // Create User
-      user = await createUserSvc(payload, session);
+
+    await dbSession.withTransaction(async () => {
+      user = await createUserSvc(userPayload, dbSession);
 
       const role = payload.role || "customer";
-
       switch (role) {
         case "customer":
-          await createCustomerSvc(user._id, session);
+          await createCustomerSvc(user._id, dbSession);
           break;
-
         case "seller":
-          await createSellerSvc(user._id, payload, session);
+          await createSellerSvc(user._id, payload, dbSession);
           break;
-
         case "driver":
-          await createDriverSvc(user._id, payload, session);
+          await createDriverSvc(user._id, payload, dbSession);
           break;
-
+        case "admin":
+          break;
         default:
           throw new Error("Invalid user role");
       }
 
-      // Generate JWT AFTER successful transaction
-
       refreshToken = jwt.sign(
-        {
-          id: user._id,
-          role: user.role,
-        },
+        { id: user._id, role: user.role },
         config.JWT_SECRET,
-        {
-          expiresIn: "7d",
-        },
+        { expiresIn: "7d" }
       );
 
-      const refreshTokenHash = await bcrypt.hash(refreshToken, 12);
-
-      const buildSessionPayload = () => ({
-        user: user._id,
-        refreshTokenHash,
-        ip,
-        userAgent,
-      });
-
-      const sessionPayload = buildSessionPayload();
-      // Create Session
-      const sessionModel = await sessionSvc.createSessionSvc(sessionPayload);
+      await sessionSvc.createSessionSvc(
+        {
+          user: user._id,
+          refreshToken,
+          ip,
+          userAgent,
+        },
+        dbSession
+      );
 
       accessToken = jwt.sign(
-        {
-          id: user._id,
-          role: user.role,
-        },
+        { id: user._id, role: user.role },
         config.JWT_SECRET,
-        {
-          expiresIn: "15m",
-        },
+        { expiresIn: "15m" }
       );
     });
 
     return {
       success: true,
-      user: { username: user.username, email: user.email },
+      user: sanitizeUser(user),
       accessToken,
       refreshToken,
     };
   } catch (error) {
     return {
       success: false,
-      message: error.message,
+      message: error.message || "Signup failed",
     };
   } finally {
-    await session.endSession();
+    await dbSession.endSession();
   }
 };
 
 const userLoginSvc = async (email, password, ip, userAgent) => {
   try {
-    if (email === "admin@gmail.com" && password === "admin") {
-      const userData = {
-        _id: "admin",
-        user_id: "admin",
-        username: "admin",
-        email: "admin@gmail.com",
-        password: "admin",
-        role: "admin",
-        super_admin: true,
-        isAdmin: true,
-      };
-      return { success: true, user: userData };
-    }
-
     const user = await User.findOne({ email });
-
     if (!user) {
-      return { success: false, message: "Email not Found" };
+      return { success: false, message: "Invalid email or password" };
     }
 
     const isPasswordMatch = await bcrypt.compare(password, user.password);
     if (!isPasswordMatch) {
-      return { success: false, message: "Invalid Password" };
+      return { success: false, message: "Invalid email or password" };
     }
 
-    // GENERATE ACCESS TOKEN
     const accessToken = jwt.sign(
       { id: user._id, role: user.role },
       config.JWT_SECRET,
-      {
-        expiresIn: "15m",
-      },
+      { expiresIn: "15m" }
     );
 
-    // GENERATE REFRESH TOKEN
     const refreshToken = jwt.sign(
       { id: user._id, role: user.role },
       config.JWT_SECRET,
-      {
-        expiresIn: "7d",
-      },
+      { expiresIn: "7d" }
     );
 
-    // GENERATE REFRESH TOKEN HASH
-    const refreshTokenHash = await bcrypt.hash(refreshToken, 12);
-
-    // CREATE SESSION
-    const buildSessionPayload = () => ({
+    await sessionSvc.createSessionSvc({
       user: user._id,
-      refreshTokenHash,
+      refreshToken,
       ip,
       userAgent,
     });
 
-    const sessionPayload = buildSessionPayload();
-    const sessionModel = await sessionSvc.createSessionSvc(sessionPayload);
-
     return {
       success: true,
-      user: {
-        username: user.username,
-        role: user.role,
-      },
+      user: sanitizeUser(user),
       accessToken,
       refreshToken,
     };
   } catch (error) {
-    console.log("Error in login: ", error);
-    return { success: false, message: error.message };
+    return { success: false, message: error.message || "Login failed" };
   }
 };
 
 const getMeSvc = async (accessToken) => {
-  const decoded = jwt.verify(accessToken, config.JWT_SECRET);
-  const user = await User.findById(decoded.id);
+  try {
+    const decoded = jwt.verify(accessToken, config.JWT_SECRET);
+    const user = await User.findById(decoded.id).select("-password");
 
-  if (!user) return;
+    if (!user) {
+      return { success: false, message: "User not found" };
+    }
 
-  return {
-    success: true,
-    message: "Successful",
-    user: {
-      username: user.username,
-      email: user.email,
-      role: user.role,
-      phone: user.phone,
-    },
-  };
+    return {
+      success: true,
+      message: "User retrieved successfully",
+      user: sanitizeUser(user),
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: "Invalid or expired access token",
+    };
+  }
 };
 
-const refreshTokenSvc = async (email, password) => {
-  const user = await User.findOne({ email });
+const refreshTokenSvc = async (refreshToken, ip, userAgent) => {
+  try {
+    if (!refreshToken) {
+      return { success: false, message: "Refresh token is required" };
+    }
 
-  if (!user)
+    let decoded;
+    try {
+      decoded = jwt.verify(refreshToken, config.JWT_SECRET);
+    } catch (err) {
+      return { success: false, message: "Invalid or expired refresh token" };
+    }
+
+    const activeSession = await sessionSvc.findSessionByRefreshTokenSvc(
+      refreshToken
+    );
+
+    if (!activeSession) {
+      return {
+        success: false,
+        message: "Session expired or revoked. Please log in again.",
+      };
+    }
+
+    const user = await User.findById(decoded.id);
+    if (!user) {
+      return { success: false, message: "User not found" };
+    }
+
+    // Revoke old session and issue rotated refresh token for optimal security
+    await sessionSvc.revokeSessionSvc(refreshToken);
+
+    const newAccessToken = jwt.sign(
+      { id: user._id, role: user.role },
+      config.JWT_SECRET,
+      { expiresIn: "15m" }
+    );
+
+    const newRefreshToken = jwt.sign(
+      { id: user._id, role: user.role },
+      config.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    await sessionSvc.createSessionSvc({
+      user: user._id,
+      refreshToken: newRefreshToken,
+      ip,
+      userAgent,
+    });
+
     return {
-      success: false,
-      message: "Invalid email or password",
+      success: true,
+      accessToken: newAccessToken,
+      refreshToken: newRefreshToken,
+      user: sanitizeUser(user),
     };
-
-  const isPasswordMatch = await bcrypt.compare(password, user.password);
-
-  if (!isPasswordMatch) {
+  } catch (error) {
     return {
       success: false,
-      message: "Invalid password",
+      message: error.message || "Failed to refresh token",
+    };
+  }
+};
+
+const logoutSvc = async (refreshToken) => {
+  if (!refreshToken) {
+    return { success: false, message: "Refresh token is required" };
+  }
+
+  const result = await sessionSvc.revokeSessionSvc(refreshToken);
+  if (!result) {
+    return {
+      success: false,
+      message: "Session already logged out or invalid",
     };
   }
 
-  const refreshToken = jwt.sign({ id: user._id }, config.JWT_SECRET, {
-    expiresIn: "7d",
-  });
-
-  const accessToken = jwt.sign({ id: user._id }, config.JWT_SECRET, {
-    expiresIn: "15m",
-  });
-
   return {
     success: true,
-    accessToken,
-    refreshToken,
-    user: { usernmae: user.username, email: user.email, role: user.role },
+    message: "Logged out successfully",
   };
 };
 
-module.exports = { userLoginSvc, userSignupSvc, getMeSvc, refreshTokenSvc };
+const logoutAllSvc = async (userId) => {
+  if (!userId) {
+    return { success: false, message: "User ID is required" };
+  }
+
+  await sessionSvc.revokeAllUserSessionsSvc(userId);
+
+  return {
+    success: true,
+    message: "Logged out of all devices successfully",
+  };
+};
+
+module.exports = {
+  userLoginSvc,
+  userSignupSvc,
+  getMeSvc,
+  refreshTokenSvc,
+  logoutSvc,
+  logoutAllSvc,
+};

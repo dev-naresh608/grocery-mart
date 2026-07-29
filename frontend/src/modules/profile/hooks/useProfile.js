@@ -27,7 +27,7 @@ export const useProfile = () => {
         setCurrentUserRole("customer");
         navigate("/");
         window.location.reload();
-      }
+      },
     });
   };
 

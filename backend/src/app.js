@@ -42,11 +42,11 @@ app.use("/admin", adminRoute);
 
 // OTHER ROUTES
 app.use("/api/auth", authRoute);
-app.use("/api", distanceRoute);
-app.use("/product", productRoute);
-app.use("/order", orderRoute);
-app.use("/cart", cartRoute);
-app.use("/stores", storeRoute);
-app.use("/address", addressRoute);
+app.use("/api/distance", distanceRoute);
+app.use("/api/product", productRoute);
+app.use("/api/order", orderRoute);
+app.use("/api/cart", cartRoute);
+app.use("/api/stores", storeRoute);
+app.use("/api/address", addressRoute);
 
 module.exports = app;
