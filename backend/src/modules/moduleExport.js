@@ -1,12 +1,12 @@
 module.exports = {
-  ...require('./User'),
+  ...require('./user'),
+  ...require('./customer'),
+  ...require('./seller'),
+  ...require('./driver'),
   ...require('./address'),
   ...require('./auth'),
   ...require('./cart'),
-  ...require('./customer'),
-  ...require('./driver'),
   ...require('./order'),
   ...require('./product'),
-  ...require('./seller'),
   ...require('./admin'),
 };

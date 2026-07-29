@@ -1,5 +1,5 @@
 const Order = require("./order.model");
-const User = require("../User");
+const User = require("../user");
 const Product = require("../product/product.model");
 
 const { addOrderService, findSingleOrderService } = require("./order.service");

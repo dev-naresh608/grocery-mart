@@ -1,5 +1,5 @@
 const Product = require("../../modules/product/product.model");
-const Seller = require("../../modules/seller/seller.model");
+const { Seller } = require("../../modules/seller/seller.model");
 const Order = require("../../modules/order/order.model");
 
 const addOrderService = async (o) => {

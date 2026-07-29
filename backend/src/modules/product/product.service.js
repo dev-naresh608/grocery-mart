@@ -1,6 +1,6 @@
-const Seller = require("../seller/seller.model");
+const { Seller } = require("../seller/seller.model");
 const Product = require("./product.model");
-const User = require("../User");
+const User = require("../user");
 const fs = require("fs");
 const path = require("path");
 const addProductService = async (payload, url, product_id) => {

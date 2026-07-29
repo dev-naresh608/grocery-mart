@@ -1,5 +1,5 @@
 const Product = require("../modules/product/product.model");
-const Seller = require("../modules/seller/seller.model");
+const { Seller } = require("../modules/seller/seller.model");
 const getAllProductsService = async (store_id) => {
   const products = await Product.find({ store_id: store_id });
 

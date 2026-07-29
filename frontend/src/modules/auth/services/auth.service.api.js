@@ -1,11 +1,11 @@
 import api from "../../../configs/api";
 
 export async function loginUserApi(payload) {
-  return api.post("/login", payload);
+  return api.post("/auth/login", payload);
 }
 
 export async function signupUserApi(payload) {
-  return api.post("/signup", payload);
+  return api.post("/auth/signup", payload);
 }
 
 // export async function loginAsAdminApi(payload){

@@ -41,7 +41,7 @@ app.get("/test", (req, res) => {
 app.use("/admin", adminRoute);
 
 // OTHER ROUTES
-app.use("/", authRoute);
+app.use("/api/auth", authRoute);
 app.use("/api", distanceRoute);
 app.use("/product", productRoute);
 app.use("/order", orderRoute);
