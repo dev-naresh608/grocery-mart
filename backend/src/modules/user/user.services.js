@@ -1,17 +1,24 @@
-const { User } = require("./user.model");
+import { User } from "./user.model.js";
 
-const createUserSvc = async (payload, session) => {
+export const createUserSvc = async (payload, session) => {
   const users = await User.create([payload], { session });
   return users[0];
 };
 
-const checkIsUserExistSvc = async (value) => {
+export const findUserByEmail = async (email) => {
   return await User.findOne({
-    email: value,
+    email,
   });
 };
 
-module.exports = {
-  createUserSvc,
-  checkIsUserExistSvc,
+export const findUserByPhone = async (phone) => {
+  return await User.findOne({
+    phone,
+  });
 };
+
+export const findUserById = async (userId) => {
+  return await User.findById(userId);
+};
+
+export const User;

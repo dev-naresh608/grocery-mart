@@ -1,89 +1,96 @@
-const { User, createUserSvc, checkIsUserExistSvc } = require("../user/index");
-const { Customer, createCustomerSvc } = require("../customer/index");
-const { Driver, createDriverSvc } = require("../driver/index");
-const { Seller, createSellerSvc } = require("../seller/index");
-const sessionSvc = require("./session.service");
-const mongoose = require("mongoose");
-const jwt = require("jsonwebtoken");
-const bcrypt = require("bcrypt");
-const { config } = require("../../configs");
+import bcrypt from "bcrypt";
+import mongoose from "mongoose";
+import jwt from "jsonwebtoken";
+
+import {
+  User,
+  createUserSvc,
+  checkIsUserExistSvc,
+  findUserByEmail,
+  findUserByPhone,
+  findUserById,
+} from "../user/user.services.js";
+
+import { Customer, createCustomerSvc } from "../customer/customer.services.js";
+import { Driver, createDriverSvc } from "../driver/driver.services.js";
+import { Seller, createSellerSvc } from "../seller/seller.services.js";
+import { config } from "../../configs/config.js";
+
+import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.js";
 
 const sanitizeUser = (user) => ({
-  _id: user._id,
+  id: user._id,
   username: user.username,
   email: user.email,
   role: user.role,
-  phone: user.phone || "",
-  profile_picture: user.profile_picture || "",
+  phone: user.phone,
+  profile_picture: user.profile_picture,
 });
 
-const userSignupSvc = async (payload, ip, userAgent) => {
-  const isUserExist = await checkIsUserExistSvc(payload.email);
-  if (isUserExist) {
+export const registerSvc = async (payload) => {
+  const isUserExistWithEmail = await findUserByEmail(payload.email);
+
+  if (isUserExistWithEmail) {
     return {
       success: false,
       message: "Email already registered",
     };
   }
 
+  const isUserExistWithPhone = await findUserByPhone(payload.phone);
+
+  if (isUserExistWithPhone) {
+    return {
+      success: false,
+      message: "Phone number already registered",
+    };
+  }
+
   const hashedPassword = await bcrypt.hash(payload.password, 12);
-  const userPayload = { ...payload, password: hashedPassword };
+
+  const userPayload = {
+    username: payload.username,
+    email: payload.email,
+    password: hashedPassword,
+    role: payload.role,
+    phone: payload.phone,
+  };
 
   const dbSession = await mongoose.startSession();
 
   try {
     let user;
-    let accessToken;
-    let refreshToken;
 
     await dbSession.withTransaction(async () => {
       user = await createUserSvc(userPayload, dbSession);
 
-      const role = payload.role || "customer";
-      switch (role) {
+      switch (payload.role) {
         case "customer":
           await createCustomerSvc(user._id, dbSession);
           break;
+
         case "seller":
           await createSellerSvc(user._id, payload, dbSession);
           break;
+
         case "driver":
           await createDriverSvc(user._id, payload, dbSession);
           break;
-        case "admin":
-          break;
+
         default:
           throw new Error("Invalid user role");
       }
-
-      refreshToken = jwt.sign(
-        { id: user._id, role: user.role },
-        config.JWT_SECRET,
-        { expiresIn: "7d" }
-      );
-
-      await sessionSvc.createSessionSvc(
-        {
-          user: user._id,
-          refreshToken,
-          ip,
-          userAgent,
-        },
-        dbSession
-      );
-
-      accessToken = jwt.sign(
-        { id: user._id, role: user.role },
-        config.JWT_SECRET,
-        { expiresIn: "15m" }
-      );
     });
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
 
     return {
       success: true,
       user: sanitizeUser(user),
       accessToken,
       refreshToken,
+      message: "Account created successfully",
     };
   } catch (error) {
     return {
@@ -95,172 +102,69 @@ const userSignupSvc = async (payload, ip, userAgent) => {
   }
 };
 
-const userLoginSvc = async (email, password, ip, userAgent) => {
-  try {
-    const user = await User.findOne({ email });
-    if (!user) {
-      return { success: false, message: "Invalid email or password" };
-    }
+export const loginSvc = async ({ email, password }) => {
+  const user = await findUserByEmail(email);
 
-    const isPasswordMatch = await bcrypt.compare(password, user.password);
-    if (!isPasswordMatch) {
-      return { success: false, message: "Invalid email or password" };
-    }
-
-    const accessToken = jwt.sign(
-      { id: user._id, role: user.role },
-      config.JWT_SECRET,
-      { expiresIn: "15m" }
-    );
-
-    const refreshToken = jwt.sign(
-      { id: user._id, role: user.role },
-      config.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    await sessionSvc.createSessionSvc({
-      user: user._id,
-      refreshToken,
-      ip,
-      userAgent,
-    });
-
-    return {
-      success: true,
-      user: sanitizeUser(user),
-      accessToken,
-      refreshToken,
-    };
-  } catch (error) {
-    return { success: false, message: error.message || "Login failed" };
-  }
-};
-
-const getMeSvc = async (accessToken) => {
-  try {
-    const decoded = jwt.verify(accessToken, config.JWT_SECRET);
-    const user = await User.findById(decoded.id).select("-password");
-
-    if (!user) {
-      return { success: false, message: "User not found" };
-    }
-
-    return {
-      success: true,
-      message: "User retrieved successfully",
-      user: sanitizeUser(user),
-    };
-  } catch (error) {
+  if (!user) {
     return {
       success: false,
-      message: "Invalid or expired access token",
+      message: "Invalid email or password",
     };
   }
+
+  const isPasswordMatch = await bcrypt.compare(password, user.password);
+
+  if (!isPasswordMatch) {
+    return { success: false, message: "Invalid email or password" };
+  }
+
+  const accessToken = generateAccessToken(user._id, user.role);
+
+  const refreshToken = generateRefreshToken(user._id);
+
+  return {
+    success: true,
+    user: sanitizeUser(user),
+    message: "User logged in successfully",
+    accessToken,
+    refreshToken,
+  };
 };
 
-const refreshTokenSvc = async (refreshToken, ip, userAgent) => {
-  try {
-    if (!refreshToken) {
-      return { success: false, message: "Refresh token is required" };
-    }
+export const getMeSvc = async (userId) => {
+  const user = await findUserById(userId);
 
-    let decoded;
-    try {
-      decoded = jwt.verify(refreshToken, config.JWT_SECRET);
-    } catch (err) {
-      return { success: false, message: "Invalid or expired refresh token" };
-    }
-
-    const activeSession = await sessionSvc.findSessionByRefreshTokenSvc(
-      refreshToken
-    );
-
-    if (!activeSession) {
-      return {
-        success: false,
-        message: "Session expired or revoked. Please log in again.",
-      };
-    }
-
-    const user = await User.findById(decoded.id);
-    if (!user) {
-      return { success: false, message: "User not found" };
-    }
-
-    // Revoke old session and issue rotated refresh token for optimal security
-    await sessionSvc.revokeSessionSvc(refreshToken);
-
-    const newAccessToken = jwt.sign(
-      { id: user._id, role: user.role },
-      config.JWT_SECRET,
-      { expiresIn: "15m" }
-    );
-
-    const newRefreshToken = jwt.sign(
-      { id: user._id, role: user.role },
-      config.JWT_SECRET,
-      { expiresIn: "7d" }
-    );
-
-    await sessionSvc.createSessionSvc({
-      user: user._id,
-      refreshToken: newRefreshToken,
-      ip,
-      userAgent,
-    });
-
-    return {
-      success: true,
-      accessToken: newAccessToken,
-      refreshToken: newRefreshToken,
-      user: sanitizeUser(user),
-    };
-  } catch (error) {
+  if (!user) {
     return {
       success: false,
-      message: error.message || "Failed to refresh token",
-    };
-  }
-};
-
-const logoutSvc = async (refreshToken) => {
-  if (!refreshToken) {
-    return { success: false, message: "Refresh token is required" };
-  }
-
-  const result = await sessionSvc.revokeSessionSvc(refreshToken);
-  if (!result) {
-    return {
-      success: false,
-      message: "Session already logged out or invalid",
+      message: "User not found",
     };
   }
 
   return {
     success: true,
-    message: "Logged out successfully",
+    message: "User retrieved successfully",
+    user: sanitizeUser(user),
   };
 };
 
-const logoutAllSvc = async (userId) => {
-  if (!userId) {
-    return { success: false, message: "User ID is required" };
+export const rotateTokenSvc = async (userId) => {
+  const user = await User.findById(userId);
+
+  if (!user) {
+    return { success: false, message: "User not found" };
   }
 
-  await sessionSvc.revokeAllUserSessionsSvc(userId);
+  const accessToken = generateAccessToken(user._id, user.role);
+
+  const refreshToken = generateRefreshToken(user._id);
 
   return {
     success: true,
-    message: "Logged out of all devices successfully",
+    user: sanitizeUser(user),
+    message: "Token rotated successfully",
+    accessToken,
+    refreshToken,
   };
 };
 
-module.exports = {
-  userLoginSvc,
-  userSignupSvc,
-  getMeSvc,
-  refreshTokenSvc,
-  logoutSvc,
-  logoutAllSvc,
-};

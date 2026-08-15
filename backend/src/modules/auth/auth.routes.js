@@ -1,14 +1,30 @@
-const express = require("express");
+import express from "express";
 const router = express.Router();
 
-const authController = require("./auth.controllers.js");
+import { register, login, getMe, rotateToken } from "./auth.controllers.js";
 
-router.post("/signup", authController.signup);
-router.post("/login", authController.login);
-router.post("/refresh-token", authController.refreshToken);
-router.post("/logout", authController.logout);
-router.post("/logout-all", authController.logoutAll);
-router.get("/get-me", authController.getMe);
+import {
+  authenticateAccessToken,
+  authenticateRefreshToken,
+} from "../../middlewares/auth.middleware.js";
+
+import { validate } from "../../middlewares/validate.middleware.js";
+
+import { loginSchema, registerSchema } from "./auth.schema.js";
+
+router.post("/register", validate(registerSchema), register);
+
+router.post("/login", validate(loginSchema), login);
+
+router.get("/me", authenticateAccessToken, getMe);
+
+router.post(
+  "/rotate-token",
+  authenticateRefreshToken,
+  rotateToken
+);
+
+router.post("/logout", );
 
 module.exports = {
   authRoute: router,

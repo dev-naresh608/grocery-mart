@@ -3,7 +3,7 @@ const {config} = require("./config");
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(config.MONGO_URI, {
+    await mongoose.connect(config.DATABASE_URI, {
       serverSelectionTimeoutMS: 5000,
     });
 

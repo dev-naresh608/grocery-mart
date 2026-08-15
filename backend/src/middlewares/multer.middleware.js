@@ -1,8 +1,8 @@
-const express = require("express");
-const multer = require("multer");
-const fs = require("fs");
+import express from "express";
+import multer from "multer";
+import fs from "fs";
+import path from "path";
 
-const path = require("path");
 // const crypto = require("crypto");
 
 const storage = multer.diskStorage({
@@ -32,8 +32,6 @@ const storage = multer.diskStorage({
 
 // (uniqueName) && fs.unlinkSync(`../temporaryUploads/${uniqueName}`)
 
-const upload = multer({
+export const upload = multer({
   storage,
 });
-
-module.exports = { upload };

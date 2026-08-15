@@ -1,38 +1,47 @@
-require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
 
-if (!process.env.MONGO_URI) {
-  throw new Error("MONGO_URI undefined in environment variable");
-}
+const requiredEnv = [
+  "DATABASE_URI",
+  "JWT_SECRET",
+  "CLOUDINARY_CLOUD_NAME",
+  "CLOUDINARY_API_KEY",
+  "CLOUDINARY_API_SECRET",
+  "OPEN_ROUTER_SERVICE_API_KEY",
+];
 
-if (!process.env.JWT_SECRET) {
-  throw new Error("JWT_SECRET undefined in environment variable");
-}
+const missingEnv = requiredEnv.filter((key) => !process.env[key]);
 
-if (!process.env.CLOUDINARY_CLOUDE_NAME) {
-  throw new Error("CLOUDINARY_CLOUDE_NAME undefined in environment variable");
-}
-
-if (!process.env.CLOUDINARY_API_KEY) {
-  throw new Error("CLOUDINARY_API_KEY undefined in environment variable");
-}
-
-if (!process.env.CLOUDINARY_API_SECRET) {
-  throw new Error("CLOUDINARY_API_SECRET undefined in environment variable");
-}
-
-if (!process.env.OPEN_ROUTER_SERVICE_API_KEY) {
+if (missingEnv.length > 0) {
   throw new Error(
-    "OPEN_ROUTER_SERVICE_API_KEY undefined in environment variable",
+    `Missing required environment variables: ${missingEnv.join(", ")}`,
   );
 }
 
-const config = {
-  MONGO_URI: process.env.MONGO_URI,
-  PORT: process.env.PORT || 5000,
-  JWT_SECRET: process.env.JWT_SECRET,
-  CLOUDINARY_CLOUDE_NAME: process.env.CLOUDINARY_CLOUDE_NAME,
-  CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
-  OPEN_ROUTER_SERVICE_API_KEY: process.env.OPEN_ROUTER_SERVICE_API_KEY,
-};
+export const config = {
+  database: {
+    uri: process.env.DATABASE_URI,
+  },
 
-module.exports = { config };
+  server: {
+    port: Number(process.env.PORT) || 5000,
+  },
+
+  auth: {
+    accessTokenSecret: requiredEnv("JWT_ACCESS_TOKEN_SECRET"),
+    refreshTokenSecret: requiredEnv("JWT_REFRESH_TOKEN_SECRET"),
+
+    accessTokenExpiresIn: requiredEnv("JWT_ACCESS_TOKEN_EXPIRE"),
+    refreshTokenExpiresIn: requiredEnv("JWT_REFRESH_TOKEN_EXPIRE"),
+  },
+
+  cloudinary: {
+    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    apiKey: process.env.CLOUDINARY_API_KEY,
+    apiSecret: process.env.CLOUDINARY_API_SECRET,
+  },
+
+  services: {
+    openRouterApiKey: process.env.OPEN_ROUTER_SERVICE_API_KEY,
+  },
+};

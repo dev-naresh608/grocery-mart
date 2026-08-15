@@ -1,5 +1,5 @@
 const { Customer } = require("./customer.model");
-const createCustomerSvc = async (userId, session) => {
+export const createCustomerSvc = async (userId, session) => {
   const customers = await Customer.create(
     [
       {
@@ -12,6 +12,4 @@ const createCustomerSvc = async (userId, session) => {
   return customers[0];
 };
 
-module.exports = {
-  createCustomerSvc,
-};
+export default Customer;

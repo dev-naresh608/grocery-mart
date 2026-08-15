@@ -1,5 +1,5 @@
 const { Seller } = require("./seller.model");
-const createSellerSvc = async (userId, payload, session) => {
+export const createSellerSvc = async (userId, payload, session) => {
   const { phone, store_owner_name, store_name, store_type, store_address } =
     payload;
   const sellers = await Seller.create(
@@ -18,6 +18,4 @@ const createSellerSvc = async (userId, payload, session) => {
   return sellers[0];
 };
 
-module.exports = {
-  createSellerSvc,
-};
+export default Seller;
