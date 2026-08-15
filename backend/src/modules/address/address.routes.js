@@ -1,17 +1,17 @@
-const express = require("express");
+import express from "express";
+
 const {
   handleGetAddressApi,
   handleAddAddressApi,
   handleDeleteAddressApi,
   handleUpdateAddressApi,
 } = require("./address.controllers");
-const router = express.Router();
 
-router.get("/all/:userId", handleGetAddressApi);
-router.post("/add/:userId", handleAddAddressApi);
-router.delete("/delete/:addressId", handleDeleteAddressApi);
-router.patch("/update/:addressId", handleUpdateAddressApi);
+const addressRouter = express.Router();
 
-module.exports = {
-  addressRoute: router
-};
+addressRouter.get("/all/:userId", handleGetAddressApi);
+addressRouter.post("/add/:userId", handleAddAddressApi);
+addressRouter.delete("/delete/:addressId", handleDeleteAddressApi);
+addressRouter.patch("/update/:addressId", handleUpdateAddressApi);
+
+export default addressRouter;

@@ -1,9 +1,11 @@
-const { Seller } = require("../seller/seller.model");
-const Product = require("./product.model");
-const User = require("../user");
-const fs = require("fs");
-const path = require("path");
-const addProductService = async (payload, url, product_id) => {
+import fs from "fs";
+import path from "path";
+
+import Seller from "../seller/seller.model.js"
+import Product from "./product.model.js";
+import User from "../user/user.model.js";
+
+export const addProductService = async (payload, url, product_id) => {
   const {
     store_id,
     product_name,
@@ -48,7 +50,7 @@ const addProductService = async (payload, url, product_id) => {
   };
 };
 
-const updateProductService = async (product_id, store_id, updates) => {
+export const updateProductService = async (product_id, store_id, updates) => {
   // console.log(updates);
   // return product;
 
@@ -72,7 +74,7 @@ const updateProductService = async (product_id, store_id, updates) => {
     }
   }
 
-  const product = await Product.findOneAndUpdate(
+const product = await Product.findOneAndUpdate(
     {
       _id: product_id,
       store_id: store_id,
@@ -89,7 +91,7 @@ const updateProductService = async (product_id, store_id, updates) => {
   return filteredUpdates;
 };
 
-const deleteProductService = async (product_id, store_id) => {
+export const deleteProductService = async (product_id, store_id) => {
   const result = await Product.findOneAndDelete({
     _id: product_id,
     store_id: store_id,
@@ -104,7 +106,8 @@ const deleteProductService = async (product_id, store_id) => {
   const { _id } = result;
   return _id;
 };
-const deleteTempFolder = async () => {
+
+export const deleteTempFolder = async () => {
   const folderPath = path.join(__dirname, "../../temporaryUploads");
   try {
     await fs.rm(folderPath, { recursive: true, force: true });
@@ -114,17 +117,9 @@ const deleteTempFolder = async () => {
   }
 };
 
-const findProductSvc = async (productId) => {
+export const findProductSvc = async (productId) => {
   const product = await Product.findById({
     _id: productId,
   });
   return product;
-};
-
-module.exports = {
-  addProductService,
-  updateProductService,
-  deleteProductService,
-  deleteTempFolder,
-  findProductSvc,
 };

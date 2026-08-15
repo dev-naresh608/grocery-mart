@@ -1,15 +1,12 @@
-const { Seller } = require("../modules/seller/seller.model");
-const Product = require("../modules/product/product.model");
-const {
-  getAllProductsService,
-  getOneStoreService,
-} = require("./store.service");
+import Seller from "../modules/seller/seller.model.js";
 
-const handleGetAllStores = async (req, res) => {
+import Product from "../modules/product/product.model.js";
+
+import { getAllProductsService, getOneStoreService } from "./store.service.js";
+
+export const handleGetAllStores = async (req, res) => {
   const { search } = req.query;
-  const query = search
-    ? { store_name: { $regex: search, $options: "i" } }
-    : {};
+  const query = search ? { store_name: { $regex: search, $options: "i" } } : {};
 
   const allSellers = await Seller.find(query);
 
@@ -44,7 +41,7 @@ const handleGetAllStores = async (req, res) => {
     .json({ success: true, message: "all restaurants are fetched", result });
 };
 
-const handlegetAllStoreProduct = async (req, res) => {
+export const handlegetAllStoreProduct = async (req, res) => {
   try {
     const store_id = req.params.storeId;
 
@@ -72,7 +69,7 @@ const handlegetAllStoreProduct = async (req, res) => {
   }
 };
 
-const handleGetOneStore = async (req, res) => {
+export const handleGetOneStore = async (req, res) => {
   const { storeId } = req.params;
 
   const store = await getOneStoreService(storeId);
@@ -82,9 +79,4 @@ const handleGetOneStore = async (req, res) => {
     message: "store fetched successfully",
     store,
   });
-};
-module.exports = {
-  handleGetAllStores,
-  handlegetAllStoreProduct,
-  handleGetOneStore,
 };

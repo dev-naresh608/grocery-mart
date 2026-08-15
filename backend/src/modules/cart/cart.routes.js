@@ -1,5 +1,6 @@
-const express = require("express");
-const router = express.Router();
+import express from "express";
+
+const cartRouter = express.Router();
 
 const {
   handleGetCartByUser,
@@ -10,11 +11,11 @@ const {
   handleFindCartItemById,
 } = require("./cart.controllers");
 
-router.get("/user/:userId", handleGetCartByUser);
-router.post("/add", handleAddToCart);
-router.patch("/update", handleUpdateCartQty);
-router.delete("/remove/:userId/:productId", handleRemoveFromCart);
-router.delete("/clear/:userId", handleClearCart);
-router.get("/:productId", handleFindCartItemById);
+cartRouter.get("/user/:userId", handleGetCartByUser);
+cartRouter.post("/add", handleAddToCart);
+cartRouter.patch("/update", handleUpdateCartQty);
+cartRouter.delete("/remove/:userId/:productId", handleRemoveFromCart);
+cartRouter.delete("/clear/:userId", handleClearCart);
+cartRouter.get("/:productId", handleFindCartItemById);
 
-module.exports = { cartRoute: router };
+export default cartRouter;

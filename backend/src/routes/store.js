@@ -1,13 +1,15 @@
-const epxress = require("express");
-const router = epxress.Router();
-const {
+import express from "express";
+
+const storeRouter = epxress.Router();
+
+import {
   handleGetAllStores,
   handlegetAllStoreProduct,
   handleGetOneStore,
-} = require("../controllers/store");
+} from "../controllers/store.js";
 
-router.get("/", handleGetAllStores);
-router.get("/:storeId", handleGetOneStore);
-router.get("/allproducts/:storeId", handlegetAllStoreProduct);
+storeRouter.get("/", handleGetAllStores);
+storeRouter.get("/:storeId", handleGetOneStore);
+storeRouter.get("/allproducts/:storeId", handlegetAllStoreProduct);
 
-module.exports = { storeRoute: router };
+export default storeRouter;

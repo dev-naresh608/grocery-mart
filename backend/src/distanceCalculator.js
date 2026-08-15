@@ -1,6 +1,6 @@
-const { config } = require("./configs/index");
+import { config } from "./configs/config.js";
 
-async function findAddress(userAddress) {
+export async function findAddress(userAddress) {
   const apiKey = config.OPEN_ROUTER_SERVICE_API_KEY;
   try {
     const response = await fetch(
@@ -28,7 +28,7 @@ async function findAddress(userAddress) {
   }
 }
 
-function getDistanceAndETA(lat1, lon1, lat2, lon2, speedKmH = 25) {
+export function getDistanceAndETA(lat1, lon1, lat2, lon2, speedKmH = 25) {
   const toRad = (angle) => (Math.PI / 180) * angle;
   const R = 6371; // Earth radius in km
 
@@ -49,8 +49,3 @@ function getDistanceAndETA(lat1, lon1, lat2, lon2, speedKmH = 25) {
 
   return { distanceKm, etaHours };
 }
-
-module.exports = {
-  findAddress,
-  getDistanceAndETA,
-};

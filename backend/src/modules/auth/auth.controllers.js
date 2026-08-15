@@ -92,7 +92,6 @@ export const rotateToken = async (req, res) => {
   });
 };
 
-
 export const logout = (req, res) => {
   res.clearCookie("refreshToken", getCookieOptions());
 
@@ -101,5 +100,3 @@ export const logout = (req, res) => {
     message: "Logged out successfully",
   });
 };
-
-

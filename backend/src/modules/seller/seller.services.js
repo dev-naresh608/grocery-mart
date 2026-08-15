@@ -1,4 +1,5 @@
-const { Seller } = require("./seller.model");
+import Seller from "./seller.model.js";
+
 export const createSellerSvc = async (userId, payload, session) => {
   const { phone, store_owner_name, store_name, store_type, store_address } =
     payload;
@@ -17,5 +18,3 @@ export const createSellerSvc = async (userId, payload, session) => {
   );
   return sellers[0];
 };
-
-export default Seller;

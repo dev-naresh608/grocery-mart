@@ -1,11 +1,11 @@
-const Product = require("../../modules/product/product.model");
-const { Seller } = require("../../modules/seller/seller.model");
-const Order = require("../../modules/order/order.model");
+import Order from "./order.model.js";
+import Product from "../product/product.model.js";
+import Seller from "../seller/seller.model";
 
-const addOrderService = async (o) => {
+export const addOrderService = async (o) => {
   try {
     let order = null;
-    const { name:customer_name, phone:customer_phone } = o.order_address;
+    const { name: customer_name, phone: customer_phone } = o.order_address;
     await Order.create({
       customer_id: o.customerId,
       store_id: o.storeId,
@@ -35,7 +35,7 @@ const addOrderService = async (o) => {
   }
 };
 
-const findSingleOrderService = async (orderId) => {
+export const findSingleOrderService = async (orderId) => {
   //fetch order.
   const order = await Order.findById(orderId);
   if (!order) {
@@ -87,9 +87,4 @@ const findSingleOrderService = async (orderId) => {
 
   // return {order, products};
   return order;
-};
-
-module.exports = {
-  addOrderService,
-  findSingleOrderService,
 };

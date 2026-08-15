@@ -1,4 +1,4 @@
-const { Customer } = require("./customer.model");
+import Customer from "./customer.model.js";
 export const createCustomerSvc = async (userId, session) => {
   const customers = await Customer.create(
     [

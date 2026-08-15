@@ -1,9 +1,10 @@
-const Order = require("./order.model");
-const User = require("../user");
-const Product = require("../product/product.model");
+import Order from "./order.model.js";
+import User from "../user/user.model.js";
+import Product from "../product/product.model.js";
 
-const { addOrderService, findSingleOrderService } = require("./order.service");
-const handleGetAllOrders = async (req, res) => {
+import { addOrderService, findSingleOrderService } from "./order.service.js";
+
+export const handleGetAllOrders = async (req, res) => {
   const { userId } = req.params;
   const { role } = req.query;
 
@@ -48,7 +49,7 @@ const handleGetAllOrders = async (req, res) => {
   });
 };
 
-const handleAddOrder = async (req, res) => {
+export const handleAddOrder = async (req, res) => {
   try {
     const payload = req.body;
     if (!payload) {
@@ -69,7 +70,6 @@ const handleAddOrder = async (req, res) => {
       message: "order places succssfully",
       order: result.order,
     });
-
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -79,7 +79,7 @@ const handleAddOrder = async (req, res) => {
   }
 };
 
-const handleFindOrderById = async (req, res) => {
+export const handleFindOrderById = async (req, res) => {
   try {
     const { orderId } = req.params;
 
@@ -111,18 +111,10 @@ const handleFindOrderById = async (req, res) => {
   }
 };
 
-const handleDeleteOrderById = async (req, res) => {
+export const handleDeleteOrderById = async (req, res) => {
   return res.json({ message: "deleted successfully" });
 };
 
-const handleUpdateOrderById = async (req, res) => {
+export const handleUpdateOrderById = async (req, res) => {
   return res.json({ message: "Updated successfully" });
-};
-
-module.exports = {
-  handleGetAllOrders,
-  handleAddOrder,
-  handleFindOrderById,
-  handleDeleteOrderById,
-  handleUpdateOrderById,
 };

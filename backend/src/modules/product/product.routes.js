@@ -1,8 +1,9 @@
-const express = require("express");
-const multer = require('multer');
-const {upload} = require('../../middlewares/multer.middleware');
+import express from "express";
+import multer from "multer";
 
-const router = express.Router();
+import { upload } from "../../middlewares/multer.middleware.js";
+
+const productRouter = express.Router();
 const {
   handleGetAllProducts,
   handleAddProduct,
@@ -11,15 +12,17 @@ const {
   handleUpdateProductById,
 } = require("./product.controllers");
 
-router.get("/allproducts/:userId",handleGetAllProducts);
-router.post("/add-product",upload.single('product_img'), handleAddProduct);
+productRouter.get("/allproducts/:userId", handleGetAllProducts);
+productRouter.post(
+  "/add-product",
+  upload.single("product_img"),
+  handleAddProduct,
+);
 
-router
+productRouter
   .route("/:productId")
   .get(handleFindProductById)
   .patch(handleUpdateProductById)
-  .delete(handleDeleteProductById)
+  .delete(handleDeleteProductById);
 
-module.exports = {
-  productRoute: router
-};
+export default productRouter;

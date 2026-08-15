@@ -1,4 +1,4 @@
-import { User } from "./user.model.js";
+import User from "./user.model.js";
 
 export const createUserSvc = async (payload, session) => {
   const users = await User.create([payload], { session });
@@ -20,5 +20,3 @@ export const findUserByPhone = async (phone) => {
 export const findUserById = async (userId) => {
   return await User.findById(userId);
 };
-
-export const User;

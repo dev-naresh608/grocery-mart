@@ -1,4 +1,5 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
+
 const sellerSchema = new mongoose.Schema({
   user_id: {
     type: mongoose.Schema.Types.ObjectId,
@@ -29,5 +30,4 @@ const sellerSchema = new mongoose.Schema({
   },
 });
 
-const Seller = mongoose.model("Seller", sellerSchema);
-module.exports = { Seller };
+export default Seller = mongoose.model("Seller", sellerSchema);

@@ -1,5 +1,4 @@
 import express from "express";
-const router = express.Router();
 
 import { register, login, getMe, rotateToken } from "./auth.controllers.js";
 
@@ -12,20 +11,20 @@ import { validate } from "../../middlewares/validate.middleware.js";
 
 import { loginSchema, registerSchema } from "./auth.schema.js";
 
-router.post("/register", validate(registerSchema), register);
+const authRouter = express.Router();
 
-router.post("/login", validate(loginSchema), login);
+authRouter.post("/register", validate(registerSchema), register);
 
-router.get("/me", authenticateAccessToken, getMe);
+authRouter.post("/login", validate(loginSchema), login);
 
-router.post(
+authRouter.get("/me", authenticateAccessToken, getMe);
+
+authRouter.post(
   "/rotate-token",
   authenticateRefreshToken,
   rotateToken
 );
 
-router.post("/logout", );
+authRouter.post("/logout", );
 
-module.exports = {
-  authRoute: router,
-};
+export default authRouter;

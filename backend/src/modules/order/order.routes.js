@@ -1,5 +1,7 @@
-const express = require("express");
-const router = express.Router();
+import express from "express";
+
+const orderRouter = express.Router();
+
 const {
   handleGetAllOrders,
   handleAddOrder,
@@ -8,13 +10,13 @@ const {
   handleUpdateOrderById,
 } = require("./order.controllers");
 
-router.get("/:userId", handleGetAllOrders);
-router.post("/", handleAddOrder);
+orderRouter.get("/:userId", handleGetAllOrders);
+orderRouter.post("/", handleAddOrder);
 
-router
+orderRouter
   .route("/detail/:orderId")
   .get(handleFindOrderById)
   .delete(handleDeleteOrderById)
   .patch(handleUpdateOrderById);
 
-module.exports = {orderRoute: router};
+export default orderRouter;

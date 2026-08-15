@@ -1,10 +1,11 @@
-const Address = require("./address.model");
-const findAddressSvc = async (userId) => {
+import Address from "./address.model.js";
+
+export const findAddressSvc = async (userId) => {
   const addressList = await Address.find({ user_id: userId });
   return addressList;
 };
 
-const addAddressSvc = async (userId, payload) => {
+export const addAddressSvc = async (userId, payload) => {
   const { name, phone, street, city, state, pincode } = payload;
 
   const address = await Address.create({
@@ -20,17 +21,10 @@ const addAddressSvc = async (userId, payload) => {
   return address;
 };
 
-const deleteAddressSvc = async (addressId) => {
+export const deleteAddressSvc = async (addressId) => {
   return await Address.findByIdAndDelete(addressId);
 };
 
-const updateAddressSvc = async (addressId, payload) => {
+export const updateAddressSvc = async (addressId, payload) => {
   return await Address.findByIdAndUpdate(addressId, payload, { new: true });
-};
-
-module.exports = {
-  findAddressSvc,
-  addAddressSvc,
-  deleteAddressSvc,
-  updateAddressSvc,
 };

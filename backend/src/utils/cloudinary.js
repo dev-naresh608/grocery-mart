@@ -1,5 +1,5 @@
-const cloudinary = require("cloudinary").v2;
-const fs = require("fs");
+import cloudinary from "cloudinary";
+import fs from "fs";
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUDE_NAME,
@@ -7,7 +7,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-const uploadOnCloudinary = async (
+export const uploadOnCloudinary = async (
   localFilePath,
   folder = "novexa/products",
 ) => {
@@ -37,5 +37,3 @@ const uploadOnCloudinary = async (
     };
   }
 };
-
-module.exports = { uploadOnCloudinary };

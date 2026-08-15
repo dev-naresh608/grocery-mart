@@ -1,12 +1,12 @@
-const epxress = require("express");
-const router = epxress.Router();
-const {
+import express from "express";
+const distanceRouter = epxress.Router();
+
+import {
   handleGetDistanceAndEta,
   handleGetAddressApi,
-} = require('../controllers/distance')
-router.get("/distance", handleGetDistanceAndEta);
-router.get("/address", handleGetAddressApi);
+} from "../controllers/distance.js";
 
-module.exports = {
-  distanceRoute: router
-};
+distanceRouter.get("/distance", handleGetDistanceAndEta);
+distanceRouter.get("/address", handleGetAddressApi);
+
+export default distanceRouter;

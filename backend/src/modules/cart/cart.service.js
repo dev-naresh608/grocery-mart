@@ -1,10 +1,8 @@
-const Cart = require("./cart.model");
-const Product = require("../product/product.model");
+import Cart from "./cart.model.js";
 
-/**
- * Retrieve all cart items for a user, populated with product details.
- */
-const getCartByUserIdSvc = async (userId) => {
+import Product from "../product/product.model.js";
+
+export const getCartByUserIdSvc = async (userId) => {
   const items = await Cart.find({ customer_id: userId }).populate("product_id");
 
   const formattedItems = [];
@@ -31,10 +29,12 @@ const getCartByUserIdSvc = async (userId) => {
   return formattedItems;
 };
 
-/**
- * Add an item to user's cart (creates a document or increments quantity).
- */
-const addToCartSvc = async (userId, productId, storeId, quantity = 1) => {
+export const addToCartSvc = async (
+  userId,
+  productId,
+  storeId,
+  quantity = 1,
+) => {
   let item = await Cart.findOne({ customer_id: userId, product_id: productId });
 
   if (item) {
@@ -52,10 +52,7 @@ const addToCartSvc = async (userId, productId, storeId, quantity = 1) => {
   return item;
 };
 
-/**
- * Set the exact quantity of a cart item.
- */
-const updateCartQtySvc = async (userId, productId, quantity) => {
+export const updateCartQtySvc = async (userId, productId, quantity) => {
   const item = await Cart.findOneAndUpdate(
     { customer_id: userId, product_id: productId },
     { $set: { quantity: Number(quantity) } },
@@ -64,10 +61,7 @@ const updateCartQtySvc = async (userId, productId, quantity) => {
   return item;
 };
 
-/**
- * Remove a specific product from user's cart.
- */
-const removeFromCartSvc = async (userId, productId) => {
+export const removeFromCartSvc = async (userId, productId) => {
   const result = await Cart.findOneAndDelete({
     customer_id: userId,
     product_id: productId,
@@ -75,24 +69,12 @@ const removeFromCartSvc = async (userId, productId) => {
   return result;
 };
 
-/**
- * Clear the entire cart for a user.
- */
-const clearCartSvc = async (userId) => {
+export const clearCartSvc = async (userId) => {
   const result = await Cart.deleteMany({ customer_id: userId });
   return result;
 };
 
-const getCartItemService = async (productId) => {
+export const getCartItemService = async (productId) => {
   const product = await Product.findById({ _id: productId });
   return product;
-};
-
-module.exports = {
-  getCartByUserIdSvc,
-  addToCartSvc,
-  updateCartQtySvc,
-  removeFromCartSvc,
-  clearCartSvc,
-  getCartItemService,
 };

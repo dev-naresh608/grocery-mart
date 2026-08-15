@@ -1,13 +1,13 @@
-const {
+import {
   getCartByUserIdSvc,
   addToCartSvc,
   updateCartQtySvc,
   removeFromCartSvc,
   clearCartSvc,
   getCartItemService,
-} = require("./cart.service");
+} from "./cart.service.js";
 
-const handleGetCartByUser = async (req, res) => {
+export const handleGetCartByUser = async (req, res) => {
   try {
     const { userId } = req.params;
     if (!userId) {
@@ -22,7 +22,7 @@ const handleGetCartByUser = async (req, res) => {
   }
 };
 
-const handleAddToCart = async (req, res) => {
+export const handleAddToCart = async (req, res) => {
   try {
     const { userId, productId, storeId, quantity } = req.body;
     if (!userId || !productId || !storeId) {
@@ -46,7 +46,7 @@ const handleAddToCart = async (req, res) => {
   }
 };
 
-const handleUpdateCartQty = async (req, res) => {
+export const handleUpdateCartQty = async (req, res) => {
   try {
     const { userId, productId, quantity } = req.body;
     if (!userId || !productId || quantity === undefined) {
@@ -70,7 +70,7 @@ const handleUpdateCartQty = async (req, res) => {
   }
 };
 
-const handleRemoveFromCart = async (req, res) => {
+export const handleRemoveFromCart = async (req, res) => {
   try {
     const { userId, productId } = req.params;
     if (!userId || !productId) {
@@ -91,7 +91,7 @@ const handleRemoveFromCart = async (req, res) => {
   }
 };
 
-const handleClearCart = async (req, res) => {
+export const handleClearCart = async (req, res) => {
   try {
     const { userId } = req.params;
     if (!userId) {
@@ -108,7 +108,7 @@ const handleClearCart = async (req, res) => {
   }
 };
 
-const handleFindCartItemById = async (req, res) => {
+export const handleFindCartItemById = async (req, res) => {
   try {
     const { productId } = req.params;
 
@@ -127,13 +127,4 @@ const handleFindCartItemById = async (req, res) => {
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
-};
-
-module.exports = {
-  handleGetCartByUser,
-  handleAddToCart,
-  handleUpdateCartQty,
-  handleRemoveFromCart,
-  handleClearCart,
-  handleFindCartItemById,
 };

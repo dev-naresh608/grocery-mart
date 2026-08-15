@@ -1,4 +1,4 @@
-const { Driver } = require("./driver.model");
+import Driver from "./driver.model.js";
 
 export const createDriverSvc = async (userId, payload, session) => {
   const { phone, driver_dob, driver_vehicle_number, driver_aadhaar_number } =
@@ -19,4 +19,4 @@ export const createDriverSvc = async (userId, payload, session) => {
 
   return drivers[0];
 };
-export default Driver;
+

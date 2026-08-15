@@ -1,15 +1,16 @@
-const Product = require("./product.model");
-const {
+import Product from "./product.model.js";
+import {
   addProductService,
   updateProductService,
   deleteProductService,
   deleteTempFolder,
   findProductSvc,
-} = require("./product.service");
-const { uploadOnCloudinary } = require("../../utils/cloudinary");
+} from "./product.service.js";
 
-const handleGetAllProducts = async (req, res) => {
-  const {userId} = req.params;
+import { uploadOnCloudinary } from "../../utils/cloudinary.js";
+
+export const handleGetAllProducts = async (req, res) => {
+  const { userId } = req.params;
 
   if (!userId) {
     return res.status(200).json({
@@ -34,7 +35,7 @@ const handleGetAllProducts = async (req, res) => {
   });
 };
 
-const handleAddProduct = async (req, res) => {
+export const handleAddProduct = async (req, res) => {
   try {
     const payload = req.body;
     const file = req.file;
@@ -70,7 +71,7 @@ const handleAddProduct = async (req, res) => {
   }
 };
 
-const handleFindProductById = async (req, res) => {
+export const handleFindProductById = async (req, res) => {
   const { productId } = req.params;
   if (!productId) {
     return res.status(200).json({
@@ -94,7 +95,7 @@ const handleFindProductById = async (req, res) => {
   });
 };
 
-const handleDeleteProductById = async (req, res) => {
+export const handleDeleteProductById = async (req, res) => {
   const { store_id } = req.body;
   const { productId } = req.params;
 
@@ -102,7 +103,7 @@ const handleDeleteProductById = async (req, res) => {
   return res.json({ success: true, result, message: "deleted successfully" });
 };
 
-const handleUpdateProductById = async (req, res) => {
+export const handleUpdateProductById = async (req, res) => {
   const { store_id, updates } = req.body;
 
   const { productId } = req.params;
@@ -116,12 +117,4 @@ const handleUpdateProductById = async (req, res) => {
   const result = await updateProductService(productId, store_id, updates);
 
   return res.status(201).json({ message: "Updated successfully" });
-};
-
-module.exports = {
-  handleGetAllProducts,
-  handleAddProduct,
-  handleFindProductById,
-  handleDeleteProductById,
-  handleUpdateProductById,
 };
