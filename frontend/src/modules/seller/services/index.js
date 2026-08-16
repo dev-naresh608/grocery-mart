@@ -1,2 +1,1 @@
-export * from "./product.service.api"
-export * from "./productFilter.service"
+export * from "./product.api.service";

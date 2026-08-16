@@ -1,12 +1,13 @@
-import { useContext, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { updateUser } from "@/modules/auth/store/authSlice";
+import { setStoreId } from "../store/cartSlice";
 import { toast } from "react-toastify";
-import { UserContext, CartProductContext } from "../../../contexts/context";
 import { calculateCartTotals } from "../utils/cartCalculation";
 import { onCartPlaceOrder } from "../services/cart.service";
 import { handleGetAddressApi } from "../../address/services/address.service.api";
 import {
-  getCartApi,
   updateCartQtyApi,
   removeFromCartApi,
   clearCartApi,
@@ -16,8 +17,11 @@ import {
  * Custom hook encapsulating cart business logic, reactive state, and item manipulation services.
  */
 export const useCart = () => {
-  const { currentUser, isLogin, setCurrentUser } = useContext(UserContext);
-  const { storeId, setStoreId } = useContext(CartProductContext);
+  const dispatch = useDispatch();
+  const { user: currentUser, isAuthenticated: isLogin } = useSelector(
+    (state) => state.auth
+  );
+  const storeId = useSelector((state) => state.cart.storeId);
   const navigate = useNavigate();
 
   const [address, setAddress] = useState("");
@@ -39,7 +43,6 @@ export const useCart = () => {
     }
   }, [currentUser]);
 
-
   // Retrieve delivery addresses
   useEffect(() => {
     const fetchAddress = async () => {
@@ -48,16 +51,13 @@ export const useCart = () => {
       if (data && data.success && data.addressList && data.addressList.length > 0) {
         setAddressList(data.addressList);
         setAddress(data.addressList[0]);
-        setCurrentUser((prev) => ({
-          ...prev,
-          address: data.addressList[0],
-        }));
+        dispatch(updateUser({ address: data.addressList[0] }));
       }
     };
     if (isLogin) {
       fetchAddress();
     }
-  }, [isLogin, currentUser?._id, setCurrentUser]);
+  }, [isLogin, currentUser?._id, dispatch]);
 
   const cartItems = currentUser?.myCart || [];
 
@@ -76,10 +76,7 @@ export const useCart = () => {
       return item;
     });
 
-    setCurrentUser({
-      ...currentUser,
-      myCart: updatedCart,
-    });
+    dispatch(updateUser({ myCart: updatedCart }));
 
     if (isLogin && currentUser?._id) {
       try {
@@ -93,10 +90,7 @@ export const useCart = () => {
   // Delete product from the cart
   const onCartItemDeleteBtn = async (productId) => {
     const updatedCart = cartItems.filter((p) => p._id !== productId);
-    setCurrentUser({
-      ...currentUser,
-      myCart: updatedCart,
-    });
+    dispatch(updateUser({ myCart: updatedCart }));
 
     if (isLogin && currentUser?._id) {
       try {
@@ -110,11 +104,8 @@ export const useCart = () => {
 
   // Clear entire cart
   const handleClearCart = async () => {
-    setCurrentUser({
-      ...currentUser,
-      myCart: [],
-    });
-    setStoreId(null);
+    dispatch(updateUser({ myCart: [] }));
+    dispatch(setStoreId(null));
 
     if (isLogin && currentUser?._id) {
       try {
@@ -135,7 +126,7 @@ export const useCart = () => {
   const handlePlaceOrder = () => {
     onCartPlaceOrder(
       currentUser,
-      setCurrentUser,
+      (updatedUser) => dispatch(updateUser(updatedUser)),
       storeId,
       orderPriceDetails,
       address,
@@ -146,9 +137,10 @@ export const useCart = () => {
 
   return {
     currentUser,
-    setCurrentUser,
+    setCurrentUser: (updater) => dispatch(updateUser(updater)),
     isLogin,
     storeId,
+    setStoreId: (id) => dispatch(setStoreId(id)),
     address,
     setAddress,
     addressList,

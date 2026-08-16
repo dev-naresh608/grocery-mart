@@ -1,27 +1,19 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-import { GradientButton, ProductBuyCard, StoreCard } from "../..";
+import { StoreCard } from "../..";
 import { defaultRest } from "@/assets";
-
-import {
-  ProductContext,
-  CategoryContext,
-  UserContext,
-} from "../../../contexts/context";
-import { toast } from "react-toastify";
-import { db } from "../../../db";
-import { div } from "framer-motion/client";
 import { Store } from "lucide-react";
 
 function CategoryWiseProducts() {
-  const { storeLisst } = useContext(ProductContext);
+  const storeLisst = useSelector((state) => state.product.storeList);
+  const categories = useSelector((state) => state.category.categories);
+  const { user: currentUser } = useSelector((state) => state.auth);
   const { catName } = useParams();
 
   const [selectedCategoryProduct, setSelectedCategoryProduct] = useState([]);
-  // const [catName, setCatName] = useState("");
-  const { categories } = useState(CategoryContext);
-  const { currentUser } = useContext(UserContext);
+
   useEffect(() => {
     if (storeLisst?.length > 0) {
       const stores = storeLisst.filter((r) =>
@@ -29,7 +21,7 @@ function CategoryWiseProducts() {
       );
       setSelectedCategoryProduct(stores);
     }
-  }, [storeLisst, currentUser]);
+  }, [storeLisst, currentUser, catName]);
 
   if (selectedCategoryProduct.length === 0) {
     return (

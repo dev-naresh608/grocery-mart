@@ -8,7 +8,7 @@ const productSchema = new mongoose.Schema(
     },
     store_id: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Store",
+      ref: "Seller",
       required: true,
     },
 
@@ -57,4 +57,5 @@ const productSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-export default Product = mongoose.model("Product", productSchema);
+const Product = mongoose.model("Product", productSchema);
+export default Product;

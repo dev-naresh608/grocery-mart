@@ -1,28 +1,41 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { UserContext } from "../../../contexts/context";
-import { loginUserApi } from "../services/auth.service.api";
+import { login } from "../store/authThunk.js";
 import { useModal } from "../../../components";
 
 export function useLoginForm() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { closeModal } = useModal();
-  const { setCurrentUser, setCurrentUserRole, setIsLogin } =
-    useContext(UserContext);
+
+  const { isLoading } = useSelector((state) => state.auth);
 
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  const [formErrors, setFormErrors] = useState({});
   const [isPassVisible, setIsPassVisible] = useState(false);
-  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
+
+    setFormErrors((prev) => {
+      if (!prev[name]) return prev;
+
+      const updated = { ...prev };
+      delete updated[name];
+
+      return updated;
+    });
   };
 
   const handleShowPassword = () => {
@@ -32,39 +45,39 @@ export function useLoginForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.email === "" || formData.password === "") {
-      toast.warning("Please enter data");
+    setFormErrors({});
+
+    if (!formData.email || !formData.password) {
+      toast.warning("Please enter email and password");
       return;
     }
 
-    setLoading(true);
     try {
-      const res = await loginUserApi(formData);
+      await dispatch(login(formData)).unwrap();
 
-      if (res.data.success) {
-        toast.success("Login successful");
-        setCurrentUser(res.data.user);
+      toast.success("Login successful");
+      closeModal();
+      navigate("/dashboard");
+    } catch (error) {
+      if (error?.errors?.length) {
+        const errors = {};
 
-        setCurrentUserRole(res.data.user.role);
-        setTimeout(() => {
-          setIsLogin(true);
-          closeModal();
-          navigate("/dashboard");
-        }, 1000);
+        error.errors.forEach(({ field, message }) => {
+          errors[field] = message;
+        });
+
+        setFormErrors(errors);
       } else {
-        toast.error(res.data.message);
+        toast.error(error?.message || "Login failed");
       }
-    } catch (err) {
-      console.log("Error:", err);
-    } finally {
-      setLoading(false);
     }
   };
 
   return {
     formData,
+    formErrors,
     isPassVisible,
-    loading,
+    isLoading,
     handleChange,
     handleShowPassword,
     handleSubmit,

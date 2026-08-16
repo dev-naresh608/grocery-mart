@@ -1,58 +1,52 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
-import { UserContext } from "../../../contexts/context";
-import { data, useNavigate } from "react-router-dom";
-// import { db } from "../../db/index";
-import { DeleteIcon, Trash2Icon } from "lucide-react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { updateUser } from "@/modules/auth/store/authSlice";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import {
   EmptyProducts,
-  ProductImage,
   getAllProductsApi,
-  handleDeleteProductApi,
-  handleProductOfferChangeApi,
-  handleProductStockChangeApi,
   ProductTable,
   searchProductsSvc,
 } from "../index";
 import { SectionCard, SearchBar } from "../../../index";
 
 function ProductListPage() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
-  const {
-    cartItems,
-    currentUser,
-    setUserData,
-    setCurrentUser,
-    activeTab,
-    setActiveTab,
-  } = useContext(UserContext);
+  const { user: currentUser } = useSelector((state) => state.auth);
 
   const [isProductsAvail, setIsProductsAvail] = useState(false);
   const [allProducts, setAllProducts] = useState(null);
   const [searchValue, setSearchValue] = useState("");
 
+  const sellerId = currentUser?.store_id || currentUser?._id;
+
   useEffect(() => {
     const fetchAllProducts = async () => {
-      const data = await getAllProductsApi(currentUser._id);
-      if (!data.success) {
-        isProductsAvail(false);
-        return toast.error(data.message);
+      if (!sellerId) return;
+      const data = await getAllProductsApi(sellerId);
+      if (!data || !data.success) {
+        setIsProductsAvail(false);
+        if (data?.message) toast.error(data.message);
+        return;
       }
-      setAllProducts(data.result);
-      setCurrentUser((prev) => ({
-        ...prev,
-        productList: data.result,
-      }));
-      setIsProductsAvail(true);
-      // console.log(currentUser.productList)
+      setAllProducts(data.result || []);
+      dispatch(updateUser({ productList: data.result || [] }));
+      if (data.result && data.result.length > 0) {
+        setIsProductsAvail(true);
+      } else {
+        setIsProductsAvail(false);
+      }
     };
 
     fetchAllProducts();
-  }, []);
+  }, [sellerId, dispatch]);
+
   const filteredProducts = useMemo(() => {
     return searchProductsSvc(allProducts, searchValue);
-  }, [allProducts,searchValue]);
+  }, [allProducts, searchValue]);
 
   if (!isProductsAvail) {
     return <EmptyProducts />;

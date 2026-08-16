@@ -1,20 +1,21 @@
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const requiredEnv = [
   "DATABASE_URI",
-  "JWT_SECRET",
-  "CLOUDINARY_CLOUD_NAME",
-  "CLOUDINARY_API_KEY",
-  "CLOUDINARY_API_SECRET",
-  "OPEN_ROUTER_SERVICE_API_KEY",
+  "PORT",
+  "JWT_ACCESS_TOKEN_SECRET",
+  "JWT_REFRESH_TOKEN_SECRET",
+  "JWT_ACCESS_TOKEN_EXPIRE",
+  "JWT_REFRESH_TOKEN_EXPIRE",
 ];
 
 const missingEnv = requiredEnv.filter((key) => !process.env[key]);
 
 if (missingEnv.length > 0) {
   throw new Error(
-    `Missing required environment variables: ${missingEnv.join(", ")}`,
+    `Missing required environment variables: ${missingEnv.join(", ")}`
   );
 }
 
@@ -24,15 +25,14 @@ export const config = {
   },
 
   server: {
-    port: Number(process.env.PORT) || 5000,
+    port: Number(process.env.PORT),
   },
 
   auth: {
-    accessTokenSecret: requiredEnv("JWT_ACCESS_TOKEN_SECRET"),
-    refreshTokenSecret: requiredEnv("JWT_REFRESH_TOKEN_SECRET"),
-
-    accessTokenExpiresIn: requiredEnv("JWT_ACCESS_TOKEN_EXPIRE"),
-    refreshTokenExpiresIn: requiredEnv("JWT_REFRESH_TOKEN_EXPIRE"),
+    accessTokenSecret: process.env.JWT_ACCESS_TOKEN_SECRET,
+    refreshTokenSecret: process.env.JWT_REFRESH_TOKEN_SECRET,
+    accessTokenExpiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRE,
+    refreshTokenExpiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRE,
   },
 
   cloudinary: {

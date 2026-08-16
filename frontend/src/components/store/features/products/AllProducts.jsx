@@ -1,27 +1,25 @@
-import React, { useContext, useEffect, useState, useMemo } from "react";
-import { Link, useLoaderData, useParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import ProductBuyCard from "./ProductBuyCard";
-import { ProductContext, UserContext } from "../../../../contexts/context";
-import { GradientButton } from "../../..";
 import api from "../../../../configs/api";
 import { toast } from "react-toastify";
+
 function AllProducts() {
   const { restId = null } = useParams();
   const [totalProducts, setTotalProducts] = useState([]);
-  const { storeLisst, productsList } = useContext(ProductContext);
-  const { setActiveTab, isLogin, currentUser, userData } =
-    useContext(UserContext);
+  const productsList = useSelector((state) => state.product.productsList);
+  const { user: currentUser, isAuthenticated: isLogin } = useSelector(
+    (state) => state.auth
+  );
 
   useEffect(() => {
-    // const product = storeLisst.find((r) => r.id === restId);
-    // setTotalProducts(product?.productList || []);
     const fetchProduct = async () => {
-      const { data } = await api.get(
-        `/stores/allproducts/${restId}`,
-      );
+      if (!restId) return;
+      const { data } = await api.get(`/stores/allproducts/${restId}`);
       if (!data.success) {
         toast.error(data.message);
-        returnl;
+        return;
       }
       if (!data.result) {
         setTotalProducts(null);
@@ -33,7 +31,7 @@ function AllProducts() {
     if (!restId) {
       setTotalProducts(productsList);
     }
-  }, [currentUser, userData, productsList]);
+  }, [currentUser, productsList, restId]);
 
   if (!totalProducts || totalProducts.length === 0)
     return (

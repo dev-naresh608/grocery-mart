@@ -1,18 +1,9 @@
-import React, { useContext, useEffect } from "react";
-import { UserContext } from "../../../contexts/context";
+import React from "react";
 import { CreditCard, Clock } from "lucide-react";
 
 function Payment() {
-  const { setActiveTab } = useContext(UserContext);
-
-  // ── Sync sidebar active state ──────────────────────────────────────────────
-  useEffect(() => {
-    setActiveTab("payments");
-  }, [setActiveTab]);
-
   return (
     <div className="bg-white h-full p-6 font-sans space-y-6">
-
       {/* Header */}
       <div>
         <h2 className="text-lg font-semibold text-[#1C1917]">Payments</h2>

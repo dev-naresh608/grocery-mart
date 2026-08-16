@@ -1,12 +1,13 @@
-import React, { useContext } from "react";
-import { UserContext } from "../../../contexts/context";
+import React from "react";
+import { useSelector } from "react-redux";
 import { ProductBuyCard, GradientButton } from "../../../components";
 
 function Wishlist() {
-  const { currentUser } = useContext(UserContext);
+  const { user: currentUser } = useSelector((state) => state.auth);
+
   if (
-    currentUser.hasOwnProperty("myWishlist") &&
-    currentUser.myWishlist.length > 0
+    currentUser?.hasOwnProperty("myWishlist") &&
+    currentUser?.myWishlist?.length > 0
   ) {
     return (
       <div

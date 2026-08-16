@@ -1,26 +1,23 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
-import { UserContext } from "../../../contexts/context";
+import React, { useEffect, useMemo, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { updateUser } from "@/modules/auth/store/authSlice";
 
 import {
   DashboardCard,
   EmptyOrders,
   dashboardCardsConfig,
-  tableHeaderConfig,
   OrdersTable,
-  OrderSearchBar,
   searchOrdersSvc,
   getAllOrdersSvc,
   sortOrderByDate,
-  sortOrderByPrice,
 } from "../index";
 
-import {SearchBar} from "../../../index"
-
-import axios from "axios";
+import { SearchBar } from "../../../index";
 import { toast } from "react-toastify";
 
 function Orders() {
-  const { currentUser, setCurrentUser } = useContext(UserContext);
+  const dispatch = useDispatch();
+  const { user: currentUser } = useSelector((state) => state.auth);
 
   const [allOrders, setAllOrders] = useState([]);
   const [activeCard, setActiveCard] = useState("total");
@@ -28,20 +25,18 @@ function Orders() {
 
   useEffect(() => {
     const fetchOrderData = async () => {
+      if (!currentUser?._id) return;
       const { data } = await getAllOrdersSvc(currentUser._id, currentUser.role);
       if (!data.success) {
         return toast.error(data.message);
       }
       const sortedOrders = sortOrderByDate(data.allOrders, "desc");
       setAllOrders(sortedOrders);
-      setCurrentUser((prev) => ({
-        ...prev,
-        myOrders: data.allOrders,
-      }));
+      dispatch(updateUser({ myOrders: data.allOrders }));
     };
 
     fetchOrderData();
-  }, []);
+  }, [currentUser?._id, currentUser?.role, dispatch]);
 
   const filteredOrders = useMemo(() => {
     return searchOrdersSvc(allOrders, searchValue);
@@ -87,7 +82,7 @@ function Orders() {
 
         {/* ================= ORDER LIST TABLE ================= */}
         <OrdersTable
-          currentUserRole={currentUser.role}
+          currentUserRole={currentUser?.role}
           allOrders={filteredOrders}
         />
       </div>

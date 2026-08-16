@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { signupUserApi } from "../services/auth.service.api";
-import { useModal, MODAL_TYPES } from "../../../components";
+import { useDispatch, useSelector } from "react-redux";
+import { useModal } from "../../../components";
+import { register } from "../store/authThunk.js";
 
 const INITIAL_FORM_DATA = {
   username: "",
@@ -20,28 +21,46 @@ const INITIAL_FORM_DATA = {
 };
 
 export function useSignupForm() {
-  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { openModal } = useModal();
+  const navigate = useNavigate();
 
-  // URL query param (?role=seller or ?role=driver) read
-  const roleParam = searchParams.get("role");
-  const validRoles = ["customer", "seller", "driver"];
-  const currentRole = validRoles.includes(roleParam) ? roleParam : "customer";
+  const dispatch = useDispatch();
+  const { isLoading } = useSelector((state) => state.auth);
 
-  const setCurrentRole = (role) => {
-    setSearchParams({ role }, { replace: true });
-  };
+  const { closeModal } = useModal();
 
   const [isPassVisible, setIsPassVisible] = useState(false);
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
-  const [loading, setLoading] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+
+  const roleParam = searchParams.get("role");
+  const validRoles = ["customer", "seller", "driver"];
+
+  const currentRole = validRoles.includes(roleParam)
+    ? roleParam
+    : "customer";
+
+  const setCurrentRole = (role) => {
+    setSearchParams({ role }, { replace: true });
+    setFormErrors({});
+  };
 
   const handleChange = (e) => {
+    const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
-      [e.target.name]: e.target.value,
+      [name]: value,
     }));
+
+    setFormErrors((prev) => {
+      if (!prev[name]) return prev;
+
+      const updated = { ...prev };
+      delete updated[name];
+
+      return updated;
+    });
   };
 
   const handleShowPassword = () => {
@@ -77,40 +96,42 @@ export function useSignupForm() {
       };
     }
 
-    // customer — base fields only
     return base;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const payload = buildPayload();
+    setFormErrors({});
 
-    setLoading(true);
     try {
-      const { data } = await signupUserApi(payload);
+      await dispatch(register(buildPayload())).unwrap();
 
-      if (data.success) {
-        toast.success(`Signup successful`);
-        setTimeout(() => {
-          openModal(MODAL_TYPES.LOGIN);
-        }, 1000);
+      toast.success("Signup successful");
+      closeModal();
+      navigate("/dashboard");
+    } catch (error) {
+      if (error?.errors?.length) {
+        const errors = {};
+
+        error.errors.forEach(({ field, message }) => {
+          errors[field] = message;
+        });
+
+        setFormErrors(errors);
       } else {
-        toast.error(data.message);
+        toast.error(error?.message || "Signup failed");
       }
-    } catch (err) {
-      console.log("Error:", err);
-    } finally {
-      setLoading(false);
     }
   };
 
   return {
     formData,
+    formErrors,
     currentRole,
     setCurrentRole,
     isPassVisible,
-    loading,
+    isLoading,
     handleChange,
     handleShowPassword,
     handleSubmit,

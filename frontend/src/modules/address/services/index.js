@@ -1,2 +1,2 @@
-export * from "./address.service.api";
-export * from "./addressLine"
+export * from "./address.api.service";
+export * from "./addressLine";

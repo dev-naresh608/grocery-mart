@@ -1,11 +1,7 @@
-import React, { useContext, useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Link, NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { createPortal } from "react-dom";
-import {
-  CartProductContext,
-  UserContext,
-  ProductContext,
-} from "../../contexts/context";
+import { useSelector } from "react-redux";
 import { novexa_logo } from "@/assets";
 import { ProfileToggle, NotificationToggle, useModal, MODAL_TYPES } from "../../index";
 import {
@@ -80,9 +76,9 @@ function JoinUsDropdown() {
 }
 
 function Header() {
-  const { isLogin } = useContext(UserContext);
-  const { productsList } = useContext(ProductContext);
-  const { cartItems } = useContext(CartProductContext);
+  const { isAuthenticated: isLogin, user: currentUser } = useSelector((state) => state.auth);
+  const productsList = useSelector((state) => state.product.productsList);
+  const cartItems = currentUser?.myCart || [];
   const navigate = useNavigate();
   const { openModal } = useModal();
   const [searchParams, setSearchParams] = useSearchParams();

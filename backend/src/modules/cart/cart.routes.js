@@ -1,15 +1,15 @@
 import express from "express";
 
-const cartRouter = express.Router();
-
-const {
+import {
   handleGetCartByUser,
   handleAddToCart,
   handleUpdateCartQty,
   handleRemoveFromCart,
   handleClearCart,
   handleFindCartItemById,
-} = require("./cart.controllers");
+} from "./cart.controllers.js";
+
+const cartRouter = express.Router();
 
 cartRouter.get("/user/:userId", handleGetCartByUser);
 cartRouter.post("/add", handleAddToCart);

@@ -1,5 +1,4 @@
 import Cart from "./cart.model.js";
-
 import Product from "../product/product.model.js";
 
 export const getCartByUserIdSvc = async (userId) => {
@@ -75,6 +74,6 @@ export const clearCartSvc = async (userId) => {
 };
 
 export const getCartItemService = async (productId) => {
-  const product = await Product.findById({ _id: productId });
+  const product = await Product.findById(productId);
   return product;
 };

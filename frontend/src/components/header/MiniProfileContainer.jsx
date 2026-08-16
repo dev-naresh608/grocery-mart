@@ -1,9 +1,11 @@
-import React, { useContext } from "react";
-import { UserContext } from "../../contexts/context";
+import React from "react";
+import { useSelector } from "react-redux";
 import { defaultPP } from "@/assets";
 import { Mail } from "lucide-react";
+
 function MiniProfileContainer() {
-  const { currentUser } = useContext(UserContext);
+  const { user: currentUser } = useSelector((state) => state.auth);
+
   return (
     <div className="flex items-center gap-2">
       <div className="h-9 w-9 flex-shrink-0">

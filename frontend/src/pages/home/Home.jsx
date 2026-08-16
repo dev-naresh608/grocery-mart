@@ -1,19 +1,20 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Hero, Footer, BlogSection } from "../../components";
 
 import { Category } from "..";
 import { bottom_banner } from "@/assets";
 
-import { UserContext, CartProductContext } from "../../contexts/context";
+import { useSelector } from "react-redux";
+import { leftPanelItems, secondLeftPanelItems } from "@/constants/navigation";
 import { Menu, X, Truck, Leaf, Coins, ShieldCheck } from "lucide-react";
 import { NavLink, Outlet, Route, Routes, useNavigate } from "react-router-dom";
 function Home({ productsList }) {
-  const { isLogin, leftPanelItems, secondLeftPanelItems, currentUser } =
-    useContext(UserContext);
+  const { user: currentUser, isAuthenticated: isLogin } = useSelector(
+    (state) => state.auth
+  );
   const navigate = useNavigate();
 
-  const { setActiveTab, activeTab } = useContext(UserContext);
-  const { cartItems } = useContext(CartProductContext);
+  const cartItems = currentUser?.myCart || [];
   const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(true);
 
   if (!isLogin) {
@@ -92,7 +93,7 @@ function Home({ productsList }) {
               {/* <div className="p-3 space-y-1 border-b border-green-300"> */}
               <div className="p-3 space-y-1">
                 {/* for customer  */}
-                {currentUser.role === "customer" &&
+                {currentUser?.role === "customer" &&
                   leftPanelItems
                     .filter((item) => item.showToCustomer)
                     .map((item, i) => (
@@ -127,7 +128,7 @@ function Home({ productsList }) {
                     ))}
 
                 {/* for seller  */}
-                {currentUser.role === "seller" &&
+                {currentUser?.role === "seller" &&
                   leftPanelItems
                     .filter((item) => item.showToSeller)
                     .map((item, i) => (
@@ -145,7 +146,7 @@ function Home({ productsList }) {
                     ))}
 
                 {/* for driver  */}
-                {currentUser.role === "driver" &&
+                {currentUser?.role === "driver" &&
                   leftPanelItems
                     .filter((item) => item.showToDriver)
                     .map((item, i) => (

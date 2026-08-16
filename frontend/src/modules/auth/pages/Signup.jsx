@@ -16,14 +16,16 @@ import { useModal, MODAL_TYPES } from "../../../components";
 export default function Signup() {
   const {
     formData,
+    formErrors,
     currentRole,
     setCurrentRole,
     isPassVisible,
-    loading,
+    isLoading,
     handleChange,
     handleShowPassword,
     handleSubmit,
   } = useSignupForm();
+
   const { openModal } = useModal();
 
   return (
@@ -35,7 +37,10 @@ export default function Signup() {
       />
 
       <form onSubmit={handleSubmit} className="space-y-4 text-black">
-        <RoleSelector currentRole={currentRole} onChange={setCurrentRole} />
+        <RoleSelector
+          currentRole={currentRole}
+          onChange={setCurrentRole}
+        />
 
         <FormInput
           icon={User}
@@ -49,6 +54,12 @@ export default function Signup() {
           required
         />
 
+        {formErrors.username && (
+          <p className="text-sm text-red-500 -mt-3">
+            {formErrors.username}
+          </p>
+        )}
+
         <FormInput
           icon={Mail}
           label="Email"
@@ -61,6 +72,12 @@ export default function Signup() {
           required
         />
 
+        {formErrors.email && (
+          <p className="text-sm text-red-500 -mt-3">
+            {formErrors.email}
+          </p>
+        )}
+
         <PasswordInput
           value={formData.password}
           onChange={handleChange}
@@ -68,6 +85,12 @@ export default function Signup() {
           onToggle={handleShowPassword}
           autoComplete="new-password"
         />
+
+        {formErrors.password && (
+          <p className="text-sm text-red-500 -mt-3">
+            {formErrors.password}
+          </p>
+        )}
 
         <FormInput
           icon={Phone}
@@ -80,29 +103,41 @@ export default function Signup() {
           required
         />
 
+        {formErrors.phone && (
+          <p className="text-sm text-red-500 -mt-3">
+            {formErrors.phone}
+          </p>
+        )}
+
         {currentRole === "seller" && (
           <SellerFields
             formData={formData}
+            formErrors={formErrors}
             onChange={handleChange}
             categories={STORE_CATEGORIES}
           />
         )}
 
         {currentRole === "driver" && (
-          <DriverFields formData={formData} onChange={handleChange} />
+          <DriverFields
+            formData={formData}
+            formErrors={formErrors}
+            onChange={handleChange}
+          />
         )}
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={isLoading}
           className="w-full bg-[#1c1917] active:scale-95 flex items-center justify-center gap-2 text-white py-3 rounded-xl font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? (
+          {isLoading ? (
             <Loader2 className="animate-spin" size={20} />
           ) : (
             <UserPlus2Icon size={20} />
           )}
-          {loading ? "Creating Account..." : "Create Account"}
+
+          {isLoading ? "Creating Account..." : "Create Account"}
         </button>
 
         <AuthFooterLink

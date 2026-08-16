@@ -1,14 +1,10 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RatingStar, ProductImageLoader } from "../../../..";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { db } from "../../../../db";
-import {
-  ProductContext,
-  CartProductContext,
-  UserContext,
-  WishlistContext,
-} from "../../../../contexts/context";
+import { useSelector, useDispatch } from "react-redux";
+import { updateUser } from "@/modules/auth/store/authSlice";
+import { setStoreId } from "@/modules/cart/store/cartSlice";
 
 import { useParams } from "react-router-dom";
 import { Heart, ShoppingCartIcon } from "lucide-react";
@@ -24,29 +20,19 @@ function ProductBuyCard({
   is_offer_available,
   offer_price,
 }) {
-
+  const dispatch = useDispatch();
   const { restId } = useParams();
-  const { isLogin } = useContext(UserContext);
-
-  const {
-    currentUserRole,
-    currentUser,
-    setCurrentUser,
-    userData,
-    setUserData,
-  } = useContext(UserContext);
-  const { wishlist, setWishlist } = useContext(WishlistContext);
-
-  const { cartItems, storeId, setStoreId } = useContext(CartProductContext);
+  const { user: currentUser, isAuthenticated: isLogin } = useSelector(
+    (state) => state.auth
+  );
+  const storeId = useSelector((state) => state.cart.storeId);
+  const cartItems = currentUser?.myCart || [];
+  const currentUserRole = currentUser?.role || "customer";
 
   const [currentQty, setCurrentQty] = useState(0);
 
   // ============== ADD TO CART ====================
   async function onAddToCart(itemId) {
-    // if (!isLogin) {
-    //   return toast.error("Login To Buy Items");
-    // }
-
     const { data } = await api.get(`/cart/${itemId}`);
 
     if (!data.success) {
@@ -54,10 +40,7 @@ function ProductBuyCard({
     }
 
     const productToAdd = data.product;
-
-    const user = currentUser;
-
-    // todo: check if product exist.
+    const user = currentUser || {};
 
     const newProduct = {
       ...productToAdd,
@@ -82,19 +65,15 @@ function ProductBuyCard({
           toast.info("product already exist");
           return;
         }
-        setCurrentUser((prev) => ({
-          ...prev,
-          myCart: [...(prev.myCart || []), newProduct],
-        }));
+        dispatch(
+          updateUser({ myCart: [...(user.myCart || []), newProduct] })
+        );
       } else {
         alert("first clear previous stores cart");
         return;
       }
     } else {
-      setCurrentUser({
-        ...currentUser,
-        myCart: [newProduct],
-      });
+      dispatch(updateUser({ myCart: [newProduct] }));
     }
 
     if (isLogin && currentUser?._id) {
@@ -105,14 +84,14 @@ function ProductBuyCard({
       }
     }
 
-    // setCurrentUser(user);
-    setStoreId(restId);
+    dispatch(setStoreId(restId));
     toast.success("Added");
   }
 
   // ============== INCREASE QUANTITY ====================
   const onIncreaseQty = async (itemId) => {
     const user = currentUser;
+    if (!user) return;
     const itemToUpdate = user.myCart?.find((item) => item._id === itemId);
     if (!itemToUpdate) return;
     const newQty = itemToUpdate.product_qty + 1;
@@ -125,7 +104,7 @@ function ProductBuyCard({
       return item;
     });
 
-    setCurrentUser({ ...currentUser, myCart: updatedCart });
+    dispatch(updateUser({ myCart: updatedCart }));
 
     if (isLogin && currentUser?._id) {
       try {
@@ -136,9 +115,10 @@ function ProductBuyCard({
     }
   };
 
-  // ==============DEINCREASE QUANTITY ====================
+  // ============== DECREASE QUANTITY ====================
   const onDecreaseQty = async (itemId) => {
     const user = currentUser;
+    if (!user) return;
     const itemToUpdate = user.myCart?.find((item) => item._id === itemId);
     if (!itemToUpdate) return;
     const newQty = itemToUpdate.product_qty - 1;
@@ -151,7 +131,7 @@ function ProductBuyCard({
         }
         return item;
       });
-      setCurrentUser({ ...currentUser, myCart: updatedCart });
+      dispatch(updateUser({ myCart: updatedCart }));
 
       if (isLogin && currentUser?._id) {
         try {
@@ -162,7 +142,7 @@ function ProductBuyCard({
       }
     } else {
       updatedCart = user.myCart.filter((item) => item._id !== itemId);
-      setCurrentUser({ ...currentUser, myCart: updatedCart });
+      dispatch(updateUser({ myCart: updatedCart }));
 
       if (isLogin && currentUser?._id) {
         try {
@@ -188,64 +168,40 @@ function ProductBuyCard({
     }
 
     const productToAdd = data.product;
+    const user = currentUser || {};
 
-    const user = currentUser;
-
-    if (user.hasOwnProperty("myWishlist")) {
+    if (user.hasOwnProperty("myWishlist") && user.myWishlist) {
       let isProductAlreadyExist = user.myWishlist.some((p) => p._id === itemId);
       if (!isProductAlreadyExist) {
-
-        // if not exist then add the wishlist item.
-        setCurrentUser((prev) => ({
-          ...prev,
-          myWishlist: [...user.myWishlist, productToAdd],
-        }));
-
-
+        dispatch(updateUser({ myWishlist: [...user.myWishlist, productToAdd] }));
       } else {
-
-        // if product exist then remove it.
         const remainingProducts = user.myWishlist.filter(
           (p) => p._id !== itemId,
         );
-        setCurrentUser({
-          ...currentUser,
-          myWishlist: remainingProducts
-        })
-        return toast.success('item removed successfully')
+        dispatch(updateUser({ myWishlist: remainingProducts }));
+        return toast.success("item removed successfully");
       }
-
-      // setCurrentUser((prev) => ({
-      //   ...prev,
-      //   myWishlist: [...user.myWishlist, productToAdd],
-      // }));
     } else {
-      setCurrentUser({ ...currentUser, myWishlist: [productToAdd] });
+      dispatch(updateUser({ myWishlist: [productToAdd] }));
     }
 
     toast.success("added in wishlist");
-    // console.log(user.hasOwnProperty("myWishlist") && user.myWishlist);
-    // setCurrentUser(await db.localUserData.get(currentUser.id));
   };
 
   // to see currentQty.
-  let currentProduct = "";
-  let qty = 0;
-
   useEffect(() => {
     const getQty = async () => {
       const user = currentUser;
-      currentProduct = user?.myCart?.find((p) => p._id === id);
-      // currentQty = currentProduct?.product_qty || 0;
-      qty = (await currentProduct?.product_qty) || 0;
+      const currentProduct = user?.myCart?.find((p) => p._id === id);
+      const qty = currentProduct?.product_qty || 0;
       setCurrentQty(qty);
     };
     getQty();
-  }, [onAddToCart, currentUser, cartItems]);
+  }, [currentUser, cartItems, id]);
 
   let isItemInWishlist = false;
 
-  if (currentUser.hasOwnProperty("myWishlist")) {
+  if (currentUser?.hasOwnProperty("myWishlist") && currentUser.myWishlist) {
     isItemInWishlist = currentUser.myWishlist.some(
       (p) => p.product_name === name,
     );
@@ -285,7 +241,6 @@ function ProductBuyCard({
     return (
       <>
         {currentUserRole === "customer" && isLogin && (
-          // Whishlist
           <div
             className={`${isItemInWishlist ? "bg-[#f3d8d9]" : ""} z-[50] transition-all w-max h-max absolute rounded-full p-2 items-center justify-center 
           hidden group-hover:flex ${is_offer_available ? "right-3 bottom-12" : "right-3"} duration-300`}
@@ -326,9 +281,6 @@ function ProductBuyCard({
 
           <div className="flex items-center justify-between">
             <div className="w-28 font-semibold">
-              {/* <span className="text-xl text-blue-700">${price} </span>
-              <del className="text-gray-500">{(price + Math.ceil((price/10)))}</del> */}
-
               {is_offer_available && is_product_in_stock ? (
                 <>
                   {/* =====OFFER LABEL ======= */}
@@ -392,9 +344,6 @@ function ProductBuyCard({
                   Add
                 </button>
               ) : (
-                // <span className="text-red-600 text-nowrap font-semibold text-sm">
-                //   Out of Stock
-                // </span>
                 <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center transition-all duration-300 rounded-2xl">
                   <span className="bg-red-200 text-red-500 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md shadow-md transform scale-100 group-hover:scale-105 transition-transform">
                     Sold Out

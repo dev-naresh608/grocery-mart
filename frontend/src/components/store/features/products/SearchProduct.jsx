@@ -1,19 +1,19 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import ProductBuyCard from "./ProductBuyCard";
-import { ProductContext } from "../../../../contexts/context";
 
 function SearchProduct() {
-  const { productsList } = useContext(ProductContext);
+  const productsList = useSelector((state) => state.product.productsList);
   const { searchValue } = useParams();
   const [totalProducts, setTotalProducts] = useState([]);
 
   useEffect(() => {
-    const filteredProducts = productsList.filter((p) =>
-      p.product_name.toLowerCase().includes(searchValue.toLowerCase().trim()),
+    const filteredProducts = (productsList || []).filter((p) =>
+      p.product_name?.toLowerCase().includes(searchValue.toLowerCase().trim()),
     );
     setTotalProducts(filteredProducts);
-  }, [searchValue]);
+  }, [searchValue, productsList]);
 
   if (totalProducts?.length === 0) {
     return (
@@ -27,6 +27,7 @@ function SearchProduct() {
       </div>
     );
   }
+
   return (
     <>
       <section className="p-10">
@@ -45,7 +46,6 @@ function SearchProduct() {
             />
           ))}
         </div>
-
       </section>
     </>
   );

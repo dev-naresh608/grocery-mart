@@ -1,30 +1,23 @@
-import React, { useContext } from "react";
-import { Link, useNavigate } from "react-router-dom"; // Added useNavigate
-import { UserContext } from "../../contexts/context";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "@/modules/auth/store/authThunk";
 import { defaultPP } from "@/assets";
 import { MiniProfileContainer, useModal, MODAL_TYPES } from "..";
-import { Home, LogOut, Mail, User } from "lucide-react";
+import { Home, LogOut, User } from "lucide-react";
 
 function ProfileToggle() {
-  const {
-    setIsLogin,
-    currentUser,
-    isProfileClicked,
-    setActiveTab,
-    setIsProfileClicked,
-    isNotificationClicked,
-    setIsNotificationClicked,
-    setCurrentUserRole,
-  } = useContext(UserContext);
-
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { openModal } = useModal();
+  const { user: currentUser } = useSelector((state) => state.auth);
+
+  const [isProfileClicked, setIsProfileClicked] = useState(false);
 
   // Base shared styles for navigation links
   const commonStyle =
     "flex items-center px-2 py-1 gap-1 font-semibold my-1 hover:bg-gray-100 rounded transition-colors duration-150";
 
- 
   const menuItems = [
     {
       label: "Home",
@@ -36,7 +29,7 @@ function ProfileToggle() {
       label: "Profile",
       to: "profile",
       icon: <User size={17} strokeWidth={2.5} />,
-      onClick: () => {setIsProfileClicked(false),setActiveTab('personalinformation')},
+      onClick: () => setIsProfileClicked(false),
     },
   ];
 
@@ -48,12 +41,10 @@ function ProfileToggle() {
       confirmText: "Logout",
       cancelText: "Cancel",
       type: "danger",
-      onConfirm: () => {
-        setIsLogin(false);
-        setCurrentUserRole("customer");
+      onConfirm: async () => {
+        await dispatch(logout());
         navigate("/");
-        window.location.reload();
-      }
+      },
     });
   };
 
@@ -63,9 +54,6 @@ function ProfileToggle() {
         <button
           onClick={() => {
             setIsProfileClicked((prev) => !prev);
-            if (isNotificationClicked) {
-              setIsNotificationClicked(false);
-            }
           }}
           className="block"
         >
@@ -88,7 +76,6 @@ function ProfileToggle() {
           <div className="absolute right-2 top-2">
             <button
               onClick={() => {
-                setIsNotificationClicked(false);
                 setIsProfileClicked(false);
               }}
               className="text-gray-400 hover:text-gray-600 font-bold"
@@ -131,16 +118,6 @@ function ProfileToggle() {
           </ul>
         </div>
       </div>
-      {/* profile sidebar */}
-      {/* <div className="font-semibold">
-          <p className="text-sm">{currentUser.username}</p>
-          <p className="text-[10px] space-x-2">
-            <span className="bg-green-200 rounded-2xl px-1.5 text-gray-800 ">
-              active
-            </span>
-            <span className="bg-yellow-100 text-yellow-700 px-1.5 rounded-full">{currentUser.role}</span>
-          </p> 
-        </div> */}
     </>
   );
 }

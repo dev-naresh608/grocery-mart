@@ -1,4 +1,5 @@
 import Product from "./product.model.js";
+import Seller from "../seller/seller.model.js";
 import {
   addProductService,
   updateProductService,
@@ -10,29 +11,34 @@ import {
 import { uploadOnCloudinary } from "../../utils/cloudinary.js";
 
 export const handleGetAllProducts = async (req, res) => {
-  const { userId } = req.params;
+  try {
+    const { userId } = req.params;
+    
+    if (!userId) {
+      return res.status(400).json({
+        success: false,
+        message: "User ID is required",
+      });
+    }
 
-  if (!userId) {
+    let sellerStoreId = userId;
+    const seller = await Seller.findOne({ $or: [{ _id: userId }, { user_id: userId }] });
+    if (seller) {
+      sellerStoreId = seller._id;
+    }
+
+    const allProducts = await Product.find({
+      $or: [{ store_id: userId }, { store_id: sellerStoreId }],
+    });
+
     return res.status(200).json({
-      success: false,
-      message: "User is required",
+      success: true,
+      message: "Your products",
+      result: allProducts || [],
     });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
   }
-  const allProducts = await Product.find({ store_id: userId });
-
-  if (allProducts.length === 0) {
-    return res.status(400).json({
-      success: false,
-      message: "there is no products in your store",
-      result: null,
-    });
-  }
-
-  return res.status(200).json({
-    success: true,
-    message: "Your products",
-    result: allProducts,
-  });
 };
 
 export const handleAddProduct = async (req, res) => {
@@ -43,78 +49,103 @@ export const handleAddProduct = async (req, res) => {
     if (!payload) {
       return res
         .status(400)
-        .json({ success: false, message: "formdata is required" });
+        .json({ success: false, message: "Form data is required" });
     }
 
     if (!file) {
       return res
         .status(400)
-        .json({ success: false, message: "img is required" });
+        .json({ success: false, message: "Product image is required" });
     }
 
     const uploadedImg = await uploadOnCloudinary(file.path);
-    // console.log("uploaded image data: ", uploadedImg);
 
-    if (!uploadedImg.success) {
-      return uploadedImg;
+    if (!uploadedImg || !uploadedImg.success) {
+      return res.status(400).json({
+        success: false,
+        message: uploadedImg?.message || "Cloudinary image upload failed",
+      });
     }
 
     const { url, public_id } = uploadedImg;
 
-    const product = await addProductService(payload, url, public_id);
+    const result = await addProductService(payload, url, public_id);
 
-    return res
-      .status(201)
-      .json({ success: true, message: "Product added successfully" });
+    if (!result.success) {
+      return res.status(400).json(result);
+    }
+
+    return res.status(201).json({
+      success: true,
+      message: "Product added successfully",
+      result: result.product,
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
 
 export const handleFindProductById = async (req, res) => {
-  const { productId } = req.params;
-  if (!productId) {
-    return res.status(200).json({
-      success: false,
-      message: "product id is required",
-    });
-  }
+  try {
+    const { productId } = req.params;
+    if (!productId) {
+      return res.status(400).json({
+        success: false,
+        message: "Product ID is required",
+      });
+    }
 
-  const result = await findProductSvc(productId);
+    const result = await findProductSvc(productId);
 
-  if (!result) {
+    if (!result) {
+      return res.status(404).json({
+        success: false,
+        message: "No product found",
+      });
+    }
+
     return res.status(200).json({
-      success: false,
-      message: "No product Found",
+      success: true,
+      message: "Product fetched successfully",
+      product: result,
     });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
   }
-  return res.status(200).json({
-    success: true,
-    message: "product fetched successfully",
-    product: result,
-  });
 };
 
 export const handleDeleteProductById = async (req, res) => {
-  const { store_id } = req.body;
-  const { productId } = req.params;
+  try {
+    const { store_id } = req.body;
+    const { productId } = req.params;
 
-  const result = await deleteProductService(productId, store_id);
-  return res.json({ success: true, result, message: "deleted successfully" });
+    const result = await deleteProductService(productId, store_id);
+    return res.json(result);
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
 };
 
 export const handleUpdateProductById = async (req, res) => {
-  const { store_id, updates } = req.body;
+  try {
+    const { store_id, updates } = req.body;
+    const { productId } = req.params;
 
-  const { productId } = req.params;
+    if (!updates) {
+      return res.status(400).json({
+        success: false,
+        message: "Please send update data",
+      });
+    }
 
-  if (!updates) {
-    return {
-      success: false,
-      message: "Please send me data",
-    };
+    const result = await updateProductService(productId, store_id, updates);
+
+    return res.status(200).json({
+      success: true,
+      message: "Updated successfully",
+      result,
+    });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
   }
-  const result = await updateProductService(productId, store_id, updates);
-
-  return res.status(201).json({ message: "Updated successfully" });
 };

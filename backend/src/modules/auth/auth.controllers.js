@@ -10,6 +10,7 @@ import {
 
 import { serverError } from "../../utils/response.js";
 
+import {badRequest} from "../../utils/response.js";
 const getCookieOptions = () => ({
   httpOnly: true,
   secure: config.env === "production",
@@ -22,7 +23,7 @@ export const register = async (req, res) => {
     const response = await registerSvc(req.body);
 
     if (!response?.success) {
-      return badRequest(res, response?.message || "Register failed");
+      return badRequest(res, response?.message || "Register failed",);
     }
 
     const { accessToken, refreshToken, user } = response;

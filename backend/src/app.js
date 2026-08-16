@@ -3,21 +3,22 @@ import morgan from "morgan";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
+import authRouter from "./modules/auth/auth.routes.js";
+import productRouter from "./modules/product/product.routes.js";
+import orderRouter from "./modules/order/order.routes.js";
+import cartRouter from "./modules/cart/cart.routes.js";
+import addressRouter from "./modules/address/address.routes.js";
+import storeRouter from "./modules/store/store.routes.js";
+
 const app = express();
 
-import {
-  authRoute,
-  // distanceRoute,
-  // storeRoute,
-  // addressRoute,
-  // productRoute,
-  // orderRoute,
-  // cartRoute,
-  // adminRoute,
-} from "./routes.js";
-
-// Middle Wares
-app.use(cors());
+// Middlewares
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "http://localhost:5173"],
+    credentials: true,
+  }),
+);
 app.use(
   express.json({
     limit: "100mb",
@@ -33,21 +34,17 @@ app.use(
 app.use(morgan("dev"));
 app.use(cookieParser());
 
-// ROUTES:
-app.get("/test", (req, res) => {
+// Health check endpoint
+app.get("/api/working", (req, res) => {
   res.json({ message: "api running" });
 });
 
-// ADMIN ROUTE
-// app.use("/admin", adminRoute);
-
-// OTHER ROUTES
-app.use("/api/auth", authRoute);
-// app.use("/api/distance", distanceRoute);
-// app.use("/api/product", productRoute);
-// app.use("/api/order", orderRoute);
-// app.use("/api/cart", cartRoute);
-// app.use("/api/stores", storeRoute);
-// app.use("/api/address", addressRoute);
+// Mounted Routes
+app.use("/api/auth", authRouter);
+app.use("/api/product", productRouter);
+app.use("/api/order", orderRouter);
+app.use("/api/cart", cartRouter);
+app.use("/api/address", addressRouter);
+app.use("/api/stores", storeRouter);
 
 export default app;

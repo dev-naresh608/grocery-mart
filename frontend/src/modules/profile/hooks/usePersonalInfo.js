@@ -1,10 +1,10 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../../../contexts/context";
+import { useSelector } from "react-redux";
 import { handleGetAddressApi } from "../../address/services/address.service.api";
 
 export const usePersonalInfo = () => {
-  const { currentUser, setActiveTab } = useContext(UserContext);
+  const { user: currentUser } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -38,7 +38,6 @@ export const usePersonalInfo = () => {
     lastUsedAddress,
     loading,
     totalOrders,
-    setActiveTab,
     navigate,
   };
 };

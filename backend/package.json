@@ -3,16 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "main": "src/server.js",
-  "types": "module",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon src/server"
+    "dev": "nodemon src/server",
+    "start": "node src/server"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cloudinary": "^2.10.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
@@ -24,6 +25,7 @@
     "morgan": "^1.11.0",
     "multer": "^2.1.1",
     "nodemon": "^3.1.14",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "zod": "^4.4.3"
   }
 }

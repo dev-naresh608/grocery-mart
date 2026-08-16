@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { UserContext } from "../../../contexts/context";
+import { useSelector, useDispatch } from "react-redux";
+import { updateUser } from "@/modules/auth/store/authSlice";
 import { toast } from "react-toastify";
 import { useModal, MODAL_TYPES } from "../../../components";
 import {
@@ -18,8 +19,9 @@ import {
 function ProductDetailPage() {
   const { productId } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { openModal } = useModal();
-  const { currentUser, setCurrentUser } = useContext(UserContext);
+  const { user: currentUser } = useSelector((state) => state.auth);
 
   const [product, setProduct] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -156,7 +158,7 @@ function ProductDetailPage() {
       type: "danger",
       onConfirm: async () => {
         try {
-          await handleDeleteProductApi(productId, currentUser, setCurrentUser);
+          await handleDeleteProductApi(productId, currentUser, (updated) => dispatch(updateUser(updated)));
           toast.success("Product deleted successfully");
           navigate("/product-list");
         } catch (error) {

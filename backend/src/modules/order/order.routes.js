@@ -1,14 +1,14 @@
 import express from "express";
 
-const orderRouter = express.Router();
-
-const {
+import {
   handleGetAllOrders,
   handleAddOrder,
   handleFindOrderById,
   handleDeleteOrderById,
   handleUpdateOrderById,
-} = require("./order.controllers");
+} from "./order.controllers.js";
+
+const orderRouter = express.Router();
 
 orderRouter.get("/:userId", handleGetAllOrders);
 orderRouter.post("/", handleAddOrder);

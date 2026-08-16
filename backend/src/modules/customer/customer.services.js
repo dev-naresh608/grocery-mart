@@ -11,5 +11,3 @@ export const createCustomerSvc = async (userId, session) => {
 
   return customers[0];
 };
-
-export default Customer;

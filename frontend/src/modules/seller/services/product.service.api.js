@@ -59,13 +59,15 @@ export const handleDeleteProductApi = async (
     { data: { store_id: currentUser._id } },
   );
 
-  const newUpdatedProductList = currentUser?.productList.filter(
+  const newUpdatedProductList = currentUser?.productList?.filter(
     (p) => p._id !== data.result,
-  );
-  setCurrentUser((prev) => ({
-    ...prev,
-    productList: newUpdatedProductList,
-  }));
+  ) || [];
+  if (typeof setCurrentUser === "function") {
+    setCurrentUser({
+      ...currentUser,
+      productList: newUpdatedProductList,
+    });
+  }
 };
 
 export const getProductByIdApi = async (productId) => {

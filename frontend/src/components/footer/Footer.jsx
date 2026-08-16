@@ -1,9 +1,9 @@
-import React, { useContext, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { Mail, Phone, MapPin, ArrowRight, CheckCircle2 } from "lucide-react";
 
 import { novexa_logo } from "@/assets";
-import { UserContext } from "../../contexts/context";
 
 const FOOTER_LINKS = {
   Shop: [
@@ -58,7 +58,7 @@ function FooterColumn({ title, links }) {
 }
 
 function Footer() {
-  const { isLogin } = useContext(UserContext);
+  const { isAuthenticated: isLogin } = useSelector((state) => state.auth);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 

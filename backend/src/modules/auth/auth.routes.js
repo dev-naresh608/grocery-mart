@@ -1,6 +1,12 @@
 import express from "express";
 
-import { register, login, getMe, rotateToken } from "./auth.controllers.js";
+import {
+  register,
+  login,
+  getMe,
+  rotateToken,
+  logout,
+} from "./auth.controllers.js";
 
 import {
   authenticateAccessToken,
@@ -19,12 +25,8 @@ authRouter.post("/login", validate(loginSchema), login);
 
 authRouter.get("/me", authenticateAccessToken, getMe);
 
-authRouter.post(
-  "/rotate-token",
-  authenticateRefreshToken,
-  rotateToken
-);
+authRouter.post("/rotate-token", authenticateRefreshToken, rotateToken);
 
-authRouter.post("/logout", );
+authRouter.post("/logout", logout);
 
 export default authRouter;

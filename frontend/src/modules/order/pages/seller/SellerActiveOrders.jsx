@@ -1,11 +1,13 @@
-import React, { useContext, useEffect, useState } from "react";
-import { UserContext } from "../../../../contexts/context";
+import React, { useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { updateUser } from "@/modules/auth/store/authSlice";
 import { db } from "../../../../db";
 import { CreditCard, Phone, ShoppingBag, Timer, User } from "lucide-react";
 import { toast } from "react-toastify";
 
 function ActiveOrders() {
-  const { currentUser, setUserData, setCurrentUser } = useContext(UserContext);
+  const dispatch = useDispatch();
+  const { user: currentUser } = useSelector((state) => state.auth);
 
   const [sortedOrders, setSortedOrders] = useState([]);
 
@@ -136,10 +138,11 @@ function ActiveOrders() {
         myOrders: updatedCustomerOrders,
       });
 
-      // ================= UPDATE CONTEXT =================
-      setCurrentUser(await db.localUserData.get(currentUser.id));
-
-      setUserData(await db.localUserData.toArray());
+      // ================= UPDATE REDUX STORE =================
+      const updatedUser = await db.localUserData.get(currentUser.id);
+      if (updatedUser) {
+        dispatch(updateUser(updatedUser));
+      }
 
       toast.success(`Order ${orderStatus}`);
     } catch (error) {

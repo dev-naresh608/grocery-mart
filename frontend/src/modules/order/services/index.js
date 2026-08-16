@@ -1,2 +1,2 @@
+export * from "./order.api.service";
 export * from "./orderFilterService";
-export * from "./orderService";

@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { db } from "../../../db";
-import { UserContext } from "../../../contexts/context";
 
 import {
   ArrowLeftIcon,
@@ -31,14 +31,11 @@ import {
 import { SectionCard, SectionLabel } from "../../../index";
 import dateAndTimeFormat from "../../../services/dateAndTimeFormat.service";
 
-import { div } from "framer-motion/client";
-import { stringify } from "uuid";
-
 function OrderDetail() {
   const { orderId } = useParams();
   const navigate = useNavigate();
 
-  const { currentUser } = useContext(UserContext);
+  const { user: currentUser } = useSelector((state) => state.auth);
   const [order, setOrder] = useState(null);
   const [orderItems, setOrderItems] = useState(null);
 

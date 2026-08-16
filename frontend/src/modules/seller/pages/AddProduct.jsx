@@ -1,16 +1,16 @@
-import React, { useContext, useState } from "react";
-import { UserContext } from "../../../contexts/context";
+import React, { useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { v4 as uuid } from "uuid";
 import { toast } from "react-toastify";
 import { ArrowLeftIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import api from "../../../configs/api";
+import { addProductApi } from "../services/product.api.service";
 
 function AddProduct() {
   const [productImg, setProductImg] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
-  const { currentUser, setUserData, setCurrentUser } = useContext(UserContext);
+  const { user: currentUser } = useSelector((state) => state.auth);
 
   const navigate = useNavigate();
   const initialFormData = {
@@ -95,15 +95,10 @@ function AddProduct() {
     }
 
     
-    if (Number(formData.product_offer_price <= 0)) {
+    if (formData.product_offer_price && Number(formData.product_offer_price) < 0) {
       toast.error("Invalid product offer price");
       return;
     }
-    if (Number(formData.product_offer_price) > Number(formData.product_cost_price)) {
-      toast.error("Offer price cannot exceed product price");
-      return;
-    }
-    
 
     try {
       setIsUploading(true);
@@ -111,7 +106,7 @@ function AddProduct() {
       const productData = {
         ...formData,
 
-        store_id: currentUser._id,
+        store_id: currentUser?.store_id || currentUser?._id,
 
         product_name: formData.product_name.trim(),
 
@@ -136,30 +131,13 @@ function AddProduct() {
 
       formDataToSend.append("product_img", selectedFile);
 
-      const config = {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      };
-      const { data } = await api.post(
-        "/product/add-product",
-        formDataToSend,
-        config,
-      );
-      // console.log('data: ',data);
-      if (!data.success || !data) {
-        toast.error(data.message);
+      const data = await addProductApi(formDataToSend);
+      if (!data || !data.success) {
+        toast.error(data?.message || "Failed to add product");
       } else {
-        toast.success(data.message);
+        toast.success(data.message || "Product added successfully");
+        resetForm();
       }
-
-      // ================= UPDATE CONTEXT =================
-      // setCurrentUser();
-
-      // setUserData();
-
-      // ================= RESET FORM =================
-      resetForm();
     } catch (error) {
       console.error(error);
       toast.error("Failed to add product");

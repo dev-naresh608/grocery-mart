@@ -1,13 +1,31 @@
-import api from "../../../configs/api";
+import api from "../../../configs/api.js";
 
-export async function loginUserApi(payload) {
-  return api.post("/auth/login", payload);
-}
+export const registerUser = async (payload) => {
+  const { data } = await api.post("/auth/register", payload);
 
-export async function signupUserApi(payload) {
-  return api.post("/auth/signup", payload);
-}
+  return data;
+};
 
-// export async function loginAsAdminApi(payload){
-//   return axios.post(`${BASE_URL}/admin`,payload);
-// }
+export const loginUser = async (payload) => {
+  const { data } = await api.post("/auth/login", payload);
+
+  return data;
+};
+
+export const getMe = async () => {
+  const { data } = await api.get("/auth/me");
+
+  return data;
+};
+
+export const rotateToken = async () => {
+  const { data } = await api.post("/auth/rotate-token");
+
+  return data;
+};
+
+export const logout = async () => {
+  const { data } = await api.post("/auth/logout");
+
+  return data;
+};

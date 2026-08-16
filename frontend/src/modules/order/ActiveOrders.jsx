@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { UserContext } from "../../contexts/context";
+import React from "react";
+import { useSelector } from "react-redux";
 import {
   CustomerActiveOrders,
   SellerActiveOrders,
@@ -7,11 +7,11 @@ import {
 } from "./pages";
 
 function ActiveOrders() {
-  const { currentUser, setUserData, setCurrentUser } = useContext(UserContext);
+  const { user: currentUser } = useSelector((state) => state.auth);
 
-  if (currentUser.role === "customer") {
+  if (currentUser?.role === "customer") {
     return <CustomerActiveOrders />;
-  } else if (currentUser.role === "seller") {
+  } else if (currentUser?.role === "seller") {
     return <SellerActiveOrders />;
   } else {
     return <DriverActiveOrders />;

@@ -1,17 +1,29 @@
-import React, { useContext } from "react";
+import React from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { updateUser } from "@/modules/auth/store/authSlice";
 import { defaultPP } from "@/assets";
-import { UserContext } from "../../contexts/context";
 import { NavLink } from "react-router-dom";
 import { db } from "../../db";
 
 function DriverDashboard() {
-  const { currentUser, setCurrentUser, setUserData } = useContext(UserContext);
+  const dispatch = useDispatch();
+  const { user: currentUser } = useSelector((state) => state.auth);
 
   const handleDriveStatus = async () => {
-    currentUser.driver_status = !currentUser.driver_status;
-    await db.localUserData.put(currentUser);
-    setCurrentUser(currentUser);
-    setUserData(await db.localUserData.toArray());
+    if (!currentUser) return;
+    const newStatus = !currentUser.driver_status;
+    dispatch(updateUser({ driver_status: newStatus }));
+    if (currentUser.id) {
+      try {
+        const user = await db.localUserData.get(currentUser.id);
+        if (user) {
+          user.driver_status = newStatus;
+          await db.localUserData.put(user);
+        }
+      } catch (err) {
+        console.error("Failed updating driver_status in IndexedDB:", err);
+      }
+    }
   };
 
   return (

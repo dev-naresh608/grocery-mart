@@ -12,10 +12,7 @@ export default function AddressSelector({
     const selectedAddress = addressList.find((a) => a._id === addressId);
     if (selectedAddress) {
       setAddress(selectedAddress);
-      setCurrentUser((prev) => ({
-        ...prev,
-        address: selectedAddress,
-      }));
+      setCurrentUser({ address: selectedAddress });
     }
   };
 

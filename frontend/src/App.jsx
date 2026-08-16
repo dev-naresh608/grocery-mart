@@ -1,16 +1,4 @@
 import {
-  AddressContextProvider,
-  CartProductContextProvider,
-  OrderHistoryContextProvider,
-  ProductContextProvider,
-  UserContext,
-  UserContextProvider,
-  WishlistContextProvider,
-  CategoryContextProvider,
-  OrderContext,
-} from "./contexts/context";
-
-import {
   Profile,
   PersonalInfo,
   Setting,
@@ -54,8 +42,9 @@ import {
 } from "react-router-dom";
 
 import { ToastContainer } from "react-toastify";
-import { useEffect, useContext } from "react";
-import OrderProvider from "./contexts/OrderContext";
+import { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { rotateToken } from "./modules/auth/store/authThunk";
 
 const LoginRedirect = () => {
   const { openModal } = useModal();
@@ -78,16 +67,16 @@ const SignupRedirect = () => {
 };
 
 const ProtectedRoute = () => {
-  const { isLogin } = useContext(UserContext);
+  const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isLogin) {
+    if (!isAuthenticated && !isLoading) {
       navigate("/login", { replace: true });
     }
-  }, [isLogin, navigate]);
+  }, [isAuthenticated, isLoading, navigate]);
 
-  if (!isLogin) {
+  if (!isAuthenticated) {
     return null;
   }
 
@@ -95,6 +84,14 @@ const ProtectedRoute = () => {
 };
 
 function App() {
+  const dispatch = useDispatch();
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      dispatch(rotateToken());
+    }
+  }, [dispatch, isAuthenticated]);
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Layout />}>
@@ -124,6 +121,7 @@ function App() {
 
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
+            <Route index element={<Dashboard />}></Route>
             <Route path="favourite" element={<Wishlist />}></Route>
             <Route path="orders" element={<Orders />}></Route>
             <Route path="orders/:orderId" element={<OrderDetail />} />
@@ -155,26 +153,6 @@ function App() {
     ),
   );
 
-  return (
-    <>
-      <UserContextProvider>
-        <CartProductContextProvider>
-          <ProductContextProvider>
-            <AddressContextProvider>
-              <OrderHistoryContextProvider>
-                <WishlistContextProvider>
-                  <CategoryContextProvider>
-                    <OrderProvider>
-                      <RouterProvider router={router} />
-                    </OrderProvider>
-                  </CategoryContextProvider>
-                </WishlistContextProvider>
-              </OrderHistoryContextProvider>
-            </AddressContextProvider>
-          </ProductContextProvider>
-        </CartProductContextProvider>
-      </UserContextProvider>
-    </>
-  );
+  return <RouterProvider router={router} />;
 }
 export default App;

@@ -20,3 +20,7 @@ export const findUserByPhone = async (phone) => {
 export const findUserById = async (userId) => {
   return await User.findById(userId);
 };
+
+// export const checkIsUserExistSvc = async => {
+
+// }

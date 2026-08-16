@@ -1,11 +1,13 @@
-import React, { useContext, useEffect } from "react";
-import { UserContext } from "../../contexts/context";
+import React, { useEffect } from "react";
+import { useSelector } from "react-redux";
 import { SellerDashboard, CustomerDashboard, DriverDashboard } from "..";
 import { useNavigate } from "react-router-dom";
 
 function Dashboard() {
   const navigate = useNavigate();
-  const { currentUser, isLogin } = useContext(UserContext);
+  const { user: currentUser, isAuthenticated: isLogin } = useSelector(
+    (state) => state.auth
+  );
 
   useEffect(() => {
     if (!isLogin) {
@@ -17,16 +19,16 @@ function Dashboard() {
     return null;
   }
 
-  if (currentUser.role === "customer") {
+  if (currentUser?.role === "customer") {
     return <CustomerDashboard />;
   }
-  if (currentUser.role === "seller") {
+  if (currentUser?.role === "seller") {
     return <SellerDashboard />;
   }
-  if (currentUser.role === "driver") {
+  if (currentUser?.role === "driver") {
     return <DriverDashboard />;
   }
-  if (currentUser.role === "admin") {
+  if (currentUser?.role === "admin") {
     return <h2> Admin Dashboard</h2>;
   }
   return null;

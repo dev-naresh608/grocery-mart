@@ -1,44 +1,38 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { UserContext } from "../../contexts/context";
+import { useSelector, useDispatch } from "react-redux";
+import { updateUser } from "@/modules/auth/store/authSlice";
 import { CheckCircle, MailCheck, Mail } from "lucide-react";
 import { MiniProfileContainer } from "..";
 import { db } from "../../db";
-function NotificationToggle() {
-  const {
-    currentUser,
-    setCurrentUser,
-    setUserData,
-    isProfileClicked,
-    setIsProfileClicked,
-    isNotificationClicked,
-    setIsNotificationClicked,
-  } = useContext(UserContext);
 
+function NotificationToggle() {
+  const dispatch = useDispatch();
+  const { user: currentUser } = useSelector((state) => state.auth);
+  const [isNotificationClicked, setIsNotificationClicked] = useState(false);
   const [isAllNotificationsRead, setIsAllNotificationsRead] = useState(true);
 
   const handleNotificationIsRead = async (notificationID) => {
-    const user = await db.localUserData.get(currentUser.id);
-    const allNotifications = user.myNotifications;
-    const clickedNotification = allNotifications.find(
-      (n) => n.notificationID === notificationID,
+    if (!currentUser) return;
+    const allNotifications = currentUser.myNotifications || [];
+    const updatedNotifications = allNotifications.map((n) =>
+      n.notificationID === notificationID
+        ? { ...n, isNotificationIsRead: true }
+        : n
     );
-    ((clickedNotification.isNotificationIsRead = true), setCurrentUser(user));
-    await db.localUserData.put(user);
-    setUserData(await db.localUserData.toArray());
+    dispatch(updateUser({ myNotifications: updatedNotifications }));
+    if (currentUser.id) {
+      try {
+        const user = await db.localUserData.get(currentUser.id);
+        if (user) {
+          user.myNotifications = updatedNotifications;
+          await db.localUserData.put(user);
+        }
+      } catch (err) {
+        console.error("Failed to update notification status in DB:", err);
+      }
+    }
   };
-
-  // useEffect(() => {
-  //   const checkReadStatus = async () => {
-  //     const user = await db.localUserData.get(currentUser?.id);
-  //     const allNotifications = user?.myNotifications;
-  //     const isThereIsAnUnReadedNotificationAvail = allNotifications?.some(
-  //       (n) => !n?.isNotificationIsRead,
-  //     );
-  //     setIsAllNotificationsRead(isThereIsAnUnReadedNotificationAvail);
-  //   };
-  //   checkReadStatus();
-  // }, [isNotificationClicked, handleNotificationIsRead]);
 
   return (
     <div className="relative group">
@@ -46,9 +40,6 @@ function NotificationToggle() {
         <button
           onClick={() => {
             setIsNotificationClicked((prev) => !prev);
-            if (isProfileClicked === true) {
-              setIsProfileClicked((prev) => !prev);
-            }
           }}
         >
           <svg
@@ -71,14 +62,14 @@ function NotificationToggle() {
         className={`absolute shadow-md top-8 right-0 bg-white rounded-xl min-w-[230px] sm:w-[30vw] md:w-[35vw] pb-2 z-[100] ${isNotificationClicked ? "block" : "hidden"}`}
       >
         <div className="flex gap-2 justify-between border-b">
-          {/* Mini Profile Containner */}
+          {/* Mini Profile Container */}
           <div className="p-2">
             <MiniProfileContainer />
           </div>
           <div className="absolute right-1 top-0">
             <button
               onClick={() => {
-                (setIsNotificationClicked(false), setIsProfileClicked(false));
+                setIsNotificationClicked(false);
               }}
             >
               ✘
@@ -90,7 +81,8 @@ function NotificationToggle() {
           {isAllNotificationsRead ? (
             <>
               <div className="flex-1 min-h-[230px]">
-                {currentUser?.myNotifications?.filter((n) => !n?.isNotificationIsRead)
+                {currentUser?.myNotifications
+                  ?.filter((n) => !n?.isNotificationIsRead)
                   .map((n, i) => {
                     return (
                       <div key={i} className=" h-full p-2">
@@ -134,7 +126,7 @@ function NotificationToggle() {
           <div className="flex justify-center w-full pt-2">
             <NavLink
               onClick={() => {
-                (setIsNotificationClicked(false), setIsProfileClicked(false));
+                setIsNotificationClicked(false);
               }}
               to="allnotifications"
               className="group/btn overflow-hidden w-max flex items-center gap-2 text-sm bg-gray-200 px-3 py-1 rounded-2xl"

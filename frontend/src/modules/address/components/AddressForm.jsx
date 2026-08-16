@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { updateUser } from "@/modules/auth/store/authSlice";
 import { handleAddAddressApi, handleUpdateAddressApi } from "../../index";
 import { useModal } from "../../../components";
 
 function AddressForm({ closeBtnAction, userId, setAddress }) {
+  const dispatch = useDispatch();
   const { payload, closeModal } = useModal();
   
   const isInsideModal = !closeBtnAction;
@@ -46,7 +49,7 @@ function AddressForm({ closeBtnAction, userId, setAddress }) {
     }));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     //  ===== validation =====
     if (!formData.pincode || Number(formData.pincode) <= 0) {
       return toast.error("Invalid pincode number");
@@ -68,7 +71,7 @@ function AddressForm({ closeBtnAction, userId, setAddress }) {
       pincode: Number(formData.pincode),
     };
 
-    const saveAddress = async () => {
+    try {
       let data;
       if (payload?.address?._id) {
         data = await handleUpdateAddressApi(payload.address._id, requestPayload);
@@ -79,19 +82,22 @@ function AddressForm({ closeBtnAction, userId, setAddress }) {
       if (!data || !data.success) {
         return toast.error(data?.message || "Failed to save address");
       }
-      if (actualSetAddress) {
-        actualSetAddress(data.address);
-      }
-    };
-    saveAddress();
 
-    setTimeout(() => {
+      const savedAddr = data.address;
+      if (actualSetAddress) {
+        actualSetAddress(savedAddr);
+      }
+      dispatch(updateUser({ address: savedAddr }));
+
+      toast.success(payload?.address?._id ? "Address updated successfully" : "Address added successfully");
+      setFormData(initialFormData);
       if (handleClose) {
         handleClose();
       }
-      setFormData(initialFormData);
-      toast.success(payload?.address?._id ? "Address updated successfully" : "Address added successfully");
-    }, 0);
+    } catch (error) {
+      console.error("Address Submit Error:", error);
+      toast.error("Failed to save address");
+    }
   };
 
   const formContent = (

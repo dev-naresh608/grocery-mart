@@ -1,9 +1,9 @@
-const mongoose = require("mongoose");
-const {config} = require("./config");
+import mongoose from "mongoose";
+import { config } from "./config.js";
 
 const connectDB = async () => {
   try {
-    await mongoose.connect(config.DATABASE_URI, {
+    await mongoose.connect(config.database.uri, {
       serverSelectionTimeoutMS: 5000,
     });
 
@@ -15,4 +15,4 @@ const connectDB = async () => {
   }
 };
 
-module.exports = {connectDB};
+export default connectDB;

@@ -1,17 +1,19 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { defaultRest } from "@/assets";
-import { UserContext } from "../../../contexts/context";
 import { EmptyStore, StoreCard } from "../..";
-import { db } from "../../../db";
 import api from "../../../configs/api";
 import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 
 function AllStores() {
   const [AllStores, setAllStores] = useState([]);
-  const { currentUser, userData, isLogin } = useContext(UserContext);
+  const { user: currentUser, isAuthenticated: isLogin } = useSelector(
+    (state) => state.auth
+  );
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get("search") || "";
+
   useEffect(() => {
     try {
       const getStores = async () => {
@@ -30,7 +32,7 @@ function AllStores() {
     } catch (error) {
       console.log(error);
     }
-  }, [currentUser, userData, searchQuery]);
+  }, [currentUser, searchQuery]);
 
   return (
     <div className={`py-0 ${isLogin ? "" : "px-10 mt-4 mb-10 max-w-7xl mx-auto w-full"}`}>

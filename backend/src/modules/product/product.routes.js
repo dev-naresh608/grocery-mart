@@ -1,16 +1,15 @@
 import express from "express";
-import multer from "multer";
-
 import { upload } from "../../middlewares/multer.middleware.js";
 
-const productRouter = express.Router();
-const {
+import {
   handleGetAllProducts,
   handleAddProduct,
   handleFindProductById,
   handleDeleteProductById,
   handleUpdateProductById,
-} = require("./product.controllers");
+} from "./product.controllers.js";
+
+const productRouter = express.Router();
 
 productRouter.get("/allproducts/:userId", handleGetAllProducts);
 productRouter.post(

@@ -1,11 +1,32 @@
-import React, { useContext } from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { CategoryContext } from "../../contexts/context";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  toggleShowAllCategoryEnable,
+  updateCategoriesForScreen,
+} from "@/modules/category/store/categorySlice";
 import { ArrowRight, Grid } from "lucide-react";
 
 function Category() {
-  const { showCategoriesAsScreen, setShowAllCategoryEnable, showCatBtnText } =
-    useContext(CategoryContext);
+  const dispatch = useDispatch();
+  const {
+    showCategoriesAsScreen,
+    showCatBtnText,
+    showAllCategoryEnable,
+    categories,
+  } = useSelector((state) => state.category);
+
+  useEffect(() => {
+    const updateCategories = () => {
+      const width = Math.floor(window.innerWidth / 250);
+      dispatch(updateCategoriesForScreen(width));
+    };
+
+    updateCategories();
+
+    window.addEventListener("resize", updateCategories);
+    return () => window.removeEventListener("resize", updateCategories);
+  }, [dispatch, showAllCategoryEnable]);
 
   const cardColors = [
     "bg-red-50",
@@ -33,6 +54,10 @@ function Category() {
     "bg-pink-100 text-pink-600",
   ];
 
+  const handleToggle = () => {
+    dispatch(toggleShowAllCategoryEnable());
+  };
+
   return (
     <section className="px-4 sm:px-6 lg:px-10 py-12 max-w-6xl mx-auto font-sans">
       {/* Category Section Header */}
@@ -45,7 +70,7 @@ function Category() {
         </div>
         <button
           type="button"
-          onClick={() => setShowAllCategoryEnable((prev) => !prev)}
+          onClick={handleToggle}
           className="hidden sm:inline-flex items-center gap-1 text-sm font-bold text-green-600 hover:text-green-700 hover:underline transition-colors duration-200 cursor-pointer outline-none bg-transparent border-none"
         >
           {showCatBtnText}
@@ -55,7 +80,7 @@ function Category() {
 
       {/* Grid of Categories */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-        {showCategoriesAsScreen?.map((product, index) => (
+        {(showCategoriesAsScreen || categories)?.map((product, index) => (
           <Link
             to={`/categories/categoryWiseProducts/${product.catName}`}
             key={index}
@@ -87,7 +112,7 @@ function Category() {
       <div className="text-center sm:hidden mt-8">
         <button
           type="button"
-          onClick={() => setShowAllCategoryEnable((prev) => !prev)}
+          onClick={handleToggle}
           className="inline-flex items-center justify-center gap-1.5 rounded-2xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-600 transition-all duration-300 hover:border-green-400 hover:bg-green-50 hover:text-green-700 cursor-pointer outline-none shadow-sm"
         >
           {showCatBtnText}

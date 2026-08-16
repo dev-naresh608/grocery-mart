@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@reduxjs/toolkit": "^2.12.0",
     "axios": "^1.14.0",
     "cookie-parser": "^1.4.7",
     "dexie": "^4.4.2",
@@ -19,6 +20,7 @@
     "morgan": "^1.11.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
+    "react-redux": "^9.3.0",
     "react-router-dom": "^7.13.2",
     "react-toastify": "^11.0.5",
     "uuid": "^13.0.0"

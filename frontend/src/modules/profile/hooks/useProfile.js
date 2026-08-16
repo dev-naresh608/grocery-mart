@@ -1,19 +1,17 @@
-import { useContext } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserContext } from "../../../contexts/context";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "@/modules/auth/store/authThunk";
 import { useModal, MODAL_TYPES } from "../../../components";
 
 export const useProfile = () => {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const { openModal } = useModal();
-  const {
-    currentUser,
-    activeTab,
-    setActiveTab,
-    isLogin,
-    setIsLogin,
-    setCurrentUserRole,
-  } = useContext(UserContext);
+  const { user: currentUser, isAuthenticated: isLogin } = useSelector(
+    (state) => state.auth
+  );
+  const [activeTab, setActiveTab] = useState("personalinformation");
 
   const handleLogout = () => {
     openModal(MODAL_TYPES.CONFIRM, {
@@ -22,11 +20,9 @@ export const useProfile = () => {
       confirmText: "Logout",
       cancelText: "Cancel",
       type: "danger",
-      onConfirm: () => {
-        setIsLogin(false);
-        setCurrentUserRole("customer");
+      onConfirm: async () => {
+        await dispatch(logout());
         navigate("/");
-        window.location.reload();
       },
     });
   };

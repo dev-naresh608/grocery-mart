@@ -13,7 +13,7 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
     store_name: {
-      type: "String",
+      type: String,
       required: true,
     },
     driver_id: {
@@ -38,12 +38,9 @@ const orderSchema = new mongoose.Schema(
 
     customer_details: {
       type: mongoose.Schema.Types.Mixed,
-
-      // customer_name, customer_phone, customer_email,
     },
     seller_details: {
       type: mongoose.Schema.Types.Mixed,
-      //  store_name,
     },
     driver_details: {
       type: mongoose.Schema.Types.Mixed,
@@ -81,4 +78,5 @@ const orderSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-export default Order = mongoose.model("Order", orderSchema);
+const Order = mongoose.model("Order", orderSchema);
+export default Order;

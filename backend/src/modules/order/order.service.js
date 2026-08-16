@@ -1,28 +1,44 @@
 import Order from "./order.model.js";
 import Product from "../product/product.model.js";
-import Seller from "../seller/seller.model";
+import Seller from "../seller/seller.model.js";
+import Cart from "../cart/cart.model.js";
 
 export const addOrderService = async (o) => {
   try {
-    let order = null;
-    const { name: customer_name, phone: customer_phone } = o.order_address;
-    await Order.create({
+    const { name: customer_name, phone: customer_phone } = o.order_address || {};
+
+    // Resolve seller store ID (o.storeId could be User._id or Seller._id)
+    let sellerStoreId = o.storeId;
+    if (o.storeId) {
+      const seller = await Seller.findOne({
+        $or: [{ _id: o.storeId }, { user_id: o.storeId }],
+      });
+      if (seller) {
+        sellerStoreId = seller._id;
+      }
+    }
+
+    const order = await Order.create({
       customer_id: o.customerId,
-      store_id: o.storeId,
+      store_id: sellerStoreId,
       store_name: o.store_name,
       order_address: o.order_address,
       store_address: o.store_address,
-      customer_name: customer_name,
-      customer_phone: customer_phone,
-      customer_email: o.email,
-      order_items: o.items,
-      order_status: o.order_status,
-      createdAt: o.createdAt,
-      payment_method: o.paymentMethod,
-      price_detail: o.priceDetails,
-    }).then((result) => {
-      order = result;
+      customer_name: customer_name || "Customer",
+      customer_phone: customer_phone || "",
+      customer_email: o.email || "",
+      order_items: o.items || [],
+      order_status: o.orderStatus || "pending",
+      createdAt: o.createdAt || new Date(),
+      payment_method: o.paymentMethod || "cashOnDelivery",
+      price_detail: o.priceDetails || {},
     });
+
+    // Clear user cart in DB after successful order placement
+    if (o.customerId) {
+      await Cart.deleteMany({ customer_id: o.customerId });
+    }
+
     return {
       success: true,
       order,
@@ -36,55 +52,36 @@ export const addOrderService = async (o) => {
 };
 
 export const findSingleOrderService = async (orderId) => {
-  //fetch order.
   const order = await Order.findById(orderId);
   if (!order) {
     throw new Error("Order not found");
   }
 
-  // const { order_items: product_ids } = order;
-
-  //fetch product items.
-  // const products = await Product.find({
-  //   _id: { $in: product_ids },
-  // });
-
-  // console.log(products);
-
-  // if (!products) {
-  //   throw new Error("No order items found");
-  // }
-
-  // !  SELECT *
-  // ! FROM PRODUCT
-  // ! WHERE id IN ('A', 'C')
-  // ! RESULT: [{}, {}];
-
   const { order_items } = order;
-  const updatedOrderItems = order_items.map(
-    ({
-      _id,
-      product_name,
-      product_url,
-      product_weight,
-      product_weight_type,
-      product_selling_price,
-      product_qty,
-      product_offer_price,
-    }) => ({
-      _id,
-      product_name,
-      product_url,
-      product_weight,
-      product_weight_type,
-      product_selling_price,
-      product_qty,
-      product_offer_price,
-    }),
-  );
+  if (order_items && Array.isArray(order_items)) {
+    const updatedOrderItems = order_items.map(
+      ({
+        _id,
+        product_name,
+        product_url,
+        product_weight,
+        product_weight_type,
+        product_selling_price,
+        product_qty,
+        product_offer_price,
+      }) => ({
+        _id,
+        product_name,
+        product_url,
+        product_weight,
+        product_weight_type,
+        product_selling_price,
+        product_qty,
+        product_offer_price,
+      }),
+    );
+    order.order_items = updatedOrderItems;
+  }
 
-  order.order_items = updatedOrderItems;
-
-  // return {order, products};
   return order;
 };

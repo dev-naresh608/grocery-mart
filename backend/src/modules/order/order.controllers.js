@@ -1,80 +1,85 @@
 import Order from "./order.model.js";
 import User from "../user/user.model.js";
 import Product from "../product/product.model.js";
+import Seller from "../seller/seller.model.js";
 
 import { addOrderService, findSingleOrderService } from "./order.service.js";
 
 export const handleGetAllOrders = async (req, res) => {
-  const { userId } = req.params;
-  const { role } = req.query;
+  try {
+    const { userId } = req.params;
+    const { role } = req.query;
 
-  if (!userId) {
-    return res.status(200).json({
-      success: false,
-      message: "User id required",
-    });
-  }
-
-  let AllOrders = "";
-
-  switch (role) {
-    case "customer": {
-      allOrders = await Order.find({ customer_id: userId });
-      break;
-    }
-    case "seller": {
-      allOrders = await Order.find({ store_id: userId });
-      break;
-    }
-    default: {
+    if (!userId) {
       return res.status(400).json({
         success: false,
-        message: "Who are you !!",
+        message: "User ID is required",
       });
     }
-  }
-  // const allOrders = await Order.find({ cfg: userId });
 
-  if (!allOrders || allOrders.length === 0) {
-    return res.status(200).json({
-      success: false,
-      message: "No order found",
+    let allOrders = [];
+
+    switch (role) {
+      case "customer": {
+        allOrders = await Order.find({ customer_id: userId }).sort({ createdAt: -1 });
+        break;
+      }
+      case "seller": {
+        let sellerStoreId = userId;
+        const seller = await Seller.findOne({
+          $or: [{ _id: userId }, { user_id: userId }],
+        });
+        if (seller) {
+          sellerStoreId = seller._id;
+        }
+        allOrders = await Order.find({
+          $or: [{ store_id: userId }, { store_id: sellerStoreId }],
+        }).sort({ createdAt: -1 });
+        break;
+      }
+      default: {
+        allOrders = await Order.find({
+          $or: [{ customer_id: userId }, { store_id: userId }],
+        }).sort({ createdAt: -1 });
+        break;
+      }
+    }
+
+    return res.json({
+      success: true,
+      message: "All orders",
+      allOrders: allOrders || [],
     });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
   }
-
-  return res.json({
-    success: true,
-    message: "All orders",
-    allOrders,
-  });
 };
 
 export const handleAddOrder = async (req, res) => {
   try {
     const payload = req.body;
     if (!payload) {
-      return res.status(200).json({
+      return res.status(400).json({
         success: false,
         message: "Payload is required",
       });
     }
     const result = await addOrderService(payload);
     if (!result.success) {
-      return res.status(200).json({
+      return res.status(400).json({
         success: false,
         message: result.message,
       });
     }
     return res.status(201).json({
       success: true,
-      message: "order places succssfully",
+      message: "Order placed successfully",
       order: result.order,
     });
   } catch (error) {
     return res.status(500).json({
       success: false,
-      message: "something happen wrong",
-      error,
+      message: error.message || "Something went wrong",
     });
   }
 };
@@ -86,21 +91,21 @@ export const handleFindOrderById = async (req, res) => {
     if (!orderId) {
       return res.status(400).json({
         success: false,
-        message: "Order id required",
+        message: "Order ID is required",
       });
     }
 
     const result = await findSingleOrderService(orderId);
     if (!result) {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
-        message: "order is not fetched",
+        message: "Order not found",
       });
     }
 
     return res.status(200).json({
       success: true,
-      message: "Order Fetched Successfully",
+      message: "Order fetched successfully",
       result,
     });
   } catch (error) {
@@ -112,9 +117,22 @@ export const handleFindOrderById = async (req, res) => {
 };
 
 export const handleDeleteOrderById = async (req, res) => {
-  return res.json({ message: "deleted successfully" });
+  try {
+    const { orderId } = req.params;
+    await Order.findByIdAndDelete(orderId);
+    return res.json({ success: true, message: "Deleted successfully" });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
 };
 
 export const handleUpdateOrderById = async (req, res) => {
-  return res.json({ message: "Updated successfully" });
+  try {
+    const { orderId } = req.params;
+    const updates = req.body;
+    const updatedOrder = await Order.findByIdAndUpdate(orderId, updates, { new: true });
+    return res.json({ success: true, message: "Updated successfully", order: updatedOrder });
+  } catch (error) {
+    return res.status(500).json({ success: false, message: error.message });
+  }
 };

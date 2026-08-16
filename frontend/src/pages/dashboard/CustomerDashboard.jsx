@@ -1,22 +1,24 @@
-import React, { useContext, useEffect } from "react";
-import { UserContext } from "../../contexts/context.js";
+import React, { useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { updateUser } from "@/modules/auth/store/authSlice";
 import { defaultPP } from "@/assets";
 import { NavLink } from "react-router-dom";
 import DashboardCards from "./DashboardCards.jsx";
 import { dashboardCards } from "./dashboardCards.js";
-import { MiniProfileContainer, useModal, MODAL_TYPES } from "../../components/index.js"
-import { db } from "../../db/index.js";
-import { ChevronRight, Mail, MapPin, MoveRight, Phone } from "lucide-react";
+import { MiniProfileContainer, useModal, MODAL_TYPES } from "../../components/index.js";
+import { ChevronRight, MapPin, Phone } from "lucide-react";
 import { handleGetAddressApi } from "../../modules/address/services/address.service.api";
 
 function CustomerDashboard() {
-  const { currentUser, setCurrentUser } = useContext(UserContext);
+  const dispatch = useDispatch();
+  const { user: currentUser } = useSelector((state) => state.auth);
   const { openModal } = useModal();
+
   let currentUserAddress = "";
-  const isAddressAvailable = currentUser.hasOwnProperty("myAddress");
+  const isAddressAvailable = currentUser?.hasOwnProperty("myAddress") && Boolean(currentUser.myAddress);
 
   if (isAddressAvailable) {
-    currentUserAddress = `${currentUser.myAddress.name} ${currentUser.myAddress.phone} ${currentUser.myAddress.street} ${currentUser.myAddress.city} ${currentUser.myAddress.state}, ${currentUser.myAddress.pincode} `;
+    currentUserAddress = `${currentUser.myAddress.name || ""} ${currentUser.myAddress.phone || ""} ${currentUser.myAddress.street || ""} ${currentUser.myAddress.city || ""} ${currentUser.myAddress.state || ""}, ${currentUser.myAddress.pincode || ""} `;
   }
 
   // Load latest address from database on dashboard load
@@ -26,43 +28,34 @@ function CustomerDashboard() {
       try {
         const data = await handleGetAddressApi(currentUser._id);
         if (data && data.success && data.addressList && data.addressList.length > 0) {
-          setCurrentUser((prev) => ({
-            ...prev,
-            myAddress: data.addressList[0],
-          }));
+          dispatch(updateUser({ myAddress: data.addressList[0] }));
         }
       } catch (error) {
         console.error("Failed to load address for dashboard:", error);
       }
     };
     fetchAddress();
-  }, [currentUser?._id, setCurrentUser]);
+  }, [currentUser?._id, dispatch]);
 
   const handleAddAddress = () => {
     openModal(MODAL_TYPES.ADDRESS, {
-      userId: currentUser._id,
+      userId: currentUser?._id,
       setAddress: (newAddress) => {
-        setCurrentUser((prev) => ({
-          ...prev,
-          myAddress: newAddress,
-        }));
-      }
+        dispatch(updateUser({ myAddress: newAddress }));
+      },
     });
   };
 
   // Customer stats -------------------------------
   const customerStats = {
     orders: currentUser?.myOrders?.length || 0,
-
     wishlist: currentUser?.myWishlist?.length || 0,
-
     rewardPoints:
       currentUser?.myOrders?.reduce(
         (total, order) =>
           total + Math.floor(order.priceDetails?.finalPrice / 10),
         0,
       ) || 0,
-
     savings: "$122",
   };
 
@@ -79,7 +72,7 @@ function CustomerDashboard() {
             <div>
               <p className="text-gray-400 font-semibold text-xs">DASHBOARD</p>
               <p className="text-3xl font-semibold">
-                Welcome back, {currentUser.username.split(" ")[0]}
+                Welcome back, {currentUser?.username ? currentUser.username.split(" ")[0] : "User"}
               </p>
 
               <p className="text-gray-500 mt-2">
@@ -90,7 +83,7 @@ function CustomerDashboard() {
             <div className="border rounded-full border-orange-200">
               <img
                 src={
-                  currentUser.hasOwnProperty("imageUrl")
+                  currentUser?.hasOwnProperty("imageUrl") && currentUser.imageUrl
                     ? currentUser.imageUrl
                     : defaultPP
                 }
@@ -140,10 +133,6 @@ function CustomerDashboard() {
 
               <div className="mt-4 flex items-center justify-between">
                 <p className="font-medium">$249</p>
-
-                {/* <button className="text-green-600 font-medium">
-                  Track Order
-                </button> */}
               </div>
             </div>
 
@@ -166,8 +155,6 @@ function CustomerDashboard() {
 
               <div className="mt-4 flex items-center justify-between">
                 <p className="font-medium">$320</p>
-
-                {/* <button className="text-green-600 font-medium">Reorder</button> */}
               </div>
             </div>
           </div>
@@ -176,7 +163,7 @@ function CustomerDashboard() {
 
           <div className={commonCss}>
             <div className="pb-2 border-b">
-              <MiniProfileContainer/>
+              <MiniProfileContainer />
             </div>
 
             {/* Info rows */}
@@ -189,7 +176,7 @@ function CustomerDashboard() {
                 <div>
                   <p className="text-xs text-[#A8A29E]">Phone</p>
                   <p className="text-[14px] font-semibold text-[#1C1917]">
-                    {currentUser.phone ? `+91 ${currentUser.phone}` : "Not provided"}
+                    {currentUser?.phone ? `+91 ${currentUser.phone}` : "Not provided"}
                   </p>
                 </div>
               </div>

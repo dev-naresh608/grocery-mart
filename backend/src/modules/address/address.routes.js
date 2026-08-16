@@ -1,11 +1,11 @@
 import express from "express";
 
-const {
+import {
   handleGetAddressApi,
   handleAddAddressApi,
   handleDeleteAddressApi,
   handleUpdateAddressApi,
-} = require("./address.controllers");
+} from "./address.controllers.js";
 
 const addressRouter = express.Router();
 

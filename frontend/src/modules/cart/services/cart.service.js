@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { v4 as uuid } from "uuid";
-import { addOrderApi, getStoreApi } from "./cart.api";
+import { addOrderApi, getStoreApi, clearCartApi } from "./cart.api.service";
 import { validateOrder } from "../utils/cartValidation";
 
 export const onCartPlaceOrder = async (
@@ -26,8 +26,8 @@ export const onCartPlaceOrder = async (
     const user = currentUser;
     const storeData = await getStoreApi(storeId);
 
-    if (!storeData.success) {
-      toast.error(storeData.message || "Failed to fetch store details");
+    if (!storeData || !storeData.success) {
+      toast.error(storeData?.message || "Failed to fetch store details");
       return;
     }
 
@@ -53,73 +53,37 @@ export const onCartPlaceOrder = async (
       priceDetails: orderPriceDetails,
     };
 
-    // Customer payload update
-    const updatedUser = {
-      ...user,
-      myOrders: user.myOrders ? [...user.myOrders, orderData] : [orderData],
-      myCurrentOrders: user.myCurrentOrders
-        ? [...user.myCurrentOrders, orderData]
-        : [orderData],
-    };
-
-    // Store payload update (keeps the same object structure as the original)
-    const updatedStore = {
-      ...store,
-      myOrders: store.myOrders ? [...store.myOrders, orderData] : [orderData],
-      myCurrentOrders: store.myCurrentOrders
-        ? [...store.myCurrentOrders, orderData]
-        : [orderData],
-    };
-
-    // Notification messages creation
-    const customerNotification = {
-      notificationID: uuid(),
-      message: `Hey ${
-        currentUser.username.split(" ")[0]
-      }, Your order has been placed successfully at ${store.store_name}.`,
-      isNotificationIsRead: false,
-      createdAt: createdAt,
-    };
-
-    const storeNotification = {
-      notificationID: uuid(),
-      message: `New order received from ${
-        currentUser.username
-      }. Total Amount: $${finalPrice}`,
-      isNotificationIsRead: false,
-      createdAt: createdAt,
-    };
-
-    // Push notification payloads
-    updatedUser.myNotifications = updatedUser.myNotifications
-      ? [...updatedUser.myNotifications, customerNotification]
-      : [customerNotification];
-
-    updatedStore.myNotifications = updatedStore.myNotifications
-      ? [...updatedStore.myNotifications, storeNotification]
-      : [storeNotification];
-
     // Submit order creation request
     const response = await addOrderApi(orderData);
 
-    if (!response.success) {
-      toast.error(response.message || "Something went wrong while placing the order");
+    if (!response || !response.success) {
+      toast.error(response?.message || "Something went wrong while placing the order");
       return;
     }
 
+    // Clear cart in DB and update user state
+    try {
+      if (currentUser?._id) {
+        await clearCartApi(currentUser._id);
+      }
+    } catch (err) {
+      console.error("Cart DB clear error:", err);
+    }
+
+    // Customer payload update with empty cart
+    const updatedUser = {
+      ...user,
+      myCart: [],
+      myOrders: user.myOrders ? [...user.myOrders, response.order || orderData] : [response.order || orderData],
+    };
+
+    setCurrentUser(updatedUser);
+
     toast.success(response.message || "Order placed successfully");
 
-    // Perform navigation and local state updates
     setTimeout(() => {
       navigate("/orders");
-    }, 1000);
-
-    setTimeout(() => {
-      const finalUser = { ...updatedUser };
-      delete finalUser.myCart;
-      setCurrentUser(finalUser);
-    }, 1100);
-
+    }, 800);
   } catch (error) {
     toast.error("Failed to place order");
     console.error("Place Order Error:", error);

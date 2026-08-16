@@ -1,18 +1,11 @@
-import React, { useContext } from "react";
-import { UserContext } from "../../contexts/context.js";
-import { db } from "../../db/index.js";
-import {
-  Store
-} from "lucide-react";
-
+import React from "react";
+import { useSelector } from "react-redux";
+import { Store } from "lucide-react";
 import DashboardCards from "./DashboardCards.jsx";
-import {dashboardCards} from "./dashboardCards.js";
+import { dashboardCards } from "./dashboardCards.js";
 
 function SellerDashboard() {
-  const { currentUser } = useContext(UserContext);
-
-  // const localUserData = await db.localUserData.get(currentUser.id);
-  // console.log(localUserData.store_name);
+  const { user: currentUser } = useSelector((state) => state.auth);
 
   // Set Seller Stats -------------------
   const sellerStats = {
@@ -28,9 +21,7 @@ function SellerDashboard() {
         {/* ===== HEADER ===== */}
         <div className="flex gap-4 items-center bg-white rounded-2xl p-5 border shadow-sm">
           <div>
-            <div
-              className="flex items-center justify-center h-12 w-12 rounded-xl bg-gray-200 text-gray-400"
-            >
+            <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-gray-200 text-gray-400">
               <Store />
             </div>
           </div>
@@ -46,14 +37,13 @@ function SellerDashboard() {
               )}
             </div>
             <p className="text-2xl font-serif font-semibold text-gray-850 mt-1">
-              {currentUser?.store_name}
+              {currentUser?.store_name || "My Store"}
             </p>
           </div>
         </div>
         {/* ===== CARDS ===== */}
         <DashboardCards cards={dashboardCards.seller} stats={sellerStats} />
 
-        
         {/* ===== CHART + ORDERS ===== */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
           {/* SALES CHART */}

@@ -1,5 +1,6 @@
-import { useContext, useState, useEffect } from "react";
-import { UserContext } from "../../../contexts/context";
+import { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { updateUser } from "@/modules/auth/store/authSlice";
 import { toast } from "react-toastify";
 import { db } from "../../../db";
 import { useModal, MODAL_TYPES } from "../../../components";
@@ -9,7 +10,8 @@ import {
 } from "../../address/services/address.service.api";
 
 export const useSetting = () => {
-  const { currentUser, setCurrentUser, setUserData } = useContext(UserContext);
+  const dispatch = useDispatch();
+  const { user: currentUser } = useSelector((state) => state.auth);
   const { openModal } = useModal();
 
   const [formData, setFormData] = useState({
@@ -63,7 +65,7 @@ export const useSetting = () => {
         } catch (error) {
           console.error("Error deleting address:", error);
         }
-      }
+      },
     });
   };
 
@@ -72,7 +74,7 @@ export const useSetting = () => {
       userId: currentUser?._id,
       setAddress: () => {
         fetchAddresses();
-      }
+      },
     });
   };
 
@@ -82,14 +84,14 @@ export const useSetting = () => {
       address: address,
       setAddress: () => {
         fetchAddresses();
-      }
+      },
     });
   };
 
   // Live password validation
   useEffect(() => {
     if (formData.oldPassword.length > 0) {
-      setIsOldPassMatch(formData.oldPassword === currentUser.password);
+      setIsOldPassMatch(formData.oldPassword === currentUser?.password);
     } else {
       setIsOldPassMatch(true);
     }
@@ -99,7 +101,7 @@ export const useSetting = () => {
     } else {
       setIsConfirmPassMatch(true);
     }
-  }, [formData.oldPassword, formData.newPassword, formData.confirmPassword, currentUser.password]);
+  }, [formData.oldPassword, formData.newPassword, formData.confirmPassword, currentUser?.password]);
 
   const onPasswordChange = (e) => {
     const { name, value } = e.target;
@@ -113,11 +115,16 @@ export const useSetting = () => {
       if (!file) return;
       const reader = new FileReader();
       reader.onloadend = async () => {
-        await db.localUserData.update(currentUser.id, {
-          imageUrl: reader.result,
-        });
-        setUserData(await db.localUserData.toArray());
-        setCurrentUser(await db.localUserData.get(currentUser.id));
+        dispatch(updateUser({ imageUrl: reader.result }));
+        if (currentUser?.id) {
+          try {
+            await db.localUserData.update(currentUser.id, {
+              imageUrl: reader.result,
+            });
+          } catch (err) {
+            console.error("Failed updating IndexedDB:", err);
+          }
+        }
       };
       reader.readAsDataURL(file);
     } catch (err) {
@@ -127,14 +134,17 @@ export const useSetting = () => {
 
   // Remove profile picture
   const handleRemoveProfilePicture = async () => {
-    const user = await db.localUserData.get(currentUser.id);
-    if (user && user.hasOwnProperty("imageUrl")) {
-      delete user.imageUrl;
-      await db.localUserData.put(user);
-      setUserData(await db.localUserData.toArray());
-      setCurrentUser(await db.localUserData.get(currentUser.id));
-    } else {
-      toast.error("No custom picture to remove");
+    dispatch(updateUser({ imageUrl: null }));
+    if (currentUser?.id) {
+      try {
+        const user = await db.localUserData.get(currentUser.id);
+        if (user && user.hasOwnProperty("imageUrl")) {
+          delete user.imageUrl;
+          await db.localUserData.put(user);
+        }
+      } catch (err) {
+        console.error("Failed removing profile picture from IndexedDB:", err);
+      }
     }
   };
 
@@ -142,7 +152,7 @@ export const useSetting = () => {
   const onFormDataSubmit = async (e) => {
     e.preventDefault();
 
-    if (formData.oldPassword !== currentUser.password) {
+    if (formData.oldPassword !== currentUser?.password) {
       toast.error("Current password is incorrect");
       return;
     }
@@ -159,11 +169,16 @@ export const useSetting = () => {
       return;
     }
 
-    await db.localUserData.update(currentUser.id, {
-      password: formData.newPassword,
-    });
-    setUserData(await db.localUserData.toArray());
-    setCurrentUser(await db.localUserData.get(currentUser.id));
+    dispatch(updateUser({ password: formData.newPassword }));
+    if (currentUser?.id) {
+      try {
+        await db.localUserData.update(currentUser.id, {
+          password: formData.newPassword,
+        });
+      } catch (err) {
+        console.error("Failed updating password in IndexedDB:", err);
+      }
+    }
 
     toast.success("Password updated successfully!");
     setFormData({ oldPassword: "", newPassword: "", confirmPassword: "" });

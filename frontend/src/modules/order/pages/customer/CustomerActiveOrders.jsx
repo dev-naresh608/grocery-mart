@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { UserContext } from "../../../../contexts/context";
+import React from "react";
+import { useSelector } from "react-redux";
 import { GradientButton } from "../../../../components";
 import {
   Banknote,
@@ -7,16 +7,14 @@ import {
   Clock,
   CreditCard,
   Store,
-  TimerIcon,
-  User,
 } from "lucide-react";
 import { EmptyOrders } from "../../index";
 
 function CustomerActiveOrders() {
-  const { currentUser } = useContext(UserContext);
+  const { user: currentUser } = useSelector((state) => state.auth);
 
   if (
-    !currentUser.myCurrentOrders ||
+    !currentUser?.myCurrentOrders ||
     currentUser.myCurrentOrders.length === 0
   ) {
     return <EmptyOrders />;

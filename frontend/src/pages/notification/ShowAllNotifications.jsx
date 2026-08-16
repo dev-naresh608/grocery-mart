@@ -1,9 +1,14 @@
-import React, { useContext } from "react";
-import { UserContext } from "../../contexts/context";
+import React from "react";
+import { useSelector } from "react-redux";
 import { GradientButton } from "../../components";
+
 function ShowAllNotifications() {
-  const { currentUser } = useContext(UserContext);
-  if (!currentUser.hasOwnProperty('myNotifications') || currentUser?.myNotifications?.length === 0) {
+  const { user: currentUser } = useSelector((state) => state.auth);
+
+  if (
+    !currentUser?.hasOwnProperty("myNotifications") ||
+    currentUser?.myNotifications?.length === 0
+  ) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <h2 className="text-lg font-semibold text-gray-600">

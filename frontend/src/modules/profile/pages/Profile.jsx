@@ -73,7 +73,7 @@ function Profile() {
           <div className="flex justify-center">
             <img
               className="h-32 w-32 rounded-[50%] border border-green-600 object-cover"
-              src={currentUser.imageUrl || defaultPP}
+              src={currentUser?.imageUrl || defaultPP}
               alt="profile picture"
             />
           </div>

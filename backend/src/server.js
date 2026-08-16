@@ -2,7 +2,8 @@ import express from "express";
 import mongoose from "mongoose";
 import app from "./app.js";
 
-const { connectDB, config } = require("./configs/index");
+import { config } from "./configs/config.js";
+import connectDB from "./configs/database.js";
 
 const startServer = async () => {
   await connectDB();
