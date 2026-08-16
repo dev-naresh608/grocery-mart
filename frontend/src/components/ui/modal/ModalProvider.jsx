@@ -25,8 +25,11 @@ export const ModalProvider = ({ children }) => {
   }, []);
 
   useEffect(() => {
-    closeModal();
-  }, [location.pathname, closeModal]);
+    if (isOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      closeModal();
+    }
+  }, [location.pathname, isOpen, closeModal]);
 
   return (
     <ModalContext.Provider

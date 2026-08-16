@@ -26,29 +26,35 @@ function ActiveOrders() {
   };
 
   // ================= SORT ORDERS =================
-  const sortOrders = async () => {
-    try {
-      const user = await db.localUserData.get(currentUser.id);
-
-      const todayOrders =
-        user?.myCurrentOrders?.filter((order) => order.orderDate === today) ||
-        [];
-
-      const sorted = [...todayOrders].sort(
-        (a, b) =>
-          convertDateAndTime(b.orderDate, b.orderTime) -
-          convertDateAndTime(a.orderDate, a.orderTime),
-      );
-
-      setSortedOrders(sorted);
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
   useEffect(() => {
-    sortOrders();
-  }, [currentUser]);
+    let isMounted = true;
+    const fetchAndSortOrders = async () => {
+      if (!currentUser?.id) return;
+      try {
+        const user = await db.localUserData.get(currentUser.id);
+        const todayOrders =
+          user?.myCurrentOrders?.filter((order) => order.orderDate === today) ||
+          [];
+
+        const sorted = [...todayOrders].sort(
+          (a, b) =>
+            convertDateAndTime(b.orderDate, b.orderTime) -
+            convertDateAndTime(a.orderDate, a.orderTime),
+        );
+
+        if (isMounted) {
+          setSortedOrders(sorted);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchAndSortOrders();
+    return () => {
+      isMounted = false;
+    };
+  }, [currentUser?.id, today]);
 
   // ================= ORDER STATUS STYLE =================
   const getOrderStatusStyle = (status) => {
@@ -152,7 +158,7 @@ function ActiveOrders() {
   };
 
   // ================= ASSIGN DRIVER =================
-  const handleAssignDriver = async (orderId) => {
+  const handleAssignDriver = async () => {
     // Assign driver logic here
   };
 

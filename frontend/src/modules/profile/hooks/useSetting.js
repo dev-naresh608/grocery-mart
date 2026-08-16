@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateUser } from "@/modules/auth/store/authSlice";
 import { toast } from "react-toastify";
@@ -27,7 +27,7 @@ export const useSetting = () => {
   const [addresses, setAddresses] = useState([]);
   const [loadingAddresses, setLoadingAddresses] = useState(false);
 
-  const fetchAddresses = async () => {
+  const fetchAddresses = React.useCallback(async () => {
     if (!currentUser?._id) return;
     setLoadingAddresses(true);
     try {
@@ -42,11 +42,11 @@ export const useSetting = () => {
     } finally {
       setLoadingAddresses(false);
     }
-  };
+  }, [currentUser?._id]);
 
   useEffect(() => {
     fetchAddresses();
-  }, [currentUser?._id]);
+  }, [fetchAddresses]);
 
   const onDeleteAddress = (addressId) => {
     openModal(MODAL_TYPES.CONFIRM, {
@@ -138,7 +138,7 @@ export const useSetting = () => {
     if (currentUser?.id) {
       try {
         const user = await db.localUserData.get(currentUser.id);
-        if (user && user.hasOwnProperty("imageUrl")) {
+        if (user && Object.prototype.hasOwnProperty.call(user, "imageUrl")) {
           delete user.imageUrl;
           await db.localUserData.put(user);
         }

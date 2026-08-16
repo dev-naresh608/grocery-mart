@@ -10,13 +10,13 @@ import {
 } from "lucide-react";
 
 // ─── Info card ────────────────────────────────────────────────────────────────
-const InfoCard = ({ icon: Icon, label, value, accent = "#6366F1" }) => (
+const InfoCard = ({ icon: CardIcon, label, value, accent = "#6366F1" }) => (
   <div className="bg-white rounded-2xl border border-[#E7E5E4] p-4 flex items-center gap-3 hover:shadow-md transition-shadow duration-200">
     <div
       className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
       style={{ background: accent + "18" }}
     >
-      <Icon size={16} style={{ color: accent }} strokeWidth={2} />
+      {CardIcon && <CardIcon size={16} style={{ color: accent }} strokeWidth={2} />}
     </div>
     <div className="min-w-0">
       <p className="text-xs text-[#A8A29E] font-medium">{label}</p>

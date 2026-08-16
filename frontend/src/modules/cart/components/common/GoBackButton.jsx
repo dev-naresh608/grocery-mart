@@ -10,7 +10,7 @@ function GoBackButton({ children, navigation = "/", className = "" }) {
     <div>
       <button
         onClick={() => navigate(navigation)}
-        className="flex gap-0.5 items-center font-semibold text-sm text-blue-600 hover:text-green-600"
+        className={`flex gap-0.5 items-center font-semibold text-sm text-blue-600 hover:text-green-600 ${className}`}
       >
         <ArrowLeft size={17} /> <span>{children}</span>
       </button>

@@ -10,7 +10,9 @@ function NotificationToggle() {
   const dispatch = useDispatch();
   const { user: currentUser } = useSelector((state) => state.auth);
   const [isNotificationClicked, setIsNotificationClicked] = useState(false);
-  const [isAllNotificationsRead, setIsAllNotificationsRead] = useState(true);
+  const isAllNotificationsRead = currentUser?.myNotifications?.every(
+    (n) => n.isNotificationIsRead
+  ) ?? true;
 
   const handleNotificationIsRead = async (notificationID) => {
     if (!currentUser) return;

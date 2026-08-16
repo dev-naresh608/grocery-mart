@@ -4,6 +4,6 @@ export const ModalContext = createContext({
   isOpen: false,
   modalType: null,
   payload: null,
-  openModal: (type, payload) => {},
+  openModal: () => {},
   closeModal: () => {},
 });

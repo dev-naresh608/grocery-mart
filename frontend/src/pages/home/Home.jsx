@@ -1,18 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Hero, Footer, BlogSection } from "../../components";
 
-import { Category } from "..";
 import { bottom_banner } from "@/assets";
 
 import { useSelector } from "react-redux";
-import { leftPanelItems, secondLeftPanelItems } from "@/constants/navigation";
+import { leftPanelItems } from "@/constants/navigation";
 import { Menu, X, Truck, Leaf, Coins, ShieldCheck } from "lucide-react";
-import { NavLink, Outlet, Route, Routes, useNavigate } from "react-router-dom";
-function Home({ productsList }) {
+import { NavLink, Outlet } from "react-router-dom";
+function Home() {
   const { user: currentUser, isAuthenticated: isLogin } = useSelector(
     (state) => state.auth
   );
-  const navigate = useNavigate();
 
   const cartItems = currentUser?.myCart || [];
   const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(true);

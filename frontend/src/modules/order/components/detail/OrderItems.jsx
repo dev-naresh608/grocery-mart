@@ -30,7 +30,7 @@ const OrderItems = ({ order ,orderItems}) => {
   [&::-webkit-scrollbar-thumb]:bg-gray-400
   [&::-webkit-scrollbar-thumb]:rounded-full"
         >
-          {orderItems.map((product, index) => {
+          {orderItems.map((product) => {
             const total = product.product_qty * product.product_selling_price;
 
             return (

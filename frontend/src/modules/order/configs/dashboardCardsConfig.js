@@ -12,8 +12,6 @@ const dashboardCardsConfig = (
       (o) => o.order_status === "pending" || o.order_status === "preparing",
     ) || [];
 
-  const completeOrders =
-    allOrders.filter((o) => o.order_status === "complete") || [];
   return [
     {
       icon: Store,

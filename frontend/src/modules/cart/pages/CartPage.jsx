@@ -15,7 +15,6 @@ export default function CartPage() {
     currentUser,
     setCurrentUser,
     isLogin,
-    storeId,
     address,
     setAddress,
     addressList,

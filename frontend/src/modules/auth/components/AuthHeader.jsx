@@ -1,10 +1,10 @@
 import React from "react";
 
-function AuthHeader({ icon: Icon, title, subtitle }) {
+function AuthHeader({ icon: HeaderIcon, title, subtitle }) {
   return (
     <div className="text-black flex flex-col items-center gap-3 mb-5">
       <div className="bg-black rounded-2xl h-14 w-14 flex items-center justify-center">
-        <Icon className="text-white" />
+        {HeaderIcon && <HeaderIcon className="text-white" />}
       </div>
       <div>
         <p className="font-bold text-2xl"> {title}</p>

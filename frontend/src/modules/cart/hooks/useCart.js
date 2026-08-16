@@ -28,20 +28,7 @@ export const useCart = () => {
   const [addressList, setAddressList] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("cashOnDelivery");
   const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
-  const [isCartEmpty, setIsCartEmpty] = useState(true);
-
-  // Monitor cart items to toggle empty cart state
-  useEffect(() => {
-    if (
-      !currentUser ||
-      !currentUser.hasOwnProperty("myCart") ||
-      currentUser.myCart.length === 0
-    ) {
-      setIsCartEmpty(true);
-    } else {
-      setIsCartEmpty(false);
-    }
-  }, [currentUser]);
+  const isCartEmpty = !currentUser?.myCart || currentUser.myCart.length === 0;
 
   // Retrieve delivery addresses
   useEffect(() => {

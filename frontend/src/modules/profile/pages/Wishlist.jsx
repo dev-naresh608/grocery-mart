@@ -5,10 +5,7 @@ import { ProductBuyCard, GradientButton } from "../../../components";
 function Wishlist() {
   const { user: currentUser } = useSelector((state) => state.auth);
 
-  if (
-    currentUser?.hasOwnProperty("myWishlist") &&
-    currentUser?.myWishlist?.length > 0
-  ) {
+  if (currentUser?.myWishlist?.length > 0) {
     return (
       <div
         className="space-y-5 h-full max-h-[90vh] overflow-y-auto 

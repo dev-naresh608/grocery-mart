@@ -3,7 +3,6 @@ import {
   getAllOrdersApi,
   getOrderDetailApi,
   createOrderApi,
-  updateOrderStatusApi,
 } from "../services/order.api.service";
 
 export const fetchAllOrders = createAsyncThunk(

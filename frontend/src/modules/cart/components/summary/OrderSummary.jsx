@@ -8,7 +8,6 @@ import CheckoutButton from "../common/CheckoutButton";
  * OrderSummary - Side panel component composing Address, Payment, Pricing and Checkout buttons.
  */
 export default function OrderSummary({
-  currentUser,
   setCurrentUser,
   userId,
   isLogin,

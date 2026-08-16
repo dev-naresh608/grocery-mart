@@ -15,10 +15,10 @@ import {
 } from "lucide-react";
 
 // ─── Field row ────────────────────────────────────────────────────────────────
-const FieldRow = ({ icon: Icon, label, value }) => (
+const FieldRow = ({ icon: FieldIcon, label, value }) => (
   <div className="flex items-center gap-3 py-3 border-b border-[#F5F5F4] last:border-0">
     <div className="w-8 h-8 rounded-lg bg-[#F5F5F4] flex items-center justify-center flex-shrink-0">
-      <Icon size={13} className="text-[#78716C]" strokeWidth={2} />
+      {FieldIcon && <FieldIcon size={13} className="text-[#78716C]" strokeWidth={2} />}
     </div>
     <div className="min-w-0">
       <p className="text-xs text-[#A8A29E]">{label}</p>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { RatingStar, ProductImageLoader } from "../../../..";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -26,10 +26,7 @@ function ProductBuyCard({
     (state) => state.auth
   );
   const storeId = useSelector((state) => state.cart.storeId);
-  const cartItems = currentUser?.myCart || [];
   const currentUserRole = currentUser?.role || "customer";
-
-  const [currentQty, setCurrentQty] = useState(0);
 
   // ============== ADD TO CART ====================
   async function onAddToCart(itemId) {
@@ -41,6 +38,7 @@ function ProductBuyCard({
 
     const productToAdd = data.product;
     const user = currentUser || {};
+    const cartItems = user.myCart || [];
 
     const newProduct = {
       ...productToAdd,
@@ -156,7 +154,7 @@ function ProductBuyCard({
   };
 
   // ============== WISHLIST =======================
-  const onAddToWishlist = async (itemId, name) => {
+  const onAddToWishlist = async (itemId) => {
     if (!isLogin) {
       return toast.error("Login To Add Items in Wishlist");
     }
@@ -169,13 +167,14 @@ function ProductBuyCard({
 
     const productToAdd = data.product;
     const user = currentUser || {};
+    const myWishlist = user.myWishlist || [];
 
-    if (user.hasOwnProperty("myWishlist") && user.myWishlist) {
-      let isProductAlreadyExist = user.myWishlist.some((p) => p._id === itemId);
+    if (myWishlist.length > 0) {
+      let isProductAlreadyExist = myWishlist.some((p) => p._id === itemId);
       if (!isProductAlreadyExist) {
-        dispatch(updateUser({ myWishlist: [...user.myWishlist, productToAdd] }));
+        dispatch(updateUser({ myWishlist: [...myWishlist, productToAdd] }));
       } else {
-        const remainingProducts = user.myWishlist.filter(
+        const remainingProducts = myWishlist.filter(
           (p) => p._id !== itemId,
         );
         dispatch(updateUser({ myWishlist: remainingProducts }));
@@ -189,57 +188,20 @@ function ProductBuyCard({
   };
 
   // to see currentQty.
-  useEffect(() => {
-    const getQty = async () => {
-      const user = currentUser;
-      const currentProduct = user?.myCart?.find((p) => p._id === id);
-      const qty = currentProduct?.product_qty || 0;
-      setCurrentQty(qty);
-    };
-    getQty();
-  }, [currentUser, cartItems, id]);
+  const currentProduct = currentUser?.myCart?.find((p) => p._id === id);
+  const currentQty = currentProduct?.product_qty || 0;
 
-  let isItemInWishlist = false;
+  const isItemInWishlist = Boolean(
+    currentUser?.myWishlist?.some((p) => p.product_name === name)
+  );
 
-  if (currentUser?.hasOwnProperty("myWishlist") && currentUser.myWishlist) {
-    isItemInWishlist = currentUser.myWishlist.some(
-      (p) => p.product_name === name,
-    );
-  }
+  // Offer calculation
+  const offerPercent = price && offer_price ? Math.round(((price - offer_price) / price) * 100) : 0;
+  const offerBackgroundColor = offerPercent >= 50 ? "bg-red-600" : offerPercent >= 30 ? "bg-blue-600" : "bg-red-600";
 
-  // ============ OFFER LABEL ================
-  const getOfferOffPercentage = (price, offerPrice) => {
-    const [offerBackgrounColor, setOfferBackgrounColor] = useState("");
-    const result = `-${(((price - offer_price) / price) * 100).toFixed(0)}% `;
-    useEffect(() => {
-      if (result >= 50) {
-        setOfferBackgrounColor("bg-red-600");
-      } else if (result < 50 && result >= 30) {
-        setOfferBackgrounColor("bg-blue-600");
-      } else {
-        setOfferBackgrounColor("bg-red-600");
-      }
-    }, [result]);
-
-    return (
-      <>
-        <div className={`offer-label ${offerBackgrounColor}`}>
-          <div className="offer-label-circle"></div>
-          <span className="text-xs font-bold">OFFER</span>
-        </div>
-        <div
-          className={`absolute top-0 right-0 text-white p-2 rounded-[0px_10px_0] ${offerBackgrounColor}`}
-        >
-          <span>{result}</span>
-        </div>
-      </>
-    );
-  };
-
-  // ================ WISHLIST COMPONENT =================
-  const WishlistComponent = (isItemInWishlist) => {
-    return (
-      <>
+  return (
+    <>
+      <div className="relative bg-white border rounded-2xl shadow-md p-2 group overflow-hidden">
         {currentUserRole === "customer" && isLogin && (
           <div
             className={`${isItemInWishlist ? "bg-[#f3d8d9]" : ""} z-[50] transition-all w-max h-max absolute rounded-full p-2 items-center justify-center 
@@ -247,7 +209,7 @@ function ProductBuyCard({
           >
             <button
               className="active:scale-95"
-              onClick={() => onAddToWishlist(id, name)}
+              onClick={() => onAddToWishlist(id)}
             >
               <Heart
                 size={20}
@@ -259,14 +221,6 @@ function ProductBuyCard({
             </button>
           </div>
         )}
-      </>
-    );
-  };
-
-  return (
-    <>
-      <div className="relative bg-white border rounded-2xl shadow-md p-2 group overflow-hidden">
-        {WishlistComponent(isItemInWishlist)}
 
         <div className="flex bg-gray-200 rounded-2xl items-center justify-center">
           <ProductImageLoader src={src} alt={name} />
@@ -284,7 +238,15 @@ function ProductBuyCard({
               {is_offer_available && is_product_in_stock ? (
                 <>
                   {/* =====OFFER LABEL ======= */}
-                  {getOfferOffPercentage(price, offer_price)}
+                  <div className={`offer-label ${offerBackgroundColor}`}>
+                    <div className="offer-label-circle"></div>
+                    <span className="text-xs font-bold">OFFER</span>
+                  </div>
+                  <div
+                    className={`absolute top-0 right-0 text-white p-2 rounded-[0px_10px_0] ${offerBackgroundColor}`}
+                  >
+                    <span>-{offerPercent}% </span>
+                  </div>
                   <span>
                     <span className="text-md text-blue-700">
                       ${offer_price}

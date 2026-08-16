@@ -6,8 +6,8 @@ function ShowAllNotifications() {
   const { user: currentUser } = useSelector((state) => state.auth);
 
   if (
-    !currentUser?.hasOwnProperty("myNotifications") ||
-    currentUser?.myNotifications?.length === 0
+    !currentUser?.myNotifications ||
+    currentUser.myNotifications.length === 0
   ) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import ProductBuyCard from "./ProductBuyCard";
@@ -6,14 +6,9 @@ import ProductBuyCard from "./ProductBuyCard";
 function SearchProduct() {
   const productsList = useSelector((state) => state.product.productsList);
   const { searchValue } = useParams();
-  const [totalProducts, setTotalProducts] = useState([]);
-
-  useEffect(() => {
-    const filteredProducts = (productsList || []).filter((p) =>
-      p.product_name?.toLowerCase().includes(searchValue.toLowerCase().trim()),
-    );
-    setTotalProducts(filteredProducts);
-  }, [searchValue, productsList]);
+  const totalProducts = (productsList || []).filter((p) =>
+    p.product_name?.toLowerCase().includes((searchValue || "").toLowerCase().trim()),
+  );
 
   if (totalProducts?.length === 0) {
     return (

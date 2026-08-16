@@ -1,5 +1,4 @@
 import { toast } from "react-toastify";
-import { v4 as uuid } from "uuid";
 import { addOrderApi, getStoreApi, clearCartApi } from "./cart.api.service";
 import { validateOrder } from "../utils/cartValidation";
 
@@ -13,7 +12,6 @@ export const onCartPlaceOrder = async (
   navigate,
 ) => {
   try {
-    const { finalPrice } = orderPriceDetails;
 
     // Run custom validation utility
     const validation = validateOrder(address, storeId, currentUser.myCart);

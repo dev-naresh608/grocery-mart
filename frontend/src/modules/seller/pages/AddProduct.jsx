@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { v4 as uuid } from "uuid";
+import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { ArrowLeftIcon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { defaultPP } from "@/assets";
 import { addProductApi } from "../services/product.api.service";
 
 function AddProduct() {

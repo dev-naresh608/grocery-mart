@@ -15,7 +15,7 @@ function CustomerDashboard() {
   const { openModal } = useModal();
 
   let currentUserAddress = "";
-  const isAddressAvailable = currentUser?.hasOwnProperty("myAddress") && Boolean(currentUser.myAddress);
+  const isAddressAvailable = Boolean(currentUser?.myAddress);
 
   if (isAddressAvailable) {
     currentUserAddress = `${currentUser.myAddress.name || ""} ${currentUser.myAddress.phone || ""} ${currentUser.myAddress.street || ""} ${currentUser.myAddress.city || ""} ${currentUser.myAddress.state || ""}, ${currentUser.myAddress.pincode || ""} `;
@@ -83,7 +83,7 @@ function CustomerDashboard() {
             <div className="border rounded-full border-orange-200">
               <img
                 src={
-                  currentUser?.hasOwnProperty("imageUrl") && currentUser.imageUrl
+                  currentUser?.imageUrl
                     ? currentUser.imageUrl
                     : defaultPP
                 }

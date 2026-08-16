@@ -28,7 +28,10 @@ export default function RoleSelector({ currentRole, onChange }) {
       <p className="text-[#989da4] text-xs font-semibold uppercase tracking-wider">I am a...</p>
 
       <div className="flex gap-2 items-center font-semibold text-xs">
-        {ROLES.map(({ key, label, icon: Icon }) => {
+        {ROLES.map((roleItem) => {
+          const key = roleItem.key;
+          const label = roleItem.label;
+          const Icon = roleItem.icon;
           const isActive = currentRole === key;
           const styles = ROLE_STYLES[key];
           

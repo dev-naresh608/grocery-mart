@@ -143,7 +143,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="profile" element={<Profile />}>
             <Route path="personalinformation" element={<PersonalInfo />}></Route>
-            <Route path="payments" element={<PersonalInfo />}></Route>
+            <Route path="payments" element={<Payments />}></Route>
             <Route path="setting" element={<Setting />}></Route>
           </Route>
         </Route>

@@ -17,7 +17,7 @@ import {
 function JoinUsDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
   const { openModal } = useModal();
 
   useEffect(() => {
@@ -77,7 +77,6 @@ function JoinUsDropdown() {
 
 function Header() {
   const { isAuthenticated: isLogin, user: currentUser } = useSelector((state) => state.auth);
-  const productsList = useSelector((state) => state.product.productsList);
   const cartItems = currentUser?.myCart || [];
   const navigate = useNavigate();
   const { openModal } = useModal();

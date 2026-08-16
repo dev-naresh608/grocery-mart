@@ -2,9 +2,6 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import {
   addProductApi,
   getAllProductsApi,
-  getProductByIdApi,
-  updateProductApi,
-  deleteProductApi,
   getAllStoresApi,
   getStoreProductsApi,
 } from "../services/product.api.service";

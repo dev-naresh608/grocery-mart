@@ -36,7 +36,7 @@ function DriverDashboard() {
             <div className="flex items-center gap-5">
               <img
                 src={
-                  currentUser.hasOwnProperty("imageUrl")
+                  currentUser?.imageUrl
                     ? currentUser.imageUrl
                     : defaultPP
                 }
@@ -45,12 +45,12 @@ function DriverDashboard() {
               />
 
               <div className="font-medium">
-                <h1 className="text-2xl">{currentUser.username}</h1>
+                <h1 className="text-2xl">{currentUser?.username || "Driver"}</h1>
 
                 <p className="text-gray-500 mt-1">Delivery Driver</p>
 
                 <div className="flex gap-3 mt-3">
-                  {currentUser.driver_status ? (
+                  {currentUser?.driver_status ? (
                     <>
                       <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm">
                         Active

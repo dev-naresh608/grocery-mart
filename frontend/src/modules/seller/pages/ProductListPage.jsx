@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateUser } from "@/modules/auth/store/authSlice";
-import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
 import {
@@ -14,7 +13,6 @@ import { SectionCard, SearchBar } from "../../../index";
 
 function ProductListPage() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { user: currentUser } = useSelector((state) => state.auth);
 
   const [isProductsAvail, setIsProductsAvail] = useState(false);

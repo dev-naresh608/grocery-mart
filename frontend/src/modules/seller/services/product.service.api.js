@@ -28,6 +28,7 @@ export const handleProductStockChangeApi = async (
       updates,
     },
   );
+  return data;
 };
 
 // ================ HANDLE OFFER CHANGE ==================
@@ -46,6 +47,7 @@ export const handleProductOfferChangeApi = async (
       updates,
     },
   );
+  return data;
 };
 
 // ================= DELETE PRODUCT =======================

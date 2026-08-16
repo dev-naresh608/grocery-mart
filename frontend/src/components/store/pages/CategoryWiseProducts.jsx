@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
@@ -8,20 +8,11 @@ import { Store } from "lucide-react";
 
 function CategoryWiseProducts() {
   const storeLisst = useSelector((state) => state.product.storeList);
-  const categories = useSelector((state) => state.category.categories);
-  const { user: currentUser } = useSelector((state) => state.auth);
   const { catName } = useParams();
 
-  const [selectedCategoryProduct, setSelectedCategoryProduct] = useState([]);
-
-  useEffect(() => {
-    if (storeLisst?.length > 0) {
-      const stores = storeLisst.filter((r) =>
-        catName.includes(r.store_type),
-      );
-      setSelectedCategoryProduct(stores);
-    }
-  }, [storeLisst, currentUser, catName]);
+  const selectedCategoryProduct = (storeLisst || []).filter(
+    (r) => r.store_type && catName?.includes(r.store_type),
+  );
 
   if (selectedCategoryProduct.length === 0) {
     return (

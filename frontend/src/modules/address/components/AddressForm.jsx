@@ -5,6 +5,15 @@ import { updateUser } from "@/modules/auth/store/authSlice";
 import { handleAddAddressApi, handleUpdateAddressApi } from "../../index";
 import { useModal } from "../../../components";
 
+const initialFormData = {
+  name: "",
+  phone: "",
+  city: "",
+  street: "",
+  state: "",
+  pincode: "",
+};
+
 function AddressForm({ closeBtnAction, userId, setAddress }) {
   const dispatch = useDispatch();
   const { payload, closeModal } = useModal();
@@ -14,20 +23,12 @@ function AddressForm({ closeBtnAction, userId, setAddress }) {
   const actualSetAddress = setAddress || payload?.setAddress;
   const handleClose = closeBtnAction ? () => closeBtnAction((prev) => !prev) : closeModal;
 
-  const initialFormData = {
-    name: "",
-    phone: "",
-    city: "",
-    street: "",
-    state: "",
-    pincode: "",
-  };
-
   // ==== STATE =======
   const [formData, setFormData] = useState(initialFormData);
 
   useEffect(() => {
     if (payload?.address) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         name: payload.address.name || "",
         phone: payload.address.phone || "",

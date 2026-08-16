@@ -9,29 +9,32 @@ function AllProducts() {
   const { restId = null } = useParams();
   const [totalProducts, setTotalProducts] = useState([]);
   const productsList = useSelector((state) => state.product.productsList);
-  const { user: currentUser, isAuthenticated: isLogin } = useSelector(
+  const { isAuthenticated: isLogin } = useSelector(
     (state) => state.auth
   );
 
   useEffect(() => {
+    let isMounted = true;
     const fetchProduct = async () => {
-      if (!restId) return;
-      const { data } = await api.get(`/stores/allproducts/${restId}`);
-      if (!data.success) {
-        toast.error(data.message);
+      if (!restId) {
+        if (isMounted) setTotalProducts(productsList || []);
         return;
       }
-      if (!data.result) {
-        setTotalProducts(null);
+      try {
+        const { data } = await api.get(`/stores/allproducts/${restId}`);
+        if (!isMounted) return;
+        if (!data.success) {
+          toast.error(data.message);
+          return;
+        }
+        setTotalProducts(data.result || []);
+      } catch {
+        if (isMounted) setTotalProducts([]);
       }
-      setTotalProducts(data.result);
     };
     fetchProduct();
-
-    if (!restId) {
-      setTotalProducts(productsList);
-    }
-  }, [currentUser, productsList, restId]);
+    return () => { isMounted = false; };
+  }, [productsList, restId]);
 
   if (!totalProducts || totalProducts.length === 0)
     return (
