@@ -40,10 +40,10 @@ const getUserWithRoleDetails = async (user) => {
       const driver = await Driver.findOne({ user_id: user._id });
       if (driver) {
         roleDetails = {
-          driver_status: driver.driver_status,
-          driver_dob: driver.driver_dob,
-          driver_vehicle_number: driver.driver_vehicle_number,
-          driver_aadhaar_number: driver.driver_aadhaar_number,
+          driver_status: driver.status ?? driver.driver_status ?? true,
+          driver_dob: driver.dob ?? driver.driver_dob,
+          driver_vehicle_number: driver.vehicle_number ?? driver.driver_vehicle_number,
+          driver_aadhaar_number: driver.aadhaar_number ?? driver.driver_aadhaar_number,
         };
       }
     } else if (user.role === "customer") {

@@ -1,7 +1,7 @@
 import { config } from "./configs/config.js";
 
 export async function findAddress(userAddress) {
-  const apiKey = config.OPEN_ROUTER_SERVICE_API_KEY;
+  const apiKey = config.services?.openRouterApiKey || process.env.OPEN_ROUTER_SERVICE_API_KEY;
   try {
     const response = await fetch(
       `https://api.openrouteservice.org/geocode/search?api_key=${apiKey}&text=${encodeURIComponent(userAddress)}`,

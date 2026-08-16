@@ -9,6 +9,7 @@ import orderRouter from "./modules/order/order.routes.js";
 import cartRouter from "./modules/cart/cart.routes.js";
 import addressRouter from "./modules/address/address.routes.js";
 import storeRouter from "./modules/store/store.routes.js";
+import distanceRouter from "./routes/distance.js";
 
 const app = express();
 
@@ -46,5 +47,6 @@ app.use("/api/order", orderRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/address", addressRouter);
 app.use("/api/stores", storeRouter);
+app.use("/api/distance", distanceRouter);
 
 export default app;

@@ -54,7 +54,7 @@ export const addOrderService = async (o) => {
 export const findSingleOrderService = async (orderId) => {
   const order = await Order.findById(orderId);
   if (!order) {
-    throw new Error("Order not found");
+    return null;
   }
 
   const { order_items } = order;

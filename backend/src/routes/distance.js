@@ -1,5 +1,5 @@
 import express from "express";
-const distanceRouter = epxress.Router();
+const distanceRouter = express.Router();
 
 import {
   handleGetDistanceAndEta,
