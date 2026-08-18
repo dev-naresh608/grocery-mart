@@ -33,7 +33,6 @@ function PersonalInfo() {
     lastUsedAddress,
     loading,
     totalOrders,
-    setActiveTab,
     navigate,
   } = usePersonalInfo();
 
@@ -93,7 +92,6 @@ function PersonalInfo() {
           </div>
           <button
             onClick={() => {
-              setActiveTab("orders");
               navigate("/orders");
             }}
             className="flex items-center gap-1 text-xs font-semibold text-[#78716C] hover:text-[#1C1917] transition-colors"
@@ -111,7 +109,6 @@ function PersonalInfo() {
           </h3>
           <button
             onClick={() => {
-              setActiveTab("setting");
               navigate("/profile/setting");
             }}
             className="text-xs font-semibold text-[#EF4444] hover:text-[#B91C1C] transition-colors bg-transparent border-none p-0 cursor-pointer outline-none"
