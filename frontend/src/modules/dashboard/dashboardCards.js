@@ -51,41 +51,39 @@ export const dashboardCards = {
   ],
 
   customer: [
-  {
-    title: "Total Orders",
-    valueKey: "orders",
-    info: "All purchases",
-    icon: Package,
-    bg: "#fff7e8",
-    color: "#f59e0b",
-  },
-
-  {
-    title: "Wishlist",
-    valueKey: "wishlist",
-    info: "Saved products",
-    icon: Heart,
-    bg: "#fdecec",
-    color: "#ef4444",
-  },
-
-  {
-  title: "Reward Points",
-  valueKey: "rewardPoints",
-  info: "Earned from orders",
-  icon: Gift,
-  bg: "#f3e8ff",
-  color: "#9333ea",
-},
-  {
-    title: "Total Savings",
-    valueKey: "savings",
-    info: "Money saved",
-    icon: BadgePercent,
-    bg: "#e8f8f1",
-    color: "#10b981",
-  },
-],
+    {
+      title: "Total Orders",
+      valueKey: "orders",
+      info: "All purchases",
+      icon: Package,
+      bg: "#fff7e8",
+      color: "#f59e0b",
+    },
+    {
+      title: "Wishlist",
+      valueKey: "wishlist",
+      info: "Saved products",
+      icon: Heart,
+      bg: "#fdecec",
+      color: "#ef4444",
+    },
+    {
+      title: "Reward Points",
+      valueKey: "rewardPoints",
+      info: "Earned from orders",
+      icon: Gift,
+      bg: "#f3e8ff",
+      color: "#9333ea",
+    },
+    {
+      title: "Total Savings",
+      valueKey: "savings",
+      info: "Money saved",
+      icon: BadgePercent,
+      bg: "#e8f8f1",
+      color: "#10b981",
+    },
+  ],
 
   driver: [
     {

@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateUser } from "@/modules/auth/store/authSlice";
 import { defaultPP } from "@/assets";
 import { NavLink } from "react-router-dom";
-import { db } from "../../db";
+import { db } from "@/db";
 
 function DriverDashboard() {
   const dispatch = useDispatch();
@@ -233,210 +233,141 @@ function DriverDashboard() {
       {/* // todo: Make Order requiest recieve container that open/close for every */}
       {/* one. */}
 
-{/* ===== NEW ORDER REQUEST MODAL ===== */}
+      {/* ===== NEW ORDER REQUEST MODAL ===== */}
 
-<div className="fixed hidden inset-0 bg-black/40 flex items-center justify-center p-3 z-50">
+      <div className="fixed hidden inset-0 bg-black/40 flex items-center justify-center p-3 z-50">
+        {/* ===== MODAL ===== */}
 
-  {/* ===== MODAL ===== */}
+        <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-4 sm:p-5">
+          {/* ===== TOP ===== */}
 
-  <div className="bg-white w-full max-w-lg rounded-3xl shadow-2xl p-4 sm:p-5">
+          <div className="flex items-start justify-between gap-4 border-b pb-3">
+            {/* ===== LEFT ===== */}
 
-    {/* ===== TOP ===== */}
+            <div>
+              <h1 className="text-xl sm:text-2xl font-bold text-green-600">
+                🚚 New Order Request
+              </h1>
 
-    <div className="flex items-start justify-between gap-4 border-b pb-3">
+              <p className="text-sm text-gray-500 mt-1">Accept before timeout</p>
+            </div>
 
-      {/* ===== LEFT ===== */}
+            {/* ===== RIGHT ===== */}
 
-      <div>
+            <div className="text-right min-w-fit">
+              <p className="text-red-500 font-bold text-lg">01:54</p>
 
-        <h1 className="text-xl sm:text-2xl font-bold text-green-600">
-          🚚 New Order Request
-        </h1>
+              {/* ===== PROGRESS ===== */}
 
-        <p className="text-sm text-gray-500 mt-1">
-          Accept before timeout
-        </p>
+              <div className="w-20 bg-gray-200 h-1.5 rounded-full mt-2 overflow-hidden ml-auto">
+                <div className="bg-red-500 h-1.5 w-[70%] rounded-full"></div>
+              </div>
+            </div>
+          </div>
 
-      </div>
+          {/* ===== ORDER INFO ===== */}
 
-      {/* ===== RIGHT ===== */}
+          <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            {/* ===== LEFT ===== */}
 
-      <div className="text-right min-w-fit">
+            <div>
+              <h2 className="text-lg sm:text-xl font-bold">Order #1452</h2>
 
-        <p className="text-red-500 font-bold text-lg">
-          01:54
-        </p>
+              <p className="text-sm text-gray-500 mt-1">Pizza • Burger • Coke</p>
+            </div>
 
-        {/* ===== PROGRESS ===== */}
+            {/* ===== RIGHT ===== */}
 
-        <div className="w-20 bg-gray-200 h-1.5 rounded-full mt-2 overflow-hidden ml-auto">
+            <div className="sm:text-right">
+              <h2 className="text-xl font-bold text-green-600">₹450</h2>
 
-          <div className="bg-red-500 h-1.5 w-[70%] rounded-full"></div>
+              <span className="inline-block mt-1 bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
+                Paid Online
+              </span>
+            </div>
+          </div>
 
+          {/* ===== LOCATIONS ===== */}
+
+          <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {/* ===== PICKUP ===== */}
+
+            <div className="bg-orange-50 rounded-2xl p-3">
+              <p className="text-xs text-gray-500">Pickup</p>
+
+              <h3 className="font-semibold text-sm sm:text-base mt-1">
+                Domino's Pizza, Nikol
+              </h3>
+            </div>
+
+            {/* ===== DELIVERY ===== */}
+
+            <div className="bg-blue-50 rounded-2xl p-3">
+              <p className="text-xs text-gray-500">Deliver To</p>
+
+              <h3 className="font-semibold text-sm sm:text-base mt-1">
+                Chandkheda, Ahmedabad
+              </h3>
+            </div>
+          </div>
+
+          {/* ===== STATS ===== */}
+
+          <div className="grid grid-cols-3 gap-3 mt-4">
+            {/* ===== DISTANCE ===== */}
+
+            <div className="bg-gray-100 rounded-2xl p-3 text-center">
+              <p className="text-xs text-gray-500">Distance</p>
+
+              <h3 className="font-bold mt-1 text-sm sm:text-base">4.5 KM</h3>
+            </div>
+
+            {/* ===== EARNING ===== */}
+
+            <div className="bg-gray-100 rounded-2xl p-3 text-center">
+              <p className="text-xs text-gray-500">Earnings</p>
+
+              <h3 className="font-bold text-green-600 mt-1 text-sm sm:text-base">
+                ₹85
+              </h3>
+            </div>
+
+            {/* ===== ETA ===== */}
+
+            <div className="bg-gray-100 rounded-2xl p-3 text-center">
+              <p className="text-xs text-gray-500">ETA</p>
+
+              <h3 className="font-bold mt-1 text-sm sm:text-base">18 Min</h3>
+            </div>
+          </div>
+
+          {/* ===== NOTE ===== */}
+
+          <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-2xl p-3">
+            <p className="text-xs font-medium text-yellow-700">Customer Note</p>
+
+            <p className="text-sm text-gray-700 mt-1">
+              Please call before arriving.
+            </p>
+          </div>
+
+          {/* ===== BUTTONS ===== */}
+
+          <div className="flex gap-3 mt-5">
+            {/* ===== REJECT ===== */}
+
+            <button className="flex-1 bg-red-500 hover:bg-red-600 active:scale-95 text-white font-semibold py-3 rounded-2xl transition-all duration-300">
+              Reject
+            </button>
+
+            {/* ===== ACCEPT ===== */}
+
+            <button className="flex-1 bg-green-500 hover:bg-green-600 active:scale-95 text-white font-semibold py-3 rounded-2xl transition-all duration-300">
+              Accept
+            </button>
+          </div>
         </div>
-
       </div>
-
-    </div>
-
-    {/* ===== ORDER INFO ===== */}
-
-    <div className="mt-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-
-      {/* ===== LEFT ===== */}
-
-      <div>
-
-        <h2 className="text-lg sm:text-xl font-bold">
-          Order #1452
-        </h2>
-
-        <p className="text-sm text-gray-500 mt-1">
-          Pizza • Burger • Coke
-        </p>
-
-      </div>
-
-      {/* ===== RIGHT ===== */}
-
-      <div className="sm:text-right">
-
-        <h2 className="text-xl font-bold text-green-600">
-          ₹450
-        </h2>
-
-        <span className="inline-block mt-1 bg-green-100 text-green-700 text-xs px-3 py-1 rounded-full">
-
-          Paid Online
-
-        </span>
-
-      </div>
-
-    </div>
-
-    {/* ===== LOCATIONS ===== */}
-
-    <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
-
-      {/* ===== PICKUP ===== */}
-
-      <div className="bg-orange-50 rounded-2xl p-3">
-
-        <p className="text-xs text-gray-500">
-          Pickup
-        </p>
-
-        <h3 className="font-semibold text-sm sm:text-base mt-1">
-          Domino's Pizza, Nikol
-        </h3>
-
-      </div>
-
-      {/* ===== DELIVERY ===== */}
-
-      <div className="bg-blue-50 rounded-2xl p-3">
-
-        <p className="text-xs text-gray-500">
-          Deliver To
-        </p>
-
-        <h3 className="font-semibold text-sm sm:text-base mt-1">
-          Chandkheda, Ahmedabad
-        </h3>
-
-      </div>
-
-    </div>
-
-    {/* ===== STATS ===== */}
-
-    <div className="grid grid-cols-3 gap-3 mt-4">
-
-      {/* ===== DISTANCE ===== */}
-
-      <div className="bg-gray-100 rounded-2xl p-3 text-center">
-
-        <p className="text-xs text-gray-500">
-          Distance
-        </p>
-
-        <h3 className="font-bold mt-1 text-sm sm:text-base">
-          4.5 KM
-        </h3>
-
-      </div>
-
-      {/* ===== EARNING ===== */}
-
-      <div className="bg-gray-100 rounded-2xl p-3 text-center">
-
-        <p className="text-xs text-gray-500">
-          Earnings
-        </p>
-
-        <h3 className="font-bold text-green-600 mt-1 text-sm sm:text-base">
-          ₹85
-        </h3>
-
-      </div>
-
-      {/* ===== ETA ===== */}
-
-      <div className="bg-gray-100 rounded-2xl p-3 text-center">
-
-        <p className="text-xs text-gray-500">
-          ETA
-        </p>
-
-        <h3 className="font-bold mt-1 text-sm sm:text-base">
-          18 Min
-        </h3>
-
-      </div>
-
-    </div>
-
-    {/* ===== NOTE ===== */}
-
-    <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-2xl p-3">
-
-      <p className="text-xs font-medium text-yellow-700">
-        Customer Note
-      </p>
-
-      <p className="text-sm text-gray-700 mt-1">
-        Please call before arriving.
-      </p>
-
-    </div>
-
-    {/* ===== BUTTONS ===== */}
-
-    <div className="flex gap-3 mt-5">
-
-      {/* ===== REJECT ===== */}
-
-      <button className="flex-1 bg-red-500 hover:bg-red-600 active:scale-95 text-white font-semibold py-3 rounded-2xl transition-all duration-300">
-
-        Reject
-
-      </button>
-
-      {/* ===== ACCEPT ===== */}
-
-      <button className="flex-1 bg-green-500 hover:bg-green-600 active:scale-95 text-white font-semibold py-3 rounded-2xl transition-all duration-300">
-
-        Accept
-
-      </button>
-
-    </div>
-
-  </div>
-
-</div>
-
     </>
   );
 }

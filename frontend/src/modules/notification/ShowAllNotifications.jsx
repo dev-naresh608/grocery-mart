@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { GradientButton } from "../../components";
+import { GradientButton } from "@/components";
 
 function ShowAllNotifications() {
   const { user: currentUser } = useSelector((state) => state.auth);

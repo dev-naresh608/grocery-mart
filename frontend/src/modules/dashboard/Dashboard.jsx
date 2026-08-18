@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import { SellerDashboard, CustomerDashboard, DriverDashboard } from "..";
+import CustomerDashboard from "./CustomerDashboard.jsx";
+import SellerDashboard from "./SellerDashboard.jsx";
+import DriverDashboard from "./DriverDashboard.jsx";
 import { useNavigate } from "react-router-dom";
 
 function Dashboard() {

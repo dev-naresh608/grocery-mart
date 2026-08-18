@@ -3,6 +3,8 @@ import { Hero, Footer, BlogSection } from "../../components";
 
 import { bottom_banner } from "@/assets";
 
+import Category from "./Category";
+
 import { useSelector } from "react-redux";
 import { leftPanelItems } from "@/constants/navigation";
 import { Menu, X, Truck, Leaf, Coins, ShieldCheck } from "lucide-react";
