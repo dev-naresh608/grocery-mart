@@ -79,6 +79,7 @@ function JoinUsDropdown() {
 
 function Header() {
   const [activeDropdown, setActiveDropdown] = useState(null);
+  const rightNavRef = useRef(null);
   const { isAuthenticated: isLogin, user: currentUser } = useSelector((state) => state.auth);
   const cartItems = currentUser?.myCart || [];
   const navigate = useNavigate();
@@ -91,6 +92,19 @@ function Header() {
   const [isMobileJoinOpen, setIsMobileJoinOpen] = useState(false);
 
   const cartCount = cartItems?.length || 0;
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (rightNavRef.current && !rightNavRef.current.contains(e.target)) {
+        setActiveDropdown(null);
+      }
+    }
+
+    if (activeDropdown) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [activeDropdown]);
 
   useEffect(() => {
     setSearchValue(searchValFromUrl);
@@ -339,7 +353,7 @@ function Header() {
       </div>
 
       {/* right nav */}
-      <div className="flex gap-3 items-center">
+      <div ref={rightNavRef} className="flex gap-3 items-center">
         {/* Notification */}
         <NotificationToggle 
           isOpen={activeDropdown === "notification"}

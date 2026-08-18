@@ -4,6 +4,7 @@ import Product from "../product/product.model.js";
 import Seller from "../seller/seller.model.js";
 
 import { addOrderService, findSingleOrderService } from "./order.service.js";
+import { createNotificationService } from "../notification/notification.service.js";
 
 export const handleGetAllOrders = async (req, res) => {
   try {
@@ -130,8 +131,33 @@ export const handleUpdateOrderById = async (req, res) => {
   try {
     const { orderId } = req.params;
     const updates = req.body;
-    const updatedOrder = await Order.findByIdAndUpdate(orderId, updates, { new: true });
-    return res.json({ success: true, message: "Updated successfully", order: updatedOrder });
+    const updatedOrder = await Order.findByIdAndUpdate(orderId, updates, {
+      new: true,
+    });
+
+    if (updatedOrder && updates.order_status && updatedOrder.customer_id) {
+      const statusTitle =
+        updates.order_status === "delivered"
+          ? "Order Delivered!"
+          : updates.order_status === "cancelled"
+          ? "Order Cancelled"
+          : `Order Status: ${updates.order_status.toUpperCase()}`;
+
+      await createNotificationService({
+        recipient: updatedOrder.customer_id,
+        title: statusTitle,
+        message: `Your order #${updatedOrder._id.toString().slice(-6)} is now ${updates.order_status}.`,
+        type: updates.order_status === "delivered" ? "delivery" : "order",
+        link: `/orders/${updatedOrder._id}`,
+        metadata: { orderId: updatedOrder._id, status: updates.order_status },
+      });
+    }
+
+    return res.json({
+      success: true,
+      message: "Updated successfully",
+      order: updatedOrder,
+    });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }

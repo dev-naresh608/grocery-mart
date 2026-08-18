@@ -1,146 +1,118 @@
-import React, { useState } from "react";
+import React from "react";
 import { NavLink } from "react-router-dom";
-import { useSelector, useDispatch } from "react-redux";
-import { updateUser } from "@/modules/auth/store/authSlice";
-import { CheckCircle, MailCheck, Mail } from "lucide-react";
-import { MiniProfileContainer } from "@/modules/profile";
-import { db } from "@/db";
+import { Bell, CheckCheck, X, Sparkles, ArrowRight } from "lucide-react";
+import { useNotificationToggle } from "../hooks/useNotificationToggle";
+import NotificationCard from "./NotificationCard";
 
 function NotificationToggle({ isOpen, onToggle, onClose }) {
-  const dispatch = useDispatch();
-  const { user: currentUser } = useSelector((state) => state.auth);
-  const isAllNotificationsRead = currentUser?.myNotifications?.every(
-    (n) => n.isNotificationIsRead
-  ) ?? true;
-
-  const handleNotificationIsRead = async (notificationID) => {
-    if (!currentUser) return;
-    const allNotifications = currentUser.myNotifications || [];
-    const updatedNotifications = allNotifications.map((n) =>
-      n.notificationID === notificationID
-        ? { ...n, isNotificationIsRead: true }
-        : n
-    );
-    dispatch(updateUser({ myNotifications: updatedNotifications }));
-    if (currentUser.id) {
-      try {
-        const user = await db.localUserData.get(currentUser.id);
-        if (user) {
-          user.myNotifications = updatedNotifications;
-          await db.localUserData.put(user);
-        }
-      } catch (err) {
-        console.error("Failed to update notification status in DB:", err);
-      }
-    }
-  };
+  const {
+    unreadNotifications,
+    unreadCount,
+    loading,
+    handleMarkAsRead,
+    handleMarkAllAsRead,
+  } = useNotificationToggle(isOpen);
 
   return (
-    <div className="relative group">
-      <div>
-        <button
-          onClick={onToggle}
-        >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            height="27px"
-            viewBox="0 -960 960 960"
-            width="27px"
-            fill="#15803D"
-            className="absolute top-1 right-0"
-          >
-            <path d="M180-204.62v-59.99h72.31v-298.47q0-80.69 49.81-142.69 49.8-62 127.88-79.31V-810q0-20.83 14.57-35.42Q459.14-860 479.95-860q20.82 0 35.43 14.58Q530-830.83 530-810v24.92q78.08 17.31 127.88 79.31 49.81 62 49.81 142.69v298.47H780v59.99H180Zm300-293.07Zm-.07 405.38q-29.85 0-51.04-21.24-21.2-21.24-21.2-51.07h144.62q0 29.93-21.26 51.12-21.26 21.19-51.12 21.19Zm-167.62-172.3h335.38v-298.47q0-69.46-49.11-118.57-49.12-49.12-118.58-49.12-69.46 0-118.58 49.12-49.11 49.11-49.11 118.57v298.47Z" />
-          </svg>
-        </button>
-        {isAllNotificationsRead && (
-          <span className="absolute group-hover:animate-bounce top-1 right-0 h-1 w-1 rounded-full bg-red-600"></span>
-        )}
-      </div>
-      {/* Go to the Notification section */}
-      <div
-        className={`absolute shadow-md top-8 right-0 bg-white rounded-xl min-w-[230px] sm:w-[30vw] md:w-[35vw] pb-2 z-[100] ${isOpen ? "block" : "hidden"}`}
+    <div className="relative">
+      {/* Bell Button */}
+      <button
+        type="button"
+        onClick={onToggle}
+        className="relative p-2 rounded-xl text-gray-700 hover:text-green-700 hover:bg-gray-100 transition-colors cursor-pointer outline-none border-none bg-transparent flex items-center justify-center"
+        aria-label="Notifications"
       >
-        <div className="flex gap-2 justify-between border-b">
-          {/* Mini Profile Container */}
-          <div className="p-2">
-            <MiniProfileContainer />
-          </div>
-          <div className="absolute right-1 top-0">
-            <button
-              onClick={onClose}
-            >
-              ✘
-            </button>
-          </div>
-        </div>
-        <div>
-          {/* notifications  */}
-          {isAllNotificationsRead ? (
-            <>
-              <div className="flex-1 min-h-[230px]">
-                {currentUser?.myNotifications
-                  ?.filter((n) => !n?.isNotificationIsRead)
-                  .map((n, i) => {
-                    return (
-                      <div key={i} className=" h-full p-2">
-                        <div className="min-h-20 p-1 flex flex-col justify-between border rounded-md">
-                          <div
-                            className={`text-sm ${!n.isNotificationIsRead ? "text-gray-600" : "text-gray-400"}`}
-                          >
-                            <p>{n.message}</p>
-                          </div>
+        <Bell className="w-5 h-5 text-gray-700 hover:text-green-700 transition-colors" />
 
-                          <div className="text-gray-500 font-semibold hover:text-gray-600 flex justify-end items-end">
-                            <button
-                              onClick={() =>
-                                handleNotificationIsRead(n.notificationID)
-                              }
-                              className="flex hover:fill-gray-600  items-center text-sm gap-1"
-                            >
-                              <Mail size={17} />
-                              Mark As read
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    );
-                  })}
-              </div>
-            </>
-          ) : (
-            <>
-              <div className=" min-h-[230px] flex flex-col items-center">
-                <div className="m-auto text-xs text-gray-800/80 rounded-2xl px-2 py-1 flex items-center w-max gap-2 ">
-                  <CheckCircle size={12} className="text-green-600" />
-                  <span>All caught up!</span>
-                </div>
-              </div>
-            </>
-          )}
+        {unreadCount > 0 && (
+          <span className="absolute top-1 right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-red-600 rounded-full ring-2 ring-white animate-in zoom-in-50">
+            {unreadCount > 99 ? "99+" : unreadCount}
+          </span>
+        )}
+      </button>
 
-          {/* Show All Notifications History Button */}
+      {/* Dropdown Panel */}
+      {isOpen && (
+        <div className="absolute right-0 mt-2 w-[90vw] sm:w-[380px] max-w-[420px] bg-white rounded-2xl shadow-xl border border-gray-100 z-50 overflow-hidden animate-in fade-in-0 zoom-in-95 duration-150 font-sans">
+          {/* Header */}
+          <div className="flex items-center justify-between px-4 py-3.5 border-b border-gray-100 bg-gray-50/70">
+            <div className="flex items-center gap-2">
+              <h3 className="text-sm font-bold text-gray-900">Notifications</h3>
+              {unreadCount > 0 && (
+                <span className="text-[11px] font-semibold text-green-800 bg-green-100 px-2 py-0.5 rounded-full">
+                  {unreadCount} new
+                </span>
+              )}
+            </div>
 
-          <div className="flex justify-center w-full pt-2">
-            <NavLink
-              onClick={onClose}
-              to="allnotifications"
-              className="group/btn overflow-hidden w-max flex items-center gap-2 text-sm bg-gray-200 px-3 py-1 rounded-2xl"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height="20px"
-                viewBox="0 -960 960 960"
-                width="20px"
-                fill="black"
-                className="transform transition-transform duration-700 ease-in-out group-hover/btn:rotate-[360deg] pointer-events-none w-5 h-5 block"
+            <div className="flex items-center gap-1.5">
+              {unreadCount > 0 && (
+                <button
+                  type="button"
+                  onClick={handleMarkAllAsRead}
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-green-700 hover:text-green-800 hover:bg-green-50 px-2 py-1 rounded-lg transition-colors border-none bg-transparent cursor-pointer"
+                  title="Mark all as read"
+                >
+                  <CheckCheck size={13} />
+                  <span>Mark all read</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={onClose}
+                className="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-200/60 rounded-lg transition-colors border-none bg-transparent cursor-pointer"
+                aria-label="Close"
               >
-                <path d="M479.23-140q-129.92 0-226.46-85.54Q156.23-311.08 141.62-440h61.23Q218-336.38 296.12-268.19 374.23-200 479.23-200q117 0 198.5-81.5t81.5-198.5q0-117-81.5-198.5T479.23-760q-65.54 0-122.84 29.12-57.31 29.11-98.7 80.11h104.62v60H159.23v-203.08h60v94.77q48.69-57.46 116.62-89.19Q403.77-820 479.23-820q70.77 0 132.62 26.77 61.84 26.77 107.84 72.77t72.77 107.85q26.77 61.84 26.77 132.61 0 70.77-26.77 132.61-26.77 61.85-72.77 107.85-46 46-107.84 72.77Q550-140 479.23-140Zm120.08-178.92L450.39-467.85V-680h59.99v187.85l131.08 131.07-42.15 42.16Z" />
-              </svg>
-              <span>View All Activity</span>
+                <X size={15} />
+              </button>
+            </div>
+          </div>
+
+          {/* List Content */}
+          <div className="max-h-[360px] overflow-y-auto p-3 space-y-2.5">
+            {loading ? (
+              <div className="py-10 text-center text-xs text-gray-400 space-y-2">
+                <div className="w-5 h-5 border-2 border-green-600 border-t-transparent rounded-full animate-spin mx-auto" />
+                <p>Loading notifications...</p>
+              </div>
+            ) : unreadNotifications.length > 0 ? (
+              unreadNotifications.map((notification) => (
+                <NotificationCard
+                  key={notification._id || notification.id}
+                  notification={notification}
+                  onMarkAsRead={handleMarkAsRead}
+                  onCloseDropdown={onClose}
+                />
+              ))
+            ) : (
+              <div className="py-10 px-4 text-center">
+                <div className="w-12 h-12 bg-green-50 rounded-2xl flex items-center justify-center mx-auto mb-2.5 text-green-600">
+                  <Sparkles size={22} />
+                </div>
+                <h4 className="text-sm font-semibold text-gray-800">
+                  All caught up!
+                </h4>
+                <p className="text-xs text-gray-500 mt-1 max-w-[240px] mx-auto">
+                  You don't have any unread notifications right now.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Footer */}
+          <div className="p-2.5 border-t border-gray-100 bg-gray-50/50">
+            <NavLink
+              to="/allnotifications"
+              onClick={onClose}
+              className="flex items-center justify-center gap-1.5 w-full py-2 px-3 text-xs font-semibold text-gray-700 hover:text-green-800 hover:bg-white rounded-xl border border-transparent hover:border-gray-200 transition-all shadow-none hover:shadow-sm"
+            >
+              <span>View All Notifications & Activity</span>
+              <ArrowRight size={13} />
             </NavLink>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

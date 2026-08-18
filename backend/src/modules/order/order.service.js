@@ -2,6 +2,7 @@ import Order from "./order.model.js";
 import Product from "../product/product.model.js";
 import Seller from "../seller/seller.model.js";
 import Cart from "../cart/cart.model.js";
+import { createNotificationService } from "../notification/notification.service.js";
 
 export const addOrderService = async (o) => {
   try {
@@ -37,6 +38,16 @@ export const addOrderService = async (o) => {
     // Clear user cart in DB after successful order placement
     if (o.customerId) {
       await Cart.deleteMany({ customer_id: o.customerId });
+      
+      // Create notification for customer
+      await createNotificationService({
+        recipient: o.customerId,
+        title: "Order Placed Successfully",
+        message: `Your order #${order._id.toString().slice(-6)} has been placed with ${o.store_name || "the store"}. Total: ₹${o.priceDetails?.totalPrice || order.price_detail?.totalPrice || 0}.`,
+        type: "order",
+        link: `/orders/${order._id}`,
+        metadata: { orderId: order._id, status: order.order_status },
+      });
     }
 
     return {
