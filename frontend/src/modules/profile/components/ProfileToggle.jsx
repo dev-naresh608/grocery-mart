@@ -3,16 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "@/modules/auth/store/authThunk";
 import { defaultPP } from "@/assets";
-import { MiniProfileContainer, useModal, MODAL_TYPES } from "..";
+import MiniProfileContainer from "./MiniProfileContainer";
+import { useModal, MODAL_TYPES } from "@/components";
 import { Home, LogOut, User } from "lucide-react";
 
-function ProfileToggle() {
+function ProfileToggle({ isOpen, onToggle, onClose }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { openModal } = useModal();
   const { user: currentUser } = useSelector((state) => state.auth);
-
-  const [isProfileClicked, setIsProfileClicked] = useState(false);
 
   // Base shared styles for navigation links
   const commonStyle =
@@ -23,18 +22,18 @@ function ProfileToggle() {
       label: "Home",
       to: "dashboard",
       icon: <Home size={17} strokeWidth={2.5} />,
-      onClick: () => setIsProfileClicked(false),
+      onClick: onClose,
     },
     {
       label: "Profile",
       to: "profile",
       icon: <User size={17} strokeWidth={2.5} />,
-      onClick: () => setIsProfileClicked(false),
+      onClick: onClose,
     },
   ];
 
   const handleLogout = () => {
-    setIsProfileClicked(false);
+    onClose();
     openModal(MODAL_TYPES.CONFIRM, {
       title: "Logout Confirmation",
       message: "Are you sure you want to log out of your account?",
@@ -52,9 +51,7 @@ function ProfileToggle() {
     <>
       <div className="relative z-[100]">
         <button
-          onClick={() => {
-            setIsProfileClicked((prev) => !prev);
-          }}
+          onClick={onToggle}
           className="block"
         >
           <div className="flex items-center justify-center overflow-hidden rounded-full h-7 w-7 border border-green-800">
@@ -70,14 +67,12 @@ function ProfileToggle() {
         {/* Dropdown Menu Container */}
         <div
           className={`absolute right-0 min-w-[200px] md:w-[20vw] lg:w-[20vw] shadow-md bg-white rounded-xl z-50 ${
-            isProfileClicked ? "block" : "hidden"
+            isOpen ? "block" : "hidden"
           }`}
         >
           <div className="absolute right-2 top-2">
             <button
-              onClick={() => {
-                setIsProfileClicked(false);
-              }}
+              onClick={onClose}
               className="text-gray-400 hover:text-gray-600 font-bold"
             >
               ✘

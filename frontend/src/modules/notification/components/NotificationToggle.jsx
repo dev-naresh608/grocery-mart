@@ -3,13 +3,12 @@ import { NavLink } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { updateUser } from "@/modules/auth/store/authSlice";
 import { CheckCircle, MailCheck, Mail } from "lucide-react";
-import { MiniProfileContainer } from "..";
-import { db } from "../../db";
+import { MiniProfileContainer } from "@/modules/profile";
+import { db } from "@/db";
 
-function NotificationToggle() {
+function NotificationToggle({ isOpen, onToggle, onClose }) {
   const dispatch = useDispatch();
   const { user: currentUser } = useSelector((state) => state.auth);
-  const [isNotificationClicked, setIsNotificationClicked] = useState(false);
   const isAllNotificationsRead = currentUser?.myNotifications?.every(
     (n) => n.isNotificationIsRead
   ) ?? true;
@@ -40,9 +39,7 @@ function NotificationToggle() {
     <div className="relative group">
       <div>
         <button
-          onClick={() => {
-            setIsNotificationClicked((prev) => !prev);
-          }}
+          onClick={onToggle}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -61,7 +58,7 @@ function NotificationToggle() {
       </div>
       {/* Go to the Notification section */}
       <div
-        className={`absolute shadow-md top-8 right-0 bg-white rounded-xl min-w-[230px] sm:w-[30vw] md:w-[35vw] pb-2 z-[100] ${isNotificationClicked ? "block" : "hidden"}`}
+        className={`absolute shadow-md top-8 right-0 bg-white rounded-xl min-w-[230px] sm:w-[30vw] md:w-[35vw] pb-2 z-[100] ${isOpen ? "block" : "hidden"}`}
       >
         <div className="flex gap-2 justify-between border-b">
           {/* Mini Profile Container */}
@@ -70,9 +67,7 @@ function NotificationToggle() {
           </div>
           <div className="absolute right-1 top-0">
             <button
-              onClick={() => {
-                setIsNotificationClicked(false);
-              }}
+              onClick={onClose}
             >
               ✘
             </button>
@@ -127,9 +122,7 @@ function NotificationToggle() {
 
           <div className="flex justify-center w-full pt-2">
             <NavLink
-              onClick={() => {
-                setIsNotificationClicked(false);
-              }}
+              onClick={onClose}
               to="allnotifications"
               className="group/btn overflow-hidden w-max flex items-center gap-2 text-sm bg-gray-200 px-3 py-1 rounded-2xl"
             >

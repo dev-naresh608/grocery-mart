@@ -5,7 +5,8 @@ import { defaultPP } from "@/assets";
 import { NavLink } from "react-router-dom";
 import DashboardCards from "./DashboardCards.jsx";
 import { dashboardCards } from "./dashboardCards.js";
-import { MiniProfileContainer, useModal, MODAL_TYPES } from "@/components";
+import { MiniProfileContainer } from "@/modules/profile";
+import { useModal, MODAL_TYPES } from "@/components";
 import { ChevronRight, MapPin, Phone } from "lucide-react";
 import { handleGetAddressApi } from "@/modules/address/services/address.service.api";
 

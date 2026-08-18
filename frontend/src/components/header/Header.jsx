@@ -3,7 +3,9 @@ import { Link, NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { createPortal } from "react-dom";
 import { useSelector } from "react-redux";
 import { novexa_logo } from "@/assets";
-import { ProfileToggle, NotificationToggle, useModal, MODAL_TYPES } from "../../index";
+import { ProfileToggle } from "@/modules/profile";
+import { NotificationToggle } from "@/modules/notification";
+import { useModal, MODAL_TYPES } from "@/components";
 import {
   Search,
   ShoppingBag,
@@ -76,6 +78,7 @@ function JoinUsDropdown() {
 }
 
 function Header() {
+  const [activeDropdown, setActiveDropdown] = useState(null);
   const { isAuthenticated: isLogin, user: currentUser } = useSelector((state) => state.auth);
   const cartItems = currentUser?.myCart || [];
   const navigate = useNavigate();
@@ -338,9 +341,17 @@ function Header() {
       {/* right nav */}
       <div className="flex gap-3 items-center">
         {/* Notification */}
-        <NotificationToggle />
+        <NotificationToggle 
+          isOpen={activeDropdown === "notification"}
+          onToggle={() => setActiveDropdown(prev => prev === "notification" ? null : "notification")}
+          onClose={() => setActiveDropdown(null)}
+        />
         {/* profile */}
-        <ProfileToggle />
+        <ProfileToggle 
+          isOpen={activeDropdown === "profile"}
+          onToggle={() => setActiveDropdown(prev => prev === "profile" ? null : "profile")}
+          onClose={() => setActiveDropdown(null)}
+        />
       </div>
     </header>
   );
