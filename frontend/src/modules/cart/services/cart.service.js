@@ -80,7 +80,7 @@ export const onCartPlaceOrder = async (
     toast.success(response.message || "Order placed successfully");
 
     setTimeout(() => {
-      navigate("/orders");
+      navigate("/active-orders");
     }, 800);
   } catch (error) {
     toast.error("Failed to place order");

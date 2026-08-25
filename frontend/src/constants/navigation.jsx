@@ -53,7 +53,7 @@ export const leftPanelItems = [
     showToDriver: false,
   },
   {
-    children: "Wishlist",
+    children: "Favourite Stores",
     to: "/wishlist",
     svg: <Heart size={18} />,
     showToCustomer: true,

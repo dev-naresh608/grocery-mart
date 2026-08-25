@@ -3,7 +3,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { updateUser } from "@/modules/auth/store/authSlice";
 import { defaultPP } from "@/assets";
 import { NavLink } from "react-router-dom";
-import { db } from "@/db";
+import { toast } from "react-toastify";
+import { getActiveOrdersApi } from "../order/active-orders/services/activeOrders.api";
 
 function DriverDashboard() {
   const dispatch = useDispatch();
@@ -11,19 +12,28 @@ function DriverDashboard() {
 
   const handleDriveStatus = async () => {
     if (!currentUser) return;
-    const newStatus = !currentUser.driver_status;
-    dispatch(updateUser({ driver_status: newStatus }));
-    if (currentUser.id) {
+
+    // Prevent deactivating status if driver has an active ongoing trip
+    if (currentUser.driver_status) {
+      const driverId = currentUser._id || currentUser.id;
       try {
-        const user = await db.localUserData.get(currentUser.id);
-        if (user) {
-          user.driver_status = newStatus;
-          await db.localUserData.put(user);
+        const data = await getActiveOrdersApi(driverId, "driver");
+        const activeTrips = data?.activeOrders || [];
+        if (currentUser.is_busy || activeTrips.length > 0) {
+          toast.error("⚠️ Cannot go offline while you have an active delivery trip in progress!");
+          return;
         }
       } catch (err) {
-        console.error("Failed updating driver_status in IndexedDB:", err);
+        if (currentUser.is_busy) {
+          toast.error("⚠️ Cannot go offline while you have an active delivery trip in progress!");
+          return;
+        }
       }
     }
+
+    const newStatus = !currentUser.driver_status;
+    dispatch(updateUser({ driver_status: newStatus }));
+    toast.info(`Status updated to ${newStatus ? "Active" : "Offline"}`);
   };
 
   return (
@@ -82,7 +92,8 @@ function DriverDashboard() {
                   className="relative inline-flex items-center cursor-pointer"
                 >
                   <input
-                    defaultChecked={currentUser.driver_status}
+                    checked={Boolean(currentUser?.driver_status)}
+                    readOnly
                     type="checkbox"
                     className="sr-only peer"
                   />
@@ -142,7 +153,7 @@ function DriverDashboard() {
                 <h4 className="font-medium">
                   XXXX XXXX{" "}
                   <span>
-                    {currentUser.driver_aadhaar_number?.slice(8) || "3610"}
+                    {String(currentUser?.driver_aadhaar_number || "").slice(8) || "3610"}
                   </span>
                 </h4>
               </div>

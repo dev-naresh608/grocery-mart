@@ -142,7 +142,7 @@ export default function Signup() {
 
         <AuthFooterLink
           text="Already have an account?"
-          linkText="Sign in"
+          linkText="Log in"
           onClick={() => openModal(MODAL_TYPES.LOGIN)}
         />
       </form>

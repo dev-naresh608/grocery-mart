@@ -7,7 +7,7 @@ import { updateUser } from "@/modules/auth/store/authSlice";
 import { setStoreId } from "@/modules/cart/store/cartSlice";
 
 import { useParams } from "react-router-dom";
-import { Heart, ShoppingCartIcon } from "lucide-react";
+import { ShoppingCartIcon } from "lucide-react";
 import api from "../../../../configs/api";
 import { addToCartApi, updateCartQtyApi, removeFromCartApi } from "../../../../modules/cart/services/cart.api";
 
@@ -153,47 +153,9 @@ function ProductBuyCard({
     }
   };
 
-  // ============== WISHLIST =======================
-  const onAddToWishlist = async (itemId) => {
-    if (!isLogin) {
-      return toast.error("Login To Add Items in Wishlist");
-    }
-
-    const { data } = await api.get(`/cart/${itemId}`);
-
-    if (!data.success) {
-      return toast.error(data.message);
-    }
-
-    const productToAdd = data.product;
-    const user = currentUser || {};
-    const myWishlist = user.myWishlist || [];
-
-    if (myWishlist.length > 0) {
-      let isProductAlreadyExist = myWishlist.some((p) => p._id === itemId);
-      if (!isProductAlreadyExist) {
-        dispatch(updateUser({ myWishlist: [...myWishlist, productToAdd] }));
-      } else {
-        const remainingProducts = myWishlist.filter(
-          (p) => p._id !== itemId,
-        );
-        dispatch(updateUser({ myWishlist: remainingProducts }));
-        return toast.success("item removed successfully");
-      }
-    } else {
-      dispatch(updateUser({ myWishlist: [productToAdd] }));
-    }
-
-    toast.success("added in wishlist");
-  };
-
   // to see currentQty.
   const currentProduct = currentUser?.myCart?.find((p) => p._id === id);
   const currentQty = currentProduct?.product_qty || 0;
-
-  const isItemInWishlist = Boolean(
-    currentUser?.myWishlist?.some((p) => p.product_name === name)
-  );
 
   // Offer calculation
   const offerPercent = price && offer_price ? Math.round(((price - offer_price) / price) * 100) : 0;
@@ -202,26 +164,6 @@ function ProductBuyCard({
   return (
     <>
       <div className="relative bg-white border rounded-2xl shadow-md p-2 group overflow-hidden">
-        {currentUserRole === "customer" && isLogin && (
-          <div
-            className={`${isItemInWishlist ? "bg-[#f3d8d9]" : ""} z-[50] transition-all w-max h-max absolute rounded-full p-2 items-center justify-center 
-          hidden group-hover:flex ${is_offer_available ? "right-3 bottom-12" : "right-3"} duration-300`}
-          >
-            <button
-              className="active:scale-95"
-              onClick={() => onAddToWishlist(id)}
-            >
-              <Heart
-                size={20}
-                strokeWidth={1}
-                stroke="#c28a90"
-                fill={isItemInWishlist ? "#dd484f" : "transparent"}
-                paintOrder="stroke"
-              />
-            </button>
-          </div>
-        )}
-
         <div className="flex bg-gray-200 rounded-2xl items-center justify-center">
           <ProductImageLoader src={src} alt={name} />
         </div>

@@ -1,11 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { ProductBuyCard, GradientButton } from "../../../components";
+import { StoreCard } from "../../../components";
+import { defaultRest } from "@/assets";
+import { getWishlistStoresApi } from "../services/wishlist.api";
 
 function Wishlist() {
   const { user: currentUser } = useSelector((state) => state.auth);
+  const [wishlistStores, setWishlistStores] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  if (currentUser?.myWishlist?.length > 0) {
+  useEffect(() => {
+    const fetchWishlist = async () => {
+      if (!currentUser?._id) {
+        setLoading(false);
+        return;
+      }
+      try {
+        const data = await getWishlistStoresApi(currentUser._id);
+        if (data.success) {
+          setWishlistStores(data.stores || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch wishlist stores:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchWishlist();
+  }, [currentUser?._id, currentUser?.myWishlist]);
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <div className="w-8 h-8 border-4 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
+  if (wishlistStores.length > 0) {
     return (
       <div
         className="space-y-5 h-full max-h-[90vh] overflow-y-auto 
@@ -15,21 +47,18 @@ function Wishlist() {
           [&::-webkit-scrollbar-thumb]:rounded-full"
       >
         <div>
-          <GradientButton
-            className="cursor-text font-bold rounded-3xl"
-          >
-            Wishlist Products
-          </GradientButton>
+          <h1 className="text-2xl font-bold text-gray-800">
+            Favourite Stores
+          </h1>
         </div>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-5">
-          {currentUser.myWishlist.map((p, index) => (
-            <ProductBuyCard
-              name={p.product_name}
-              src={p.product_url}
-              price={p.product_selling_price}
-              id={p._id}
-              key={index}
-              is_product_in_stock={p.is_product_in_stock}
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-6">
+          {wishlistStores.map((store) => (
+            <StoreCard
+              key={store._id}
+              defaultRest={defaultRest}
+              name={store.store_name}
+              address={store.store_address}
+              id={store._id}
             />
           ))}
         </div>
@@ -39,10 +68,10 @@ function Wishlist() {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
         <h2 className="text-lg font-semibold text-gray-600">
-          No Wishlist Products yet 📦
+          No Favourite Stores yet 🏪
         </h2>
         <p className="text-sm text-gray-500 mt-1">
-          Start adding products in wishlist to see your products here
+          Start adding stores to your favourites to see them here
         </p>
       </div>
     );

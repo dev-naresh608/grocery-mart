@@ -5,12 +5,14 @@ import cors from "cors";
 
 import authRouter from "./modules/auth/auth.routes.js";
 import productRouter from "./modules/product/product.routes.js";
-import orderRouter from "./modules/order/order.routes.js";
+import orderHistoryRouter from "./modules/order/order-history/orderHistory.routes.js";
+import activeOrdersRouter from "./modules/order/active-orders/activeOrders.routes.js";
 import cartRouter from "./modules/cart/cart.routes.js";
 import addressRouter from "./modules/address/address.routes.js";
 import storeRouter from "./modules/store/store.routes.js";
 import distanceRouter from "./routes/distance.js";
 import notificationRouter from "./modules/notification/notification.routes.js";
+import wishlistRouter from "./modules/customer/wishlist.routes.js";
 
 const app = express();
 
@@ -44,11 +46,13 @@ app.get("/api/working", (req, res) => {
 // Mounted Routes
 app.use("/api/auth", authRouter);
 app.use("/api/product", productRouter);
-app.use("/api/order", orderRouter);
+app.use("/api/order", orderHistoryRouter);
+app.use("/api/active-orders", activeOrdersRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/address", addressRouter);
 app.use("/api/stores", storeRouter);
 app.use("/api/distance", distanceRouter);
 app.use("/api/notification", notificationRouter);
+app.use("/api/wishlist", wishlistRouter);
 
 export default app;

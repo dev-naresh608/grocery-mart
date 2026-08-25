@@ -10,6 +10,12 @@ const customerSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Address",
   },
+  myWishlist: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Seller",
+    },
+  ],
 });
 
 const Customer = mongoose.model("Customer", customerSchema);

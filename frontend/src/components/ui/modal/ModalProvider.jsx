@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useLocation } from "react-router-dom";
 import { ModalContext } from "./ModalContext";
 import Modal from "./Modal";
@@ -8,6 +8,12 @@ export const ModalProvider = ({ children }) => {
   const [modalType, setModalType] = useState(null);
   const [payload, setPayload] = useState(null);
   const location = useLocation();
+  const isOpenRef = useRef(isOpen);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
 
   const openModal = useCallback((type, data = null) => {
     setModalType(type);
@@ -24,12 +30,13 @@ export const ModalProvider = ({ children }) => {
     }, 200);
   }, []);
 
+  // Close modal only when the route changes (not when isOpen changes)
   useEffect(() => {
-    if (isOpen) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (isOpenRef.current) {
       closeModal();
     }
-  }, [location.pathname, isOpen, closeModal]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
 
   return (
     <ModalContext.Provider

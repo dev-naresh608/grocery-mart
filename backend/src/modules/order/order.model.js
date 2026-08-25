@@ -35,6 +35,14 @@ const orderSchema = new mongoose.Schema(
       required: true,
       default: "Unknown",
     },
+    customer_phone: {
+      type: String,
+      default: "",
+    },
+    customer_email: {
+      type: String,
+      default: "",
+    },
 
     customer_details: {
       type: mongoose.Schema.Types.Mixed,
@@ -45,6 +53,17 @@ const orderSchema = new mongoose.Schema(
     driver_details: {
       type: mongoose.Schema.Types.Mixed,
     },
+    driver_allocation_status: {
+      type: String,
+      enum: ["unassigned", "searching", "assigned", "no_driver_available"],
+      default: "unassigned",
+    },
+    rejected_driver_ids: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
 
     order_items: {
       type: mongoose.Schema.Types.Mixed,
@@ -57,7 +76,9 @@ const orderSchema = new mongoose.Schema(
         "preparing",
         "confirmed",
         "processing",
+        "ready",
         "shipped",
+        "out_for_delivery",
         "completed",
         "delivered",
         "rejected",

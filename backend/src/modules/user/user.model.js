@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema({
   phone: {
     type: String,
   },
+  is_busy: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const User = mongoose.model("User", userSchema);

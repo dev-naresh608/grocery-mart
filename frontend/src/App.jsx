@@ -96,7 +96,6 @@ function App() {
     createRoutesFromElements(
       <Route path="/" element={<Layout />}>
         {/* ! general path */}
-
         <Route path="/login" element={<LoginRedirect />}></Route>
         <Route path="/signup" element={<SignupRedirect />}></Route>
         {/* ! end of general paths */}
@@ -132,7 +131,7 @@ function App() {
             <Route path="product-list" element={<ProductListPage />}></Route>
             <Route path="active-orders" element={<ActiveOrders />}></Route>
             <Route path="allnotifications" element={<ShowAllNotifications />}></Route>
-            <Route path="deliveryHistory" element={<DeliveryHistory />}></Route>
+            <Route path="deliveryHistory" element={<Orders />}></Route>
             <Route path="earnings" element={<Earnings />}></Route>
             <Route path="vehicleDetails" element={<VehicleDetails />}></Route>
           </Route>

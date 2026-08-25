@@ -161,25 +161,15 @@ function NotificationCard({
           </div>
 
           <div className="flex items-center gap-1.5 opacity-90 group-hover:opacity-100 transition-opacity">
-            {!isRead ? (
+            {!isRead && (
               <button
                 type="button"
                 onClick={() => onMarkAsRead && onMarkAsRead(notifId)}
-                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-green-50 hover:text-green-700 hover:border-green-300 transition-colors"
+                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-gray-700 bg-white border border-gray-200 rounded-lg hover:bg-green-50 hover:text-green-700 hover:border-green-300 transition-colors cursor-pointer"
                 title="Mark as read"
               >
                 <Check size={13} />
                 <span>Mark as read</span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => onMarkAsUnread && onMarkAsUnread(notifId)}
-                className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-gray-500 bg-white border border-gray-200 rounded-lg hover:bg-gray-100 hover:text-gray-700 transition-colors"
-                title="Mark as unread"
-              >
-                <RotateCcw size={12} />
-                <span>Unread</span>
               </button>
             )}
 

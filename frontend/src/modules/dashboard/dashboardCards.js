@@ -62,7 +62,7 @@ export const dashboardCards = {
     {
       title: "Wishlist",
       valueKey: "wishlist",
-      info: "Saved products",
+      info: "Saved stores",
       icon: Heart,
       bg: "#fdecec",
       color: "#ef4444",

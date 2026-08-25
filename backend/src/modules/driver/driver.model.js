@@ -17,6 +17,10 @@ const driverSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  is_busy: {
+    type: Boolean,
+    default: false,
+  },
   aadhaar_number: {
     type: Number,
     required: true,

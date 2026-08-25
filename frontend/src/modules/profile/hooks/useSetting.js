@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateUser } from "@/modules/auth/store/authSlice";
 import { toast } from "react-toastify";
-import { db } from "../../../db";
 import { useModal, MODAL_TYPES } from "../../../components";
 import {
   handleGetAddressApi,
@@ -116,15 +115,6 @@ export const useSetting = () => {
       const reader = new FileReader();
       reader.onloadend = async () => {
         dispatch(updateUser({ imageUrl: reader.result }));
-        if (currentUser?.id) {
-          try {
-            await db.localUserData.update(currentUser.id, {
-              imageUrl: reader.result,
-            });
-          } catch (err) {
-            console.error("Failed updating IndexedDB:", err);
-          }
-        }
       };
       reader.readAsDataURL(file);
     } catch (err) {
@@ -135,17 +125,6 @@ export const useSetting = () => {
   // Remove profile picture
   const handleRemoveProfilePicture = async () => {
     dispatch(updateUser({ imageUrl: null }));
-    if (currentUser?.id) {
-      try {
-        const user = await db.localUserData.get(currentUser.id);
-        if (user && Object.prototype.hasOwnProperty.call(user, "imageUrl")) {
-          delete user.imageUrl;
-          await db.localUserData.put(user);
-        }
-      } catch (err) {
-        console.error("Failed removing profile picture from IndexedDB:", err);
-      }
-    }
   };
 
   // Submit password change
@@ -170,15 +149,6 @@ export const useSetting = () => {
     }
 
     dispatch(updateUser({ password: formData.newPassword }));
-    if (currentUser?.id) {
-      try {
-        await db.localUserData.update(currentUser.id, {
-          password: formData.newPassword,
-        });
-      } catch (err) {
-        console.error("Failed updating password in IndexedDB:", err);
-      }
-    }
 
     toast.success("Password updated successfully!");
     setFormData({ oldPassword: "", newPassword: "", confirmPassword: "" });

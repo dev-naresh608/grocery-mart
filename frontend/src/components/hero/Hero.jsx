@@ -13,7 +13,7 @@ import {
   Sparkles,
 } from "lucide-react";
 
-import { GradientButton, useModal, MODAL_TYPES } from "..";
+import { useModal, MODAL_TYPES } from "..";
 import { heroBannerImage } from "@/assets";
 
 const TRUST_BADGES = [

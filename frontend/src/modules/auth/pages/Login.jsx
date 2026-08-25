@@ -27,7 +27,7 @@ export default function Login() {
       <AuthHeader
         icon={LogIn}
         title="Welcome Back"
-        subtitle="Sign in to your account"
+        subtitle="Log in to your account"
       />
 
       <form onSubmit={handleSubmit} className="space-y-4">
@@ -73,7 +73,7 @@ export default function Login() {
             <LogIn size={20} />
           )}
 
-          {isLoading ? "Signing In..." : "Sign In"}
+          {isLoading ? "Logging In..." : "Log In"}
         </button>
 
         <AuthFooterLink
