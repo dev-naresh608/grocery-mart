@@ -2,7 +2,7 @@ import Order from "../order.model.js";
 import Seller from "../../seller/seller.model.js";
 import User from "../../user/user.model.js";
 import Driver from "../../driver/driver.model.js";
-import { createNotificationService } from "../../notification/notification.service.js";
+import { createNotificationSvc } from "../../notification/notification.service.js";
 
 const ACTIVE_STATUSES = ["pending", "preparing", "confirmed", "processing", "shipped", "ready", "out_for_delivery"];
 
@@ -15,7 +15,7 @@ const getSellerUserId = async (storeId) => {
   return seller?.user_id || seller?._id || storeId;
 };
 
-export const getActiveOrdersService = async (userId, role) => {
+export const getActiveOrdersSvc = async (userId, role) => {
   let query = {};
 
   switch (role) {
@@ -65,7 +65,7 @@ export const getActiveOrdersService = async (userId, role) => {
   return activeOrders || [];
 };
 
-export const updateOrderStatusService = async (orderId, updates) => {
+export const updateOrderStatusSvc = async (orderId, updates) => {
   const existingOrder = await Order.findById(orderId);
   if (!existingOrder) return null;
 
@@ -111,7 +111,7 @@ export const updateOrderStatusService = async (orderId, updates) => {
         ? "⚠️ Order Rejected"
         : `Order Status: ${updates.order_status.toUpperCase()}`;
 
-    await createNotificationService({
+    await createNotificationSvc({
       recipient: updatedOrder.customer_id,
       title: statusTitle,
       message: `Your order #${orderIdShort} status updated to ${updates.order_status}.`,
@@ -124,7 +124,7 @@ export const updateOrderStatusService = async (orderId, updates) => {
   // 2. Notify Seller / Store User
   const sellerUserId = await getSellerUserId(updatedOrder.store_id);
   if (sellerUserId && updates.order_status) {
-    await createNotificationService({
+    await createNotificationSvc({
       recipient: sellerUserId,
       title: `Order #${orderIdShort} Update`,
       message: `Order #${orderIdShort} is now marked as ${updates.order_status}.`,
@@ -136,7 +136,7 @@ export const updateOrderStatusService = async (orderId, updates) => {
 
   // 3. Notify Driver if assigned
   if (updatedOrder.driver_id && updates.order_status) {
-    await createNotificationService({
+    await createNotificationSvc({
       recipient: updatedOrder.driver_id,
       title: `Trip Update #${orderIdShort}`,
       message: `Order #${orderIdShort} status changed to ${updates.order_status}.`,
@@ -152,7 +152,7 @@ export const updateOrderStatusService = async (orderId, updates) => {
 // ================= DRIVER ALLOCATION SERVICES =================
 
 // Get available requests for a driver (only if driver is not busy with another active trip)
-export const getAvailableDriverRequestsService = async (driverId) => {
+export const getAvailableDriverRequestsSvc = async (driverId) => {
   // 1. Check if driver is already busy with an active ongoing trip
   const existingActiveTrip = await Order.findOne({
     driver_id: driverId,
@@ -175,7 +175,7 @@ export const getAvailableDriverRequestsService = async (driverId) => {
 };
 
 // Driver accepts order
-export const driverAcceptOrderService = async (orderId, driverId) => {
+export const driverAcceptOrderSvc = async (orderId, driverId) => {
   const order = await Order.findById(orderId);
   if (!order) {
     return { success: false, message: "Order not found" };
@@ -220,7 +220,7 @@ export const driverAcceptOrderService = async (orderId, driverId) => {
 
   // 1. Notify Customer
   if (order.customer_id) {
-    await createNotificationService({
+    await createNotificationSvc({
       recipient: order.customer_id,
       title: "Driver Assigned!",
       message: `${driverDetails.driver_name} (+91 ${driverDetails.driver_phone}) has been assigned to your order #${orderIdShort}.`,
@@ -233,7 +233,7 @@ export const driverAcceptOrderService = async (orderId, driverId) => {
   // 2. Notify Seller / Store
   const sellerUserId = await getSellerUserId(order.store_id);
   if (sellerUserId) {
-    await createNotificationService({
+    await createNotificationSvc({
       recipient: sellerUserId,
       title: "Driver Found!",
       message: `${driverDetails.driver_name} (+91 ${driverDetails.driver_phone}) accepted delivery for Order #${orderIdShort}.`,
@@ -244,7 +244,7 @@ export const driverAcceptOrderService = async (orderId, driverId) => {
   }
 
   // 3. Notify Driver
-  await createNotificationService({
+  await createNotificationSvc({
     recipient: driverId,
     title: "Trip Confirmed!",
     message: `You accepted delivery trip #${orderIdShort} for ${order.store_name}.`,
@@ -257,7 +257,7 @@ export const driverAcceptOrderService = async (orderId, driverId) => {
 };
 
 // Driver rejects order
-export const driverRejectOrderService = async (orderId, driverId) => {
+export const driverRejectOrderSvc = async (orderId, driverId) => {
   const order = await Order.findById(orderId);
   if (!order) {
     return { success: false, message: "Order not found" };
@@ -281,7 +281,7 @@ export const driverRejectOrderService = async (orderId, driverId) => {
 
     // Notify seller & customer
     if (order.customer_id) {
-      await createNotificationService({
+      await createNotificationSvc({
         recipient: order.customer_id,
         title: "Order Status Update",
         message: `Currently searching for available drivers for your order #${orderIdShort}.`,
@@ -293,7 +293,7 @@ export const driverRejectOrderService = async (orderId, driverId) => {
 
     const sellerUserId = await getSellerUserId(order.store_id);
     if (sellerUserId) {
-      await createNotificationService({
+      await createNotificationSvc({
         recipient: sellerUserId,
         title: "⚠️ No Driver Available",
         message: `No drivers are currently available for Order #${orderIdShort}. You can retry driver search from Kanban board.`,
@@ -309,7 +309,7 @@ export const driverRejectOrderService = async (orderId, driverId) => {
 };
 
 // Retry driver allocation
-export const retryDriverAllocationService = async (orderId) => {
+export const retryDriverAllocationSvc = async (orderId) => {
   const order = await Order.findById(orderId);
   if (!order) {
     return { success: false, message: "Order not found" };

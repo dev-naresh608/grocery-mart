@@ -2,9 +2,9 @@ import Order from "../order.model.js";
 import Product from "../../product/product.model.js";
 import Seller from "../../seller/seller.model.js";
 import Cart from "../../cart/cart.model.js";
-import { createNotificationService } from "../../notification/notification.service.js";
+import { createNotificationSvc } from "../../notification/notification.service.js";
 
-export const addOrderService = async (o) => {
+export const addOrderSvc = async (o) => {
   try {
     const { name: customer_name, phone: customer_phone } = o.order_address || {};
 
@@ -40,7 +40,7 @@ export const addOrderService = async (o) => {
       await Cart.deleteMany({ customer_id: o.customerId });
       
       // Create notification for customer
-      await createNotificationService({
+      await createNotificationSvc({
         recipient: o.customerId,
         title: "Order Placed Successfully",
         message: `Your order #${order._id.toString().slice(-6)} has been placed with ${o.store_name || "the store"}. Total: ₹${o.priceDetails?.finalPrice || order.price_detail?.finalPrice || 0}.`,
@@ -57,7 +57,7 @@ export const addOrderService = async (o) => {
       sellerUserId = sellerRecord.user_id;
     }
     if (sellerUserId) {
-      await createNotificationService({
+      await createNotificationSvc({
         recipient: sellerUserId,
         title: "🛒 New Incoming Order!",
         message: `New order #${order._id.toString().slice(-6)} received from ${customer_name}. Total: ₹${o.priceDetails?.finalPrice || order.price_detail?.finalPrice || 0}.`,
@@ -79,7 +79,7 @@ export const addOrderService = async (o) => {
   }
 };
 
-export const findSingleOrderService = async (orderId) => {
+export const findSingleOrderSvc = async (orderId) => {
   let order = await Order.findById(orderId).populate("customer_id", "username email phone");
   if (!order) {
     return null;

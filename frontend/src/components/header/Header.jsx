@@ -1,14 +1,15 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, NavLink, useNavigate, useSearchParams } from "react-router-dom";
 import { createPortal } from "react-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { novexa_logo } from "@/assets";
 import { ProfileToggle } from "@/modules/profile";
 import { NotificationToggle } from "@/modules/notification";
 import { useModal, MODAL_TYPES } from "@/components";
+import { openCartDrawer } from "@/modules/cart/store/cartSlice";
 import {
   Search,
-  ShoppingBag,
+  ShoppingCart,
   Menu,
   X,
   ChevronDown,
@@ -78,6 +79,7 @@ function JoinUsDropdown() {
 }
 
 function Header() {
+  const dispatch = useDispatch();
   const [activeDropdown, setActiveDropdown] = useState(null);
   const rightNavRef = useRef(null);
   const { isAuthenticated: isLogin, user: currentUser } = useSelector((state) => state.auth);
@@ -153,7 +155,7 @@ function Header() {
               <button
                 type="submit"
                 aria-label="Search"
-                className="text-gray-400 hover:text-green-700 transition-colors"
+                className="text-gray-400 hover:text-green-700 transition-colors border-none bg-transparent cursor-pointer outline-none"
               >
                 <Search className="w-5 h-5" />
               </button>
@@ -172,14 +174,20 @@ function Header() {
 
             <JoinUsDropdown />
 
-            <Link to="/cart" className="relative" aria-label="Cart">
-              <ShoppingBag className="w-6 h-6 text-gray-700 hover:text-green-700 transition-colors" />
+            {/* Cart Drawer Toggle */}
+            <button
+              type="button"
+              onClick={() => dispatch(openCartDrawer())}
+              className="relative p-2 rounded-xl text-gray-700 hover:text-green-700 hover:bg-gray-100/70 transition-all cursor-pointer border-none bg-transparent outline-none"
+              aria-label="Open cart"
+            >
+              <ShoppingCart className="w-6 h-6" />
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-green-600 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
+                <span className="absolute -top-1 -right-1 bg-green-600 text-white text-[10px] font-extrabold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1 shadow-sm shadow-green-600/30">
                   {cartCount}
                 </span>
               )}
-            </Link>
+            </button>
 
             <div>
               <button
@@ -194,25 +202,32 @@ function Header() {
 
           {/* Right: Cart + Hamburger (mobile) */}
           <div className="flex md:hidden items-center gap-4">
-            <Link to="/cart" className="relative" aria-label="Cart">
-              <ShoppingBag className="w-6 h-6 text-gray-700" />
+            <button
+              type="button"
+              onClick={() => dispatch(openCartDrawer())}
+              className="relative p-2 text-gray-700 border-none bg-transparent cursor-pointer outline-none"
+              aria-label="Open cart"
+            >
+              <ShoppingCart className="w-6 h-6 text-gray-700" />
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-green-600 text-white text-[10px] font-bold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1">
+                <span className="absolute -top-1 -right-1 bg-green-600 text-white text-[10px] font-extrabold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1 shadow-sm shadow-green-600/30">
                   {cartCount}
                 </span>
               )}
-            </Link>
+            </button>
+
             <button
               type="button"
               aria-label="Open menu"
               onClick={() => setIsMobileMenuOpen(true)}
+              className="border-none bg-transparent cursor-pointer outline-none"
             >
               <Menu className="w-6 h-6 text-gray-700" />
             </button>
           </div>
         </div>
 
-        {/* Mobile Drawer — portalled so it escapes header's stacking context */}
+        {/* Mobile Drawer */}
         {createPortal(
           <div
             className={`fixed inset-0 z-[100] md:hidden transition-opacity duration-300 ${
@@ -239,6 +254,7 @@ function Header() {
                   type="button"
                   aria-label="Close menu"
                   onClick={() => setIsMobileMenuOpen(false)}
+                  className="border-none bg-transparent cursor-pointer outline-none"
                 >
                   <X className="w-6 h-6 text-gray-600" />
                 </button>
@@ -257,7 +273,7 @@ function Header() {
                     <button
                       type="submit"
                       aria-label="Search"
-                      className="text-gray-400"
+                      className="text-gray-400 border-none bg-transparent cursor-pointer outline-none"
                     >
                       <Search className="w-5 h-5" />
                     </button>
@@ -275,12 +291,11 @@ function Header() {
                     </NavLink>
                   </li>
 
-                  {/* Join Us — expandable section (mobile equivalent of the dropdown) */}
                   <li>
                     <button
                       type="button"
                       onClick={() => setIsMobileJoinOpen((prev) => !prev)}
-                      className="flex items-center justify-between w-full text-gray-700"
+                      className="flex items-center justify-between w-full text-gray-700 border-none bg-transparent cursor-pointer outline-none"
                     >
                       Join Us
                       <ChevronDown
@@ -354,6 +369,20 @@ function Header() {
 
       {/* right nav */}
       <div ref={rightNavRef} className="flex gap-3 items-center">
+        {/* Cart Toggle */}
+        <button
+          type="button"
+          onClick={() => dispatch(openCartDrawer())}
+          className="relative p-2 rounded-xl text-gray-700 hover:text-green-700 hover:bg-gray-100/70 transition-all cursor-pointer border-none bg-transparent outline-none"
+          aria-label="Open cart"
+        >
+          <ShoppingCart className="w-6 h-6" />
+          {cartCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-green-600 text-white text-[10px] font-extrabold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1 shadow-sm shadow-green-600/30">
+              {cartCount}
+            </span>
+          )}
+        </button>
         {/* Notification */}
         <NotificationToggle 
           isOpen={activeDropdown === "notification"}

@@ -19,21 +19,26 @@ function OrderDetail() {
 
   const [order, setOrder] = useState(null);
   const [orderItems, setOrderItems] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchOrder = async () => {
       if (!orderId) return;
+      setLoading(true);
       try {
         const { data } = await api.get(
           `/order/detail/${orderId}`,
         );
         if (!data.success) {
-          return toast.error(data.message);
+          toast.error(data.message);
+          return;
         }
         setOrder(data.result);
-        setOrderItems(data.result.order_items);
+        setOrderItems(data.result?.order_items || []);
       } catch (error) {
-        return toast.error(error.message);
+        toast.error(error.message);
+      } finally {
+        setLoading(false);
       }
     };
     fetchOrder();
@@ -41,7 +46,32 @@ function OrderDetail() {
 
   // ================== STATUS CONFIG ====================
   const STATUS_CONFIG = orderStatusConfig();
-  const cfg = STATUS_CONFIG[order?.order_status];
+  const cfg = order ? STATUS_CONFIG[order.order_status] : null;
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <div className="w-10 h-10 border-4 border-green-600 border-t-transparent rounded-full animate-spin mb-3"></div>
+        <p className="text-sm font-semibold text-gray-500">Loading order details...</p>
+      </div>
+    );
+  }
+
+  if (!order) {
+    return (
+      <div className="text-center py-20 bg-white rounded-3xl p-8 border border-gray-100 shadow-sm max-w-md mx-auto my-10">
+        <h2 className="text-lg font-bold text-gray-800">Order Not Found</h2>
+        <p className="text-sm text-gray-500 mt-1">We couldn't retrieve the details for this order.</p>
+        <button
+          type="button"
+          onClick={() => navigate("/orders")}
+          className="mt-5 px-5 py-2.5 bg-green-700 hover:bg-green-800 text-white rounded-2xl text-xs font-bold transition-all cursor-pointer border-none"
+        >
+          Back to Orders
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div>

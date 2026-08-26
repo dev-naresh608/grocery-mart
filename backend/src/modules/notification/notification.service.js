@@ -3,7 +3,7 @@ import Notification from "./notification.model.js";
 /**
  * Create a new notification
  */
-export const createNotificationService = async ({
+export const createNotificationSvc = async ({
   recipient,
   sender = null,
   title,
@@ -45,7 +45,7 @@ export const createNotificationService = async ({
 /**
  * Get paginated notifications with filters
  */
-export const getUserNotificationsService = async (
+export const getUserNotificationsSvc = async (
   userId,
   { page = 1, limit = 10, filter = "all", type, search } = {}
 ) => {
@@ -114,7 +114,7 @@ export const getUserNotificationsService = async (
 /**
  * Get unread notifications for header toggle/dropdown
  */
-export const getUnreadNotificationsService = async (userId, limit = 10) => {
+export const getUnreadNotificationsSvc = async (userId, limit = 10) => {
   try {
     const [unreadNotifications, unreadCount, totalCount] = await Promise.all([
       Notification.find({ recipient: userId, isRead: false })
@@ -145,7 +145,7 @@ export const getUnreadNotificationsService = async (userId, limit = 10) => {
 /**
  * Mark a single notification as read
  */
-export const markAsReadService = async (notificationId, userId) => {
+export const markAsReadSvc = async (notificationId, userId) => {
   try {
     const query = { _id: notificationId };
     if (userId) {
@@ -171,7 +171,7 @@ export const markAsReadService = async (notificationId, userId) => {
 /**
  * Mark a single notification as unread
  */
-export const markAsUnreadService = async (notificationId, userId) => {
+export const markAsUnreadSvc = async (notificationId, userId) => {
   try {
     const query = { _id: notificationId };
     if (userId) {
@@ -197,7 +197,7 @@ export const markAsUnreadService = async (notificationId, userId) => {
 /**
  * Mark all notifications as read for a user
  */
-export const markAllAsReadService = async (userId) => {
+export const markAllAsReadSvc = async (userId) => {
   try {
     const result = await Notification.updateMany(
       { recipient: userId, isRead: false },
@@ -217,7 +217,7 @@ export const markAllAsReadService = async (userId) => {
 /**
  * Delete a single notification
  */
-export const deleteNotificationService = async (notificationId, userId) => {
+export const deleteNotificationSvc = async (notificationId, userId) => {
   try {
     const query = { _id: notificationId };
     if (userId) {
@@ -242,7 +242,7 @@ export const deleteNotificationService = async (notificationId, userId) => {
 /**
  * Clear notifications for a user (either all or only read)
  */
-export const clearNotificationsService = async (userId, filter = "read") => {
+export const clearNotificationsSvc = async (userId, filter = "read") => {
   try {
     const query = { recipient: userId };
     if (filter === "read") {

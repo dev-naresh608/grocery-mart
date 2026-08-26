@@ -25,10 +25,20 @@ const InfoRow = ({ label, value }) => {
   );
 };
 
+const getDisplayId = (val) => {
+  if (!val) return "N/A";
+  if (typeof val === "object") {
+    return val._id ? String(val._id) : (val.username || val.store_name || JSON.stringify(val));
+  }
+  return String(val);
+};
+
 const OrderIdInfo = ({ order }) => {
   if (!order) return null;
 
-  const { _id: orderId, customer_id: customerId, store_id: storeId } = order;
+  const orderId = getDisplayId(order._id);
+  const customerId = getDisplayId(order.customer_id);
+  const storeId = getDisplayId(order.store_id);
 
   return (
     <SectionCard>

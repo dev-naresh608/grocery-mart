@@ -1,6 +1,6 @@
 import Order from "../order.model.js";
 import Seller from "../../seller/seller.model.js";
-import { addOrderService, findSingleOrderService } from "./orderHistory.service.js";
+import { addOrderSvc, findSingleOrderSvc } from "./orderHistory.service.js";
 
 const HISTORICAL_STATUSES = ["completed", "delivered", "rejected", "cancelled"];
 
@@ -79,7 +79,7 @@ export const handleAddOrder = async (req, res) => {
         message: "Payload is required",
       });
     }
-    const result = await addOrderService(payload);
+    const result = await addOrderSvc(payload);
     if (!result.success) {
       return res.status(400).json({
         success: false,
@@ -110,7 +110,7 @@ export const handleFindOrderById = async (req, res) => {
       });
     }
 
-    const result = await findSingleOrderService(orderId);
+    const result = await findSingleOrderSvc(orderId);
     if (!result) {
       return res.status(404).json({
         success: false,

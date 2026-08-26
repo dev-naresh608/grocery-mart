@@ -1,17 +1,23 @@
 import { useState, useEffect, useCallback } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import {
   fetchUnreadNotificationsApi,
   markNotificationAsReadApi,
   markAllNotificationsAsReadApi,
 } from "../services/notification.api.service";
+import {
+  setUnreadData,
+  markSingleRead,
+  markAllRead,
+} from "../store/notificationSlice";
 
 export const useNotificationToggle = (isOpen = false) => {
+  const dispatch = useDispatch();
   const { user: currentUser } = useSelector((state) => state.auth);
+  const { unreadNotifications, unreadCount } = useSelector(
+    (state) => state.notification
+  );
   const userId = currentUser?._id || currentUser?.id;
-
-  const [unreadNotifications, setUnreadNotifications] = useState([]);
-  const [unreadCount, setUnreadCount] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const fetchUnread = useCallback(async () => {
@@ -20,15 +26,19 @@ export const useNotificationToggle = (isOpen = false) => {
       setLoading(true);
       const res = await fetchUnreadNotificationsApi(userId, 8);
       if (res && res.success) {
-        setUnreadNotifications(res.notifications || []);
-        setUnreadCount(res.unreadCount || 0);
+        dispatch(
+          setUnreadData({
+            notifications: res.notifications || [],
+            unreadCount: res.unreadCount || 0,
+          })
+        );
       }
     } catch (err) {
       console.error("Failed to fetch unread notifications:", err);
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, [userId, dispatch]);
 
   // Fetch when component mounts, userId changes, or dropdown opens
   useEffect(() => {
@@ -55,11 +65,8 @@ export const useNotificationToggle = (isOpen = false) => {
   const handleMarkAsRead = async (notificationId) => {
     if (!notificationId || !userId) return;
     try {
-      // Optimistic update
-      setUnreadNotifications((prev) =>
-        prev.filter((n) => (n._id || n.id) !== notificationId)
-      );
-      setUnreadCount((prev) => Math.max(0, prev - 1));
+      // Optimistic update in Redux store
+      dispatch(markSingleRead(notificationId));
 
       await markNotificationAsReadApi(notificationId, userId);
     } catch (err) {
@@ -72,8 +79,7 @@ export const useNotificationToggle = (isOpen = false) => {
   const handleMarkAllAsRead = async () => {
     if (!userId) return;
     try {
-      setUnreadNotifications([]);
-      setUnreadCount(0);
+      dispatch(markAllRead());
 
       await markAllNotificationsAsReadApi(userId);
     } catch (err) {

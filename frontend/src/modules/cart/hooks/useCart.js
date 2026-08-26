@@ -119,6 +119,7 @@ export const useCart = () => {
       address,
       paymentMethod,
       navigate,
+      dispatch,
     );
   };
 

@@ -1,10 +1,40 @@
 import { SectionCard, SectionLabel } from "../../../../index";
   import { User, Phone, Mail, CreditCard, Banknote } from "lucide-react"
 
-  const CustomerInfoComponent = ({order}) => {
-    if (order) {
-      const { customer_name, customer_phone, customer_email, payment_method } =
-        order;
+const getDisplayString = (val) => {
+  if (val === null || val === undefined) return "N/A";
+  if (typeof val === "object") {
+    return val.username || val.name || val.email || val.phone || val._id || JSON.stringify(val);
+  }
+  return String(val);
+};
+
+const CustomerInfoComponent = ({ order }) => {
+    if (!order) return null;
+
+    const customer_name = getDisplayString(
+      order.customer_name ||
+      order.customer_id?.username ||
+      order.order_address?.name ||
+      "Customer"
+    );
+
+    const customer_phone = getDisplayString(
+      order.customer_phone ||
+      order.customer_id?.phone ||
+      order.order_address?.phone ||
+      order.customer_details?.phone ||
+      "N/A"
+    );
+
+    const customer_email = getDisplayString(
+      order.customer_email ||
+      order.customer_id?.email ||
+      order.customer_details?.email ||
+      "N/A"
+    );
+
+    const payment_method = getDisplayString(order.payment_method || order.paymentMethod || "cashOnDelivery");
 
       const TITLE_CONFIG = [
         {
@@ -69,7 +99,6 @@ import { SectionCard, SectionLabel } from "../../../../index";
           </div>
         </SectionCard>
       );
-    }
   };
 
 export default CustomerInfoComponent;

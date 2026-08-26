@@ -3,6 +3,7 @@ import { Header, Footer } from ".";
 import { Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { ModalProvider } from "./ui/modal";
+import { CartDrawer } from "@/modules/cart";
 
 function Layout() {
 
@@ -14,6 +15,7 @@ function Layout() {
           <Outlet />
         </div>
       </div>
+      <CartDrawer />
         <ToastContainer
           position="top-right"
           autoClose={500}

@@ -3,8 +3,8 @@ import User from "../user/user.model.js";
 import Product from "../product/product.model.js";
 import Seller from "../seller/seller.model.js";
 
-import { addOrderService, findSingleOrderService } from "./order.service.js";
-import { createNotificationService } from "../notification/notification.service.js";
+import { addOrderSvc, findSingleOrderSvc } from "./order.service.js";
+import { createNotificationSvc } from "../notification/notification.service.js";
 
 export const handleGetAllOrders = async (req, res) => {
   try {
@@ -65,7 +65,7 @@ export const handleAddOrder = async (req, res) => {
         message: "Payload is required",
       });
     }
-    const result = await addOrderService(payload);
+    const result = await addOrderSvc(payload);
     if (!result.success) {
       return res.status(400).json({
         success: false,
@@ -96,7 +96,7 @@ export const handleFindOrderById = async (req, res) => {
       });
     }
 
-    const result = await findSingleOrderService(orderId);
+    const result = await findSingleOrderSvc(orderId);
     if (!result) {
       return res.status(404).json({
         success: false,
@@ -143,7 +143,7 @@ export const handleUpdateOrderById = async (req, res) => {
           ? "Order Cancelled"
           : `Order Status: ${updates.order_status.toUpperCase()}`;
 
-      await createNotificationService({
+      await createNotificationSvc({
         recipient: updatedOrder.customer_id,
         title: statusTitle,
         message: `Your order #${updatedOrder._id.toString().slice(-6)} is now ${updates.order_status}.`,

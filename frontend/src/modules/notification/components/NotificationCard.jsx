@@ -97,6 +97,15 @@ function NotificationCard({
   const config = getTypeConfig(type);
   const IconComponent = config.icon;
 
+  const handleLinkClick = () => {
+    if (!isRead && onMarkAsRead && notifId) {
+      onMarkAsRead(notifId);
+    }
+    if (onCloseDropdown) {
+      onCloseDropdown();
+    }
+  };
+
   return (
     <div
       className={`group relative flex items-start gap-3.5 p-4 rounded-2xl border transition-all duration-200 ${
@@ -121,13 +130,25 @@ function NotificationCard({
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
           <div className="flex items-center gap-2">
-            <h4
-              className={`text-sm font-semibold truncate ${
-                !isRead ? "text-gray-900" : "text-gray-700"
-              }`}
-            >
-              {title}
-            </h4>
+            {link ? (
+              <Link
+                to={link}
+                onClick={handleLinkClick}
+                className={`text-sm font-semibold truncate hover:text-green-700 transition-colors ${
+                  !isRead ? "text-gray-900" : "text-gray-700"
+                }`}
+              >
+                {title}
+              </Link>
+            ) : (
+              <h4
+                className={`text-sm font-semibold truncate ${
+                  !isRead ? "text-gray-900" : "text-gray-700"
+                }`}
+              >
+                {title}
+              </h4>
+            )}
             <span
               className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${config.badgeBg}`}
             >
@@ -151,7 +172,7 @@ function NotificationCard({
             {link ? (
               <Link
                 to={link}
-                onClick={onCloseDropdown}
+                onClick={handleLinkClick}
                 className="inline-flex items-center gap-1 text-xs font-semibold text-green-700 hover:text-green-800 transition-colors"
               >
                 View Details

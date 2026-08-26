@@ -2,9 +2,9 @@ import Order from "./order.model.js";
 import Product from "../product/product.model.js";
 import Seller from "../seller/seller.model.js";
 import Cart from "../cart/cart.model.js";
-import { createNotificationService } from "../notification/notification.service.js";
+import { createNotificationSvc } from "../notification/notification.service.js";
 
-export const addOrderService = async (o) => {
+export const addOrderSvc = async (o) => {
   try {
     const { name: customer_name, phone: customer_phone } = o.order_address || {};
 
@@ -40,7 +40,7 @@ export const addOrderService = async (o) => {
       await Cart.deleteMany({ customer_id: o.customerId });
       
       // Create notification for customer
-      await createNotificationService({
+      await createNotificationSvc({
         recipient: o.customerId,
         title: "Order Placed Successfully",
         message: `Your order #${order._id.toString().slice(-6)} has been placed with ${o.store_name || "the store"}. Total: ₹${o.priceDetails?.totalPrice || order.price_detail?.totalPrice || 0}.`,
@@ -62,7 +62,7 @@ export const addOrderService = async (o) => {
   }
 };
 
-export const findSingleOrderService = async (orderId) => {
+export const findSingleOrderSvc = async (orderId) => {
   const order = await Order.findById(orderId);
   if (!order) {
     return null;

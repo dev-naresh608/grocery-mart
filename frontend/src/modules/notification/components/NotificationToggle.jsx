@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { Bell, CheckCheck, X, Sparkles, ArrowRight } from "lucide-react";
+import { BellIcon, CheckCheck, X, Sparkles, ArrowRight } from "lucide-react";
 import { useNotificationToggle } from "../hooks/useNotificationToggle";
 import NotificationCard from "./NotificationCard";
 
@@ -22,7 +22,7 @@ function NotificationToggle({ isOpen, onToggle, onClose }) {
         className="relative p-2 rounded-xl text-gray-700 hover:text-green-700 hover:bg-gray-100 transition-colors cursor-pointer outline-none border-none bg-transparent flex items-center justify-center"
         aria-label="Notifications"
       >
-        <Bell className="w-5 h-5 text-gray-700 hover:text-green-700 transition-colors" />
+        <BellIcon className="w-5 h-5 text-gray-700 hover:text-green-700 transition-colors" />
 
         {unreadCount > 0 && (
           <span className="absolute top-1 right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-red-600 rounded-full ring-2 ring-white animate-in zoom-in-50">

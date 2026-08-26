@@ -1,12 +1,12 @@
 import {
-  createNotificationService,
-  getUserNotificationsService,
-  getUnreadNotificationsService,
-  markAsReadService,
-  markAsUnreadService,
-  markAllAsReadService,
-  deleteNotificationService,
-  clearNotificationsService,
+  createNotificationSvc,
+  getUserNotificationsSvc,
+  getUnreadNotificationsSvc,
+  markAsReadSvc,
+  markAsUnreadSvc,
+  markAllAsReadSvc,
+  deleteNotificationSvc,
+  clearNotificationsSvc,
 } from "./notification.service.js";
 
 export const handleGetUserNotifications = async (req, res) => {
@@ -21,7 +21,7 @@ export const handleGetUserNotifications = async (req, res) => {
       });
     }
 
-    const result = await getUserNotificationsService(userId, {
+    const result = await getUserNotificationsSvc(userId, {
       page,
       limit,
       filter,
@@ -50,7 +50,7 @@ export const handleGetUnreadNotifications = async (req, res) => {
       });
     }
 
-    const result = await getUnreadNotificationsService(
+    const result = await getUnreadNotificationsSvc(
       userId,
       limit ? parseInt(limit, 10) : 10
     );
@@ -76,7 +76,7 @@ export const handleMarkAsRead = async (req, res) => {
       });
     }
 
-    const result = await markAsReadService(notificationId, userId);
+    const result = await markAsReadSvc(notificationId, userId);
 
     if (!result.success) {
       return res.status(404).json(result);
@@ -103,7 +103,7 @@ export const handleMarkAsUnread = async (req, res) => {
       });
     }
 
-    const result = await markAsUnreadService(notificationId, userId);
+    const result = await markAsUnreadSvc(notificationId, userId);
 
     if (!result.success) {
       return res.status(404).json(result);
@@ -129,7 +129,7 @@ export const handleMarkAllAsRead = async (req, res) => {
       });
     }
 
-    const result = await markAllAsReadService(userId);
+    const result = await markAllAsReadSvc(userId);
     return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({
@@ -151,7 +151,7 @@ export const handleDeleteNotification = async (req, res) => {
       });
     }
 
-    const result = await deleteNotificationService(notificationId, userId);
+    const result = await deleteNotificationSvc(notificationId, userId);
 
     if (!result.success) {
       return res.status(404).json(result);
@@ -178,7 +178,7 @@ export const handleClearNotifications = async (req, res) => {
       });
     }
 
-    const result = await clearNotificationsService(userId, filter);
+    const result = await clearNotificationsSvc(userId, filter);
     return res.status(200).json(result);
   } catch (error) {
     return res.status(500).json({
@@ -199,7 +199,7 @@ export const handleCreateNotification = async (req, res) => {
       });
     }
 
-    const result = await createNotificationService({
+    const result = await createNotificationSvc({
       recipient,
       sender,
       title,

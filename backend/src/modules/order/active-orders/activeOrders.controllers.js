@@ -1,10 +1,10 @@
 import {
-  getActiveOrdersService,
-  updateOrderStatusService,
-  getAvailableDriverRequestsService,
-  driverAcceptOrderService,
-  driverRejectOrderService,
-  retryDriverAllocationService,
+  getActiveOrdersSvc,
+  updateOrderStatusSvc,
+  getAvailableDriverRequestsSvc,
+  driverAcceptOrderSvc,
+  driverRejectOrderSvc,
+  retryDriverAllocationSvc,
 } from "./activeOrders.service.js";
 
 export const handleGetActiveOrders = async (req, res) => {
@@ -19,7 +19,7 @@ export const handleGetActiveOrders = async (req, res) => {
       });
     }
 
-    const activeOrders = await getActiveOrdersService(userId, role);
+    const activeOrders = await getActiveOrdersSvc(userId, role);
 
     return res.json({
       success: true,
@@ -43,7 +43,7 @@ export const handleUpdateOrderStatus = async (req, res) => {
       });
     }
 
-    const updatedOrder = await updateOrderStatusService(orderId, updates);
+    const updatedOrder = await updateOrderStatusSvc(orderId, updates);
 
     if (!updatedOrder) {
       return res.status(404).json({
@@ -70,7 +70,7 @@ export const handleGetAvailableDriverRequests = async (req, res) => {
     if (!driverId) {
       return res.status(400).json({ success: false, message: "Driver ID required" });
     }
-    const requests = await getAvailableDriverRequestsService(driverId);
+    const requests = await getAvailableDriverRequestsSvc(driverId);
     return res.json({ success: true, requests });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -86,7 +86,7 @@ export const handleDriverAcceptOrder = async (req, res) => {
       return res.status(400).json({ success: false, message: "orderId and driverId required" });
     }
 
-    const result = await driverAcceptOrderService(orderId, driverId);
+    const result = await driverAcceptOrderSvc(orderId, driverId);
     if (!result.success) {
       return res.status(400).json(result);
     }
@@ -106,7 +106,7 @@ export const handleDriverRejectOrder = async (req, res) => {
       return res.status(400).json({ success: false, message: "orderId and driverId required" });
     }
 
-    const result = await driverRejectOrderService(orderId, driverId);
+    const result = await driverRejectOrderSvc(orderId, driverId);
     return res.json({ success: true, message: "Order rejected by driver", order: result.order });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -116,7 +116,7 @@ export const handleDriverRejectOrder = async (req, res) => {
 export const handleRetryDriverAllocation = async (req, res) => {
   try {
     const { orderId } = req.params;
-    const result = await retryDriverAllocationService(orderId);
+    const result = await retryDriverAllocationSvc(orderId);
     return res.json({ success: true, message: "Driver searching retried", order: result.order });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

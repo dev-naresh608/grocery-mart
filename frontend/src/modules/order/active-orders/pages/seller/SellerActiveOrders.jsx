@@ -8,7 +8,7 @@ import {
   XCircle,
   ArrowRight,
   Package,
-  ShoppingBag,
+  ShoppingCart,
   CreditCard,
   AlertCircle,
   Flame,
@@ -187,7 +187,7 @@ function SellerActiveOrders() {
         </div>
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-4 py-2 rounded-xl text-sm font-semibold border border-emerald-100">
-            <ShoppingBag size={18} />
+            <ShoppingCart size={18} />
             <span>Live Orders: {activeOrders.length}</span>
           </div>
         </div>

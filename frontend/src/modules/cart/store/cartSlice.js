@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   storeId: null,
+  isCartDrawerOpen: false,
 };
 
 const cartSlice = createSlice({
@@ -14,8 +15,23 @@ const cartSlice = createSlice({
     clearCartState: (state) => {
       state.storeId = null;
     },
+    toggleCartDrawer: (state) => {
+      state.isCartDrawerOpen = !state.isCartDrawerOpen;
+    },
+    openCartDrawer: (state) => {
+      state.isCartDrawerOpen = true;
+    },
+    closeCartDrawer: (state) => {
+      state.isCartDrawerOpen = false;
+    },
   },
 });
 
-export const { setStoreId, clearCartState } = cartSlice.actions;
+export const {
+  setStoreId,
+  clearCartState,
+  toggleCartDrawer,
+  openCartDrawer,
+  closeCartDrawer,
+} = cartSlice.actions;
 export default cartSlice.reducer;

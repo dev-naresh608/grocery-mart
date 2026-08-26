@@ -39,6 +39,7 @@ import {
   RouterProvider,
   useNavigate,
   Outlet,
+  Navigate,
 } from "react-router-dom";
 
 import { ToastContainer } from "react-toastify";
@@ -103,10 +104,10 @@ function App() {
         {/* ! show in panel  */}
         <Route path="/" element={<Home />}>
           {/* Public Routes */}
-          <Route path="categories" element={<Category />}></Route>
+          <Route path="categories" element={<Navigate to="/stores" replace />} />
           <Route
             path="categories/categoryWiseProducts/:catName"
-            element={<CategoryWiseProducts />}
+            element={<Navigate to="/stores" replace />}
           />
           <Route path="cart" element={<CartPage />}></Route>
           <Route path="stores" element={<AllStores />}></Route>

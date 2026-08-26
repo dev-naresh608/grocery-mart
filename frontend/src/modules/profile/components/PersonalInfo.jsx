@@ -5,7 +5,7 @@ import {
   Mail,
   Phone,
   MapPin,
-  ShoppingBag,
+  ShoppingCart,
   ChevronRight,
 } from "lucide-react";
 
@@ -77,7 +77,7 @@ function PersonalInfo() {
         <div className="bg-[#FAFAF9] border border-[#E7E5E4] rounded-2xl p-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
-              <ShoppingBag
+              <ShoppingCart
                 size={16}
                 className="text-amber-500"
                 strokeWidth={2}

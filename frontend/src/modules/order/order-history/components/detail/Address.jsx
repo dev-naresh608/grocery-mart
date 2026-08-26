@@ -1,20 +1,36 @@
 import { SectionCard, SectionLabel } from "@/components/common";
 import { Store, MapPin } from "lucide-react";
 
+const formatAddressStr = (addr) => {
+  if (!addr) return "N/A";
+  if (typeof addr === "string") return addr;
+  if (typeof addr === "object") {
+    const { street, city, state, pincode, fullAddress, addressLine, address } = addr;
+    if (fullAddress) return fullAddress;
+    if (addressLine) return addressLine;
+    if (address) return typeof address === "string" ? address : formatAddressStr(address);
+    const parts = [street, city, state, pincode].filter(Boolean);
+    return parts.length > 0 ? parts.join(", ") : "N/A";
+  }
+  return String(addr);
+};
+
 const Address = ({ order_address, store_address, store_name }) => {
-  const { street, city, state, pincode } = order_address || {};
+  const deliveryAddrStr = formatAddressStr(order_address);
+  const storeAddrStr = formatAddressStr(store_address);
+
   const CONFIG = [
     {
       icon: MapPin,
       text: "Delivery address",
-      value: street || city ? `${street || ""}, ${city || ""}, ${state || ""}, ${pincode || ""}` : (typeof order_address === 'string' ? order_address : "N/A"),
+      value: deliveryAddrStr,
       iconStyle: "text-blue-400",
     },
 
     {
       icon: Store,
       text: "Store address",
-      value: store_address,
+      value: storeAddrStr,
       iconStyle: "text-gray-500",
     },
   ];

@@ -4,7 +4,7 @@ import {
   updateCartQtySvc,
   removeFromCartSvc,
   clearCartSvc,
-  getCartItemService,
+  getCartItemSvc,
 } from "./cart.service.js";
 
 export const handleGetCartByUser = async (req, res) => {
@@ -118,7 +118,7 @@ export const handleFindCartItemById = async (req, res) => {
         message: "Product id required",
       });
     }
-    const product = await getCartItemService(productId);
+    const product = await getCartItemSvc(productId);
     return res.status(200).json({
       success: true,
       message: "product fetched successfully",

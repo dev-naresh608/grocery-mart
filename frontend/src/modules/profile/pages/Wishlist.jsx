@@ -27,7 +27,21 @@ function Wishlist() {
       }
     };
     fetchWishlist();
-  }, [currentUser?._id, currentUser?.myWishlist]);
+  }, [currentUser?._id]);
+
+  // Keep wishlistStores in sync with Redux currentUser.myWishlist
+  useEffect(() => {
+    if (currentUser?.myWishlist) {
+      const savedIds = new Set(
+        currentUser.myWishlist.map((item) =>
+          typeof item === "object" ? item._id || item.id : item
+        )
+      );
+      setWishlistStores((prevStores) =>
+        prevStores.filter((store) => savedIds.has(store._id || store.id))
+      );
+    }
+  }, [currentUser?.myWishlist]);
 
   if (loading) {
     return (
@@ -59,6 +73,7 @@ function Wishlist() {
               name={store.store_name}
               address={store.store_address}
               id={store._id}
+              storeType={store.store_type || store.category || "General Store"}
             />
           ))}
         </div>

@@ -10,6 +10,7 @@ import {
   ScrollText,
   Package,
   CopyPlus,
+  Bell,
 } from "lucide-react";
 
 export const leftPanelItems = [
@@ -35,14 +36,15 @@ export const leftPanelItems = [
     showToDriver: true,
   },
   {
-    children: "Categories",
-    to: "/categories",
-    svg: <Tags size={18} className="rotate-90" />,
+    children: "Notifications",
+    to: "/allnotifications",
+    svg: <Bell size={18} />,
     showToCustomer: true,
-    showToSeller: false,
+    showToSeller: true,
     showToAdmin: false,
-    showToDriver: false,
+    showToDriver: true,
   },
+
   {
     children: "Stores",
     to: "/stores",

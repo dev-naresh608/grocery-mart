@@ -73,7 +73,7 @@ export const clearCartSvc = async (userId) => {
   return result;
 };
 
-export const getCartItemService = async (productId) => {
+export const getCartItemSvc = async (productId) => {
   const product = await Product.findById(productId);
   return product;
 };

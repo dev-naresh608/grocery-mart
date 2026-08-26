@@ -39,8 +39,16 @@ function Orders() {
   }, [currentUser?._id, currentUser?.role, dispatch]);
 
   const filteredOrders = useMemo(() => {
-    return searchOrdersSvc(allOrders, searchValue);
-  }, [allOrders, searchValue]);
+    let list = allOrders;
+
+    if (activeCard === "active") {
+      list = list.filter(
+        (o) => o.order_status === "pending" || o.order_status === "preparing"
+      );
+    }
+
+    return searchOrdersSvc(list, searchValue);
+  }, [allOrders, activeCard, searchValue]);
 
   // ===================== EMPTY STATE =====================
   if (allOrders.length === 0) {
@@ -51,7 +59,6 @@ function Orders() {
   const dashboardCards = dashboardCardsConfig(
     currentUser,
     setActiveCard,
-    setAllOrders,
     allOrders,
   );
 

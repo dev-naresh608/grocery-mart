@@ -3,8 +3,7 @@ import { Store, Package, CheckCircle2, XCircle } from "lucide-react";
 const dashboardCardsConfig = (
   currentUser,
   setActiveCard,
-  setAllOrders,
-  allOrders,
+  allOrders = [],
 ) => {
   const completedOrders =
     allOrders.filter(
@@ -35,9 +34,8 @@ const dashboardCardsConfig = (
 
       onClick: () => {
         setActiveCard("total");
-        setAllOrders(allOrders || []);
       },
-      cardStyle: "bg-orange-100 text-orange-500 border border-orange-200",
+      cardStyle: "bg-orange-100 text-orange-500 border border-orange-200 cursor-pointer",
       borderStyle: "border-b-[3px] border-orange-400",
     },
 
@@ -49,10 +47,9 @@ const dashboardCardsConfig = (
 
       onClick: () => {
         setActiveCard("completed");
-        setAllOrders(completedOrders);
       },
 
-      cardStyle: "bg-emerald-100 text-emerald-600 border border-emerald-200",
+      cardStyle: "bg-emerald-100 text-emerald-600 border border-emerald-200 cursor-pointer",
       borderStyle: "border-b-[3px] border-emerald-500",
     },
 
@@ -64,10 +61,9 @@ const dashboardCardsConfig = (
 
       onClick: () => {
         setActiveCard("cancelled");
-        setAllOrders(cancelledOrders);
       },
 
-      cardStyle: "bg-red-100 text-red-600 border border-red-200",
+      cardStyle: "bg-red-100 text-red-600 border border-red-200 cursor-pointer",
       borderStyle: "border-b-[3px] border-red-500",
     },
   ];

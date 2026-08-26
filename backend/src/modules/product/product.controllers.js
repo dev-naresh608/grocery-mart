@@ -1,9 +1,9 @@
 import Product from "./product.model.js";
 import Seller from "../seller/seller.model.js";
 import {
-  addProductService,
-  updateProductService,
-  deleteProductService,
+  addProductSvc,
+  updateProductSvc,
+  deleteProductSvc,
   deleteTempFolder,
   findProductSvc,
 } from "./product.service.js";
@@ -69,7 +69,7 @@ export const handleAddProduct = async (req, res) => {
 
     const { url, public_id } = uploadedImg;
 
-    const result = await addProductService(payload, url, public_id);
+    const result = await addProductSvc(payload, url, public_id);
 
     if (!result.success) {
       return res.status(400).json(result);
@@ -119,7 +119,7 @@ export const handleDeleteProductById = async (req, res) => {
     const { store_id } = req.body;
     const { productId } = req.params;
 
-    const result = await deleteProductService(productId, store_id);
+    const result = await deleteProductSvc(productId, store_id);
     return res.json(result);
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -138,7 +138,7 @@ export const handleUpdateProductById = async (req, res) => {
       });
     }
 
-    const result = await updateProductService(productId, store_id, updates);
+    const result = await updateProductSvc(productId, store_id, updates);
 
     return res.status(200).json({
       success: true,

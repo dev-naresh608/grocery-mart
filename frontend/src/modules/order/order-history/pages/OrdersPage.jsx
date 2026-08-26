@@ -39,8 +39,20 @@ function Orders() {
   }, [currentUser?._id, currentUser?.role, dispatch]);
 
   const filteredOrders = useMemo(() => {
-    return searchOrdersSvc(allOrders, searchValue);
-  }, [allOrders, searchValue]);
+    let list = allOrders;
+
+    if (activeCard === "completed") {
+      list = list.filter(
+        (o) => o.order_status === "completed" || o.order_status === "delivered"
+      );
+    } else if (activeCard === "cancelled") {
+      list = list.filter(
+        (o) => o.order_status === "rejected" || o.order_status === "cancelled"
+      );
+    }
+
+    return searchOrdersSvc(list, searchValue);
+  }, [allOrders, activeCard, searchValue]);
 
   // ===================== EMPTY STATE =====================
   if (allOrders.length === 0) {
@@ -51,7 +63,6 @@ function Orders() {
   const dashboardCards = dashboardCardsConfig(
     currentUser,
     setActiveCard,
-    setAllOrders,
     allOrders,
   );
 

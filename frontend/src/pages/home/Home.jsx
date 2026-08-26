@@ -9,10 +9,13 @@ import { useSelector } from "react-redux";
 import { leftPanelItems } from "@/constants/navigation";
 import { Menu, X, Truck, Leaf, Coins, ShieldCheck } from "lucide-react";
 import { NavLink, Outlet } from "react-router-dom";
+import { useNotificationToggle } from "@/modules/notification";
+
 function Home() {
   const { user: currentUser, isAuthenticated: isLogin } = useSelector(
     (state) => state.auth
   );
+  const { unreadCount } = useNotificationToggle();
 
   const cartItems = currentUser?.myCart || [];
   const [isLeftPanelOpen, setIsLeftPanelOpen] = useState(true);
@@ -86,11 +89,10 @@ function Home() {
   return (
     <>
       <div>
-        <div className="flex h-[90vh]">
+        <div className="flex h-[calc(100vh-65px)] overflow-hidden">
           {/* left panel */}
-          <div className="relative bg-white h-full pt-3">
+          <div className="relative bg-white h-full shrink-0 pt-3 overflow-y-auto border-r border-gray-100">
             <div>
-              {/* <div className="p-3 space-y-1 border-b border-green-300"> */}
               <div className="p-3 space-y-1">
                 {/* for customer  */}
                 {currentUser?.role === "customer" &&
@@ -100,30 +102,20 @@ function Home() {
                       <NavLink
                         key={i}
                         to={item.to}
-                        // onClick={item.handleOnClick}
                         className={({ isActive }) => {
-                          return `relative hover:scale-105 duration-150 flex gap-2 text-sm items-center font-semibold w-full px-2 py-1.5 rounded-md hover:bg-green-800 hover:text-white hover:shadow-md group whitespace-nowrap ${isActive ? "bg-green-800 text-white shadow-md" : "bg-none text-green-800"}`;
+                          return `relative hover:scale-105 duration-150 flex gap-2.5 text-sm items-center font-semibold w-full px-2 py-1.5 rounded-md hover:bg-green-800 hover:text-white hover:shadow-md group whitespace-nowrap ${isActive ? "bg-green-800 text-white shadow-md" : "bg-none text-green-800"}`;
                         }}
                       >
-                        {item.svg}
-                        {!isLeftPanelOpen && item.to === "/cart" && (
-                          <div className="absolute top-0 right-0.5 text-xs">
-                            <div className="">{cartItems?.length || ""}</div>
-                          </div>
-                        )}
-                        {isLeftPanelOpen && (
-                          <span className="flex items-center">
-                            {item.children}
-                            {item.to === "/cart" && (
-                              <div>
-                                <div>
-                                  <span>{"⠀- ⠀"}</span>
-                                  {cartItems?.length || "0"}
-                                </div>
-                              </div>
-                            )}
-                          </span>
-                        )}
+                        <div className="relative flex items-center justify-center">
+                          {item.svg}
+                          {item.to === "/cart" && cartItems?.length > 0 && (
+                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-green-500 ring-2 ring-white" />
+                          )}
+                          {item.to === "/allnotifications" && unreadCount > 0 && (
+                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-white animate-pulse" />
+                          )}
+                        </div>
+                        {isLeftPanelOpen && <span>{item.children}</span>}
                       </NavLink>
                     ))}
 
@@ -135,12 +127,16 @@ function Home() {
                       <NavLink
                         key={i}
                         to={item.to}
-                        // onClick={item.handleOnClick}
                         className={({ isActive }) => {
-                          return `flex gap-2 text-sm items-center font-semibold w-full  px-2 py-1.5 rounded-md hover:bg-green-800 hover:text-white hover:shadow-md group whitespace-nowrap ${isActive ? "bg-green-800 text-white shadow-md" : "bg-none text-green-800/80"}`;
+                          return `relative flex gap-2.5 text-sm items-center font-semibold w-full px-2 py-1.5 rounded-md hover:bg-green-800 hover:text-white hover:shadow-md group whitespace-nowrap ${isActive ? "bg-green-800 text-white shadow-md" : "bg-none text-green-800/80"}`;
                         }}
                       >
-                        {item.svg}
+                        <div className="relative flex items-center justify-center">
+                          {item.svg}
+                          {item.to === "/allnotifications" && unreadCount > 0 && (
+                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-white animate-pulse" />
+                          )}
+                        </div>
                         {isLeftPanelOpen && <span>{item.children}</span>}
                       </NavLink>
                     ))}
@@ -153,34 +149,21 @@ function Home() {
                       <NavLink
                         key={i}
                         to={item.to}
-                        // onClick={item.handleOnClick}
                         className={({ isActive }) => {
-                          return `flex gap-2 text-sm items-center font-semibold w-full  px-2 py-1.5 rounded-md hover:bg-green-800 hover:text-white hover:shadow-md group whitespace-nowrap ${isActive ? "bg-green-800 text-white shadow-md" : "bg-none text-green-800/80"}`;
+                          return `relative flex gap-2.5 text-sm items-center font-semibold w-full px-2 py-1.5 rounded-md hover:bg-green-800 hover:text-white hover:shadow-md group whitespace-nowrap ${isActive ? "bg-green-800 text-white shadow-md" : "bg-none text-green-800/80"}`;
                         }}
                       >
-                        {item.svg}
+                        <div className="relative flex items-center justify-center">
+                          {item.svg}
+                          {item.to === "/allnotifications" && unreadCount > 0 && (
+                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-white animate-pulse" />
+                          )}
+                        </div>
                         {isLeftPanelOpen && <span>{item.children}</span>}
                       </NavLink>
                     ))}
               </div>
 
-              {/* For both */}
-              {/* <div className="p-3 space-y-1">
-                {secondLeftPanelItems.map((item, i) => (
-                  <NavLink
-                    key={i}
-                    to={item.to}
-                    // onClick={item.handleOnClick}
-                    className={({ isActive }) => {
-                      return `flex gap-2 text-sm items-center font-semibold w-full px-2 py-1.5 rounded-md hover:bg-green-800 
-                      hover:text-white  hover:shadow-md group whitespace-nowrap ${isActive ? "bg-green-800 text-white shadow-md" : "bg-none text-gray-500"}`;
-                    }}
-                  >
-                    {<item.svg className="fill-gray-500 text-white" />}
-                    {isLeftPanelOpen && <span>{item.children}</span>}
-                  </NavLink>
-                ))}
-              </div> */}
               <div className="absolute z-50 right-0 top-0">
                 <button onClick={() => setIsLeftPanelOpen((prev) => !prev)}>
                   {isLeftPanelOpen ? "✘" : <Menu size={15} />}
@@ -188,14 +171,14 @@ function Home() {
               </div>
             </div>
           </div>
+
           {/* right panel  */}
           <div
-            className="w-full  h-full bg-gray-100 p-4   
-          [&::-webkit-scrollbar]:w-2
-          overflow-y-auto
-  [&::-webkit-scrollbar-track]:transparent
-  [&::-webkit-scrollbar-thumb]:transparent
-  [&::-webkit-scrollbar-thumb]:rounded-full"
+            className="flex-1 bg-gray-100 p-4 sm:p-6 overflow-y-auto
+              [&::-webkit-scrollbar]:w-2
+              [&::-webkit-scrollbar-track]:transparent
+              [&::-webkit-scrollbar-thumb]:bg-gray-300
+              [&::-webkit-scrollbar-thumb]:rounded-full"
           >
             <Outlet />
           </div>

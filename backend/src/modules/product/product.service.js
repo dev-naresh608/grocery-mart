@@ -5,7 +5,7 @@ import Seller from "../seller/seller.model.js";
 import Product from "./product.model.js";
 import User from "../user/user.model.js";
 
-export const addProductService = async (payload, url, product_id) => {
+export const addProductSvc = async (payload, url, product_id) => {
   const {
     store_id,
     product_name,
@@ -50,7 +50,7 @@ export const addProductService = async (payload, url, product_id) => {
   };
 };
 
-export const updateProductService = async (product_id, store_id, updates) => {
+export const updateProductSvc = async (product_id, store_id, updates) => {
   const allowedFields = [
     "product_name",
     "product_weight",
@@ -97,7 +97,7 @@ export const updateProductService = async (product_id, store_id, updates) => {
   return product;
 };
 
-export const deleteProductService = async (product_id, store_id) => {
+export const deleteProductSvc = async (product_id, store_id) => {
   let actualStoreId = store_id;
   const seller = await Seller.findOne({
     $or: [{ _id: store_id }, { user_id: store_id }],

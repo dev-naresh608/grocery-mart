@@ -1,6 +1,8 @@
 import { toast } from "react-toastify";
 import { addOrderApi, getStoreApi, clearCartApi } from "./cart.api.service";
 import { validateOrder } from "../utils/cartValidation";
+import { fetchUnreadNotificationsApi } from "@/modules/notification/services/notification.api.service";
+import { setUnreadData } from "@/modules/notification/store/notificationSlice";
 
 export const onCartPlaceOrder = async (
   currentUser,
@@ -10,6 +12,7 @@ export const onCartPlaceOrder = async (
   address,
   paymentMethod,
   navigate,
+  dispatch,
 ) => {
   try {
 
@@ -76,6 +79,23 @@ export const onCartPlaceOrder = async (
     };
 
     setCurrentUser(updatedUser);
+
+    // Refresh notification state in Redux for real-time header and sidebar update
+    try {
+      if (currentUser?._id && dispatch) {
+        const notifRes = await fetchUnreadNotificationsApi(currentUser._id, 8);
+        if (notifRes && notifRes.success) {
+          dispatch(
+            setUnreadData({
+              notifications: notifRes.notifications || [],
+              unreadCount: notifRes.unreadCount || 0,
+            })
+          );
+        }
+      }
+    } catch (notifErr) {
+      console.error("Failed to update notification state on order placement:", notifErr);
+    }
 
     toast.success(response.message || "Order placed successfully");
 
