@@ -46,7 +46,7 @@ function Home() {
         },
       ];
       return (
-        <div className="min-h-screen flex flex-col bg-white">
+        <div className="h-full flex flex-col bg-white overflow-y-auto custom-scrollbar">
           <Hero />
           <Category />
           <BlogSection />
@@ -90,7 +90,7 @@ function Home() {
 
     // For public routes (/stores, /cart, /product/:id, etc.) when NOT logged in:
     return (
-      <div className="min-h-screen flex flex-col bg-gray-50">
+      <div className="h-full flex flex-col bg-gray-50 overflow-y-auto custom-scrollbar">
         <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6">
           <Outlet />
         </main>
@@ -101,104 +101,94 @@ function Home() {
 
   // If user IS logged in: Render Dashboard / Sidebar panel layout!
   return (
-    <>
-      <div>
-        <div className="flex h-[calc(100vh-65px)] overflow-hidden">
-          {/* left panel */}
-          <div className="relative bg-white h-full shrink-0 pt-3 overflow-y-auto border-r border-gray-100">
-            <div>
-              <div className="p-3 space-y-1">
-                {/* for customer  */}
-                {userRole === "customer" &&
-                  leftPanelItems
-                    .filter((item) => item.showToCustomer)
-                    .map((item, i) => (
-                      <NavLink
-                        key={i}
-                        to={item.to}
-                        className={({ isActive }) => {
-                          return `relative hover:scale-105 duration-150 flex gap-2.5 text-sm items-center font-semibold w-full px-2 py-1.5 rounded-md hover:bg-green-800 hover:text-white hover:shadow-md group whitespace-nowrap ${isActive ? "bg-green-800 text-white shadow-md" : "bg-none text-green-800"}`;
-                        }}
-                      >
-                        <div className="relative flex items-center justify-center">
-                          {item.svg}
-                          {item.to === "/cart" && cartItems?.length > 0 && (
-                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-green-500 ring-2 ring-white" />
-                          )}
-                          {item.to === "/allnotifications" && unreadCount > 0 && (
-                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-white animate-pulse" />
-                          )}
-                        </div>
-                        {isLeftPanelOpen && <span>{item.children}</span>}
-                      </NavLink>
-                    ))}
+    <div className="flex h-full overflow-hidden">
+      {/* left panel */}
+      <div className="relative bg-white h-full shrink-0 pt-3 overflow-y-auto scrollbar-none [&::-webkit-scrollbar]:hidden border-r border-gray-100">
+        <div>
+          <div className="p-3 space-y-1">
+            {/* for customer  */}
+            {userRole === "customer" &&
+              leftPanelItems
+                .filter((item) => item.showToCustomer)
+                .map((item, i) => (
+                  <NavLink
+                    key={i}
+                    to={item.to}
+                    className={({ isActive }) => {
+                      return `relative hover:scale-105 duration-150 flex gap-2.5 text-sm items-center font-semibold w-full px-2 py-1.5 rounded-md hover:bg-green-800 hover:text-white hover:shadow-md group whitespace-nowrap ${isActive ? "bg-green-800 text-white shadow-md" : "bg-none text-green-800"}`;
+                    }}
+                  >
+                    <div className="relative flex items-center justify-center">
+                      {item.svg}
+                      {item.to === "/cart" && cartItems?.length > 0 && (
+                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-green-500 ring-2 ring-white" />
+                      )}
+                      {item.to === "/allnotifications" && unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-white animate-pulse" />
+                      )}
+                    </div>
+                    {isLeftPanelOpen && <span>{item.children}</span>}
+                  </NavLink>
+                ))}
 
-                {/* for seller  */}
-                {userRole === "seller" &&
-                  leftPanelItems
-                    .filter((item) => item.showToSeller)
-                    .map((item, i) => (
-                      <NavLink
-                        key={i}
-                        to={item.to}
-                        className={({ isActive }) => {
-                          return `relative flex gap-2.5 text-sm items-center font-semibold w-full px-2 py-1.5 rounded-md hover:bg-green-800 hover:text-white hover:shadow-md group whitespace-nowrap ${isActive ? "bg-green-800 text-white shadow-md" : "bg-none text-green-800/80"}`;
-                        }}
-                      >
-                        <div className="relative flex items-center justify-center">
-                          {item.svg}
-                          {item.to === "/allnotifications" && unreadCount > 0 && (
-                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-white animate-pulse" />
-                          )}
-                        </div>
-                        {isLeftPanelOpen && <span>{item.children}</span>}
-                      </NavLink>
-                    ))}
+            {/* for seller  */}
+            {userRole === "seller" &&
+              leftPanelItems
+                .filter((item) => item.showToSeller)
+                .map((item, i) => (
+                  <NavLink
+                    key={i}
+                    to={item.to}
+                    className={({ isActive }) => {
+                      return `relative flex gap-2.5 text-sm items-center font-semibold w-full px-2 py-1.5 rounded-md hover:bg-green-800 hover:text-white hover:shadow-md group whitespace-nowrap ${isActive ? "bg-green-800 text-white shadow-md" : "bg-none text-green-800/80"}`;
+                    }}
+                  >
+                    <div className="relative flex items-center justify-center">
+                      {item.svg}
+                      {item.to === "/allnotifications" && unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-white animate-pulse" />
+                      )}
+                    </div>
+                    {isLeftPanelOpen && <span>{item.children}</span>}
+                  </NavLink>
+                ))}
 
-                {/* for driver  */}
-                {userRole === "driver" &&
-                  leftPanelItems
-                    .filter((item) => item.showToDriver)
-                    .map((item, i) => (
-                      <NavLink
-                        key={i}
-                        to={item.to}
-                        className={({ isActive }) => {
-                          return `relative flex gap-2.5 text-sm items-center font-semibold w-full px-2 py-1.5 rounded-md hover:bg-green-800 hover:text-white hover:shadow-md group whitespace-nowrap ${isActive ? "bg-green-800 text-white shadow-md" : "bg-none text-green-800/80"}`;
-                        }}
-                      >
-                        <div className="relative flex items-center justify-center">
-                          {item.svg}
-                          {item.to === "/allnotifications" && unreadCount > 0 && (
-                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-white animate-pulse" />
-                          )}
-                        </div>
-                        {isLeftPanelOpen && <span>{item.children}</span>}
-                      </NavLink>
-                    ))}
-              </div>
-
-              <div className="absolute z-50 right-0 top-0">
-                <button onClick={() => setIsLeftPanelOpen((prev) => !prev)}>
-                  {isLeftPanelOpen ? "✘" : <Menu size={15} />}
-                </button>
-              </div>
-            </div>
+            {/* for driver  */}
+            {userRole === "driver" &&
+              leftPanelItems
+                .filter((item) => item.showToDriver)
+                .map((item, i) => (
+                  <NavLink
+                    key={i}
+                    to={item.to}
+                    className={({ isActive }) => {
+                      return `relative flex gap-2.5 text-sm items-center font-semibold w-full px-2 py-1.5 rounded-md hover:bg-green-800 hover:text-white hover:shadow-md group whitespace-nowrap ${isActive ? "bg-green-800 text-white shadow-md" : "bg-none text-green-800/80"}`;
+                    }}
+                  >
+                    <div className="relative flex items-center justify-center">
+                      {item.svg}
+                      {item.to === "/allnotifications" && unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-red-500 ring-2 ring-white animate-pulse" />
+                      )}
+                    </div>
+                    {isLeftPanelOpen && <span>{item.children}</span>}
+                  </NavLink>
+                ))}
           </div>
 
-          {/* right panel  */}
-          <div
-            className="flex-1 bg-gray-100 p-4 sm:p-6 overflow-y-auto
-              [&::-webkit-scrollbar]:w-2
-              [&::-webkit-scrollbar-track]:transparent
-              [&::-webkit-scrollbar-thumb]:bg-gray-300
-              [&::-webkit-scrollbar-thumb]:rounded-full"
-          >
-            <Outlet />
+          <div className="absolute z-50 right-0 top-0">
+            <button onClick={() => setIsLeftPanelOpen((prev) => !prev)}>
+              {isLeftPanelOpen ? "✘" : <Menu size={15} />}
+            </button>
           </div>
         </div>
       </div>
-    </>
+
+      {/* right panel  */}
+      <div className="flex-1 h-full bg-gray-100 p-4 sm:p-6 overflow-y-auto custom-scrollbar">
+        <Outlet />
+      </div>
+    </div>
   );
 }
 
