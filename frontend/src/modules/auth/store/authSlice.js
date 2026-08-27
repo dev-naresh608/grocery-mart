@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { addToCartApi } from "@/modules/cart/services/cart.api";
 
 import {
   register,
@@ -7,6 +8,53 @@ import {
   rotateToken,
   logout,
 } from "./authThunk.js";
+
+const clearGuestLocalStorage = () => {
+  try {
+    localStorage.removeItem("novexa_guest_cart");
+    localStorage.removeItem("novexa_cart_store_id");
+  } catch (e) {}
+};
+
+const syncGuestCartToUser = (user) => {
+  if (!user || (user.role && user.role !== "customer")) {
+    clearGuestLocalStorage();
+    return user;
+  }
+  try {
+    const saved = localStorage.getItem("novexa_guest_cart");
+    if (!saved) {
+      clearGuestLocalStorage();
+      return user;
+    }
+    const guestItems = JSON.parse(saved);
+    if (!Array.isArray(guestItems) || guestItems.length === 0) {
+      clearGuestLocalStorage();
+      return user;
+    }
+
+    const existingCart = user.myCart || [];
+    const mergedCart = [...existingCart];
+
+    guestItems.forEach((gItem) => {
+      const exists = mergedCart.some((item) => item._id === gItem._id);
+      if (!exists) {
+        mergedCart.push(gItem);
+        if (user._id) {
+          addToCartApi(user._id, gItem._id, gItem.store_id || gItem.storeId, gItem.product_qty || 1).catch((err) =>
+            console.error("Failed to sync guest item to DB:", err)
+          );
+        }
+      }
+    });
+
+    clearGuestLocalStorage();
+    return { ...user, myCart: mergedCart };
+  } catch (e) {
+    clearGuestLocalStorage();
+    return user;
+  }
+};
 
 const initialState = {
   user: null,
@@ -27,6 +75,7 @@ const authSlice = createSlice({
       state.isAuthenticated = false;
       state.isLoading = false;
       state.error = null;
+      clearGuestLocalStorage();
     },
     updateUser: (state, action) => {
       if (state.user) {
@@ -52,7 +101,7 @@ const authSlice = createSlice({
 
         const { user, accessToken } = action.payload;
 
-        state.user = user;
+        state.user = syncGuestCartToUser(user);
         state.accessToken = accessToken;
         state.isAuthenticated = true;
       })
@@ -71,7 +120,7 @@ const authSlice = createSlice({
 
         const { user, accessToken } = action.payload;
 
-        state.user = user;
+        state.user = syncGuestCartToUser(user);
         state.accessToken = accessToken;
         state.isAuthenticated = true;
       })
@@ -89,6 +138,7 @@ const authSlice = createSlice({
         state.isLoading = false;
         state.user = action.payload.user;
         state.isAuthenticated = true;
+        clearGuestLocalStorage();
       })
       .addCase(getMe.rejected, (state, action) => {
         state.isLoading = false;
@@ -108,6 +158,7 @@ const authSlice = createSlice({
         state.accessToken = action.payload.accessToken;
         state.user = action.payload.user;
         state.isAuthenticated = true;
+        clearGuestLocalStorage();
       })
       .addCase(rotateToken.rejected, (state, action) => {
         state.isLoading = false;
@@ -128,6 +179,7 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.isLoading = false;
         state.error = null;
+        clearGuestLocalStorage();
       })
       .addCase(logout.rejected, (state) => {
         state.user = null;
@@ -135,6 +187,7 @@ const authSlice = createSlice({
         state.isAuthenticated = false;
         state.isLoading = false;
         state.error = null;
+        clearGuestLocalStorage();
       });
   },
 });

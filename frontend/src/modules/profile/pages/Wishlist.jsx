@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import { StoreCard } from "../../../components";
+import { StoreCard } from "@/modules/seller";
 import { defaultRest } from "@/assets";
 import { getWishlistStoresApi } from "../services/wishlist.api";
 

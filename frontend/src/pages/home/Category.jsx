@@ -82,7 +82,7 @@ function Category() {
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
         {(showCategoriesAsScreen || categories)?.map((product, index) => (
           <Link
-            to={`/categories/categoryWiseProducts/${product.catName}`}
+            to={`/stores?category=${encodeURIComponent(product.catName)}`}
             key={index}
             className={`group relative flex flex-col justify-center rounded-3xl p-6 text-center shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-gray-100 ${
               cardColors[index % cardColors.length]

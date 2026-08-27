@@ -18,18 +18,21 @@ import {
   VehicleDetails,
   Earnings,
   ShowAllNotifications,
-  NotFound
+  NotFound,
 } from "./index";
+
+import {
+  Layout,
+  useModal,
+  MODAL_TYPES,
+} from "./components";
 
 import {
   AllProducts,
   CategoryWiseProducts,
-  Layout,
   SearchProduct,
   AllStores,
-  useModal,
-  MODAL_TYPES,
-} from "./components";
+} from "./modules/seller";
 
 import {
   BrowserRouter,
@@ -38,6 +41,7 @@ import {
   Route,
   RouterProvider,
   useNavigate,
+  useParams,
   Outlet,
   Navigate,
 } from "react-router-dom";
@@ -67,6 +71,24 @@ const SignupRedirect = () => {
   return null;
 };
 
+const HomeIndexRoute = () => {
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  if (isAuthenticated) {
+    return <Dashboard />;
+  }
+  return null;
+};
+
+const CategoryWiseRedirect = () => {
+  const { catName } = useParams();
+  return (
+    <Navigate
+      to={`/stores?category=${encodeURIComponent(catName || "")}`}
+      replace
+    />
+  );
+};
+
 const ProtectedRoute = () => {
   const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
   const navigate = useNavigate();
@@ -93,6 +115,7 @@ function App() {
       dispatch(rotateToken());
     }
   }, [dispatch, isAuthenticated]);
+
   const router = createBrowserRouter(
     createRoutesFromElements(
       <Route path="/" element={<Layout />}>
@@ -104,10 +127,14 @@ function App() {
         {/* ! show in panel  */}
         <Route path="/" element={<Home />}>
           {/* Public Routes */}
-          <Route path="categories" element={<Navigate to="/stores" replace />} />
+          <Route index element={<HomeIndexRoute />} />
+          <Route
+            path="categories"
+            element={<Navigate to="/stores" replace />}
+          />
           <Route
             path="categories/categoryWiseProducts/:catName"
-            element={<Navigate to="/stores" replace />}
+            element={<CategoryWiseRedirect />}
           />
           <Route path="cart" element={<CartPage />}></Route>
           <Route path="stores" element={<AllStores />}></Route>
@@ -117,11 +144,13 @@ function App() {
             path="/allproducts/searchproduct/:searchValue"
             element={<SearchProduct />}
           />
-          <Route path="product/:productId" element={<ProductDetailPage />}></Route>
+          <Route
+            path="product/:productId"
+            element={<ProductDetailPage />}
+          ></Route>
 
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
-            <Route index element={<Dashboard />}></Route>
             <Route path="favourite" element={<Wishlist />}></Route>
             <Route path="orders" element={<Orders />}></Route>
             <Route path="orders/:orderId" element={<OrderDetail />} />
@@ -131,7 +160,10 @@ function App() {
             <Route path="addproducts" element={<AddProduct />}></Route>
             <Route path="product-list" element={<ProductListPage />}></Route>
             <Route path="active-orders" element={<ActiveOrders />}></Route>
-            <Route path="allnotifications" element={<ShowAllNotifications />}></Route>
+            <Route
+              path="allnotifications"
+              element={<ShowAllNotifications />}
+            ></Route>
             <Route path="deliveryHistory" element={<Orders />}></Route>
             <Route path="earnings" element={<Earnings />}></Route>
             <Route path="vehicleDetails" element={<VehicleDetails />}></Route>
@@ -142,7 +174,10 @@ function App() {
         {/* ! profile path  */}
         <Route element={<ProtectedRoute />}>
           <Route path="profile" element={<Profile />}>
-            <Route path="personalinformation" element={<PersonalInfo />}></Route>
+            <Route
+              path="personalinformation"
+              element={<PersonalInfo />}
+            ></Route>
             <Route path="payments" element={<Payments />}></Route>
             <Route path="setting" element={<Setting />}></Route>
           </Route>

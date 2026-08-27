@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import ProductBuyCard from "./ProductBuyCard";
-import api from "../../../../configs/api";
+import api from "@/configs/api";
 import { toast } from "react-toastify";
 
 function AllProducts() {

@@ -1,15 +1,16 @@
 import React from "react";
-import { RatingStar, ProductImageLoader } from "../../../..";
+import { RatingStar, ProductImageLoader } from "@/components";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useSelector, useDispatch } from "react-redux";
 import { updateUser } from "@/modules/auth/store/authSlice";
-import { setStoreId } from "@/modules/cart/store/cartSlice";
+import { setStoreId, setGuestCart, clearGuestCart } from "@/modules/cart/store/cartSlice";
+import { useModal, MODAL_TYPES } from "@/components";
 
 import { useParams } from "react-router-dom";
 import { ShoppingCartIcon } from "lucide-react";
-import api from "../../../../configs/api";
-import { addToCartApi, updateCartQtyApi, removeFromCartApi } from "../../../../modules/cart/services/cart.api";
+import api from "@/configs/api";
+import { addToCartApi, updateCartQtyApi, removeFromCartApi } from "@/modules/cart/services/cart.api";
 
 function ProductBuyCard({
   name,
@@ -22,87 +23,115 @@ function ProductBuyCard({
 }) {
   const dispatch = useDispatch();
   const { restId } = useParams();
+  const { openModal } = useModal();
+
   const { user: currentUser, isAuthenticated: isLogin } = useSelector(
     (state) => state.auth
   );
   const storeId = useSelector((state) => state.cart.storeId);
+  const guestCart = useSelector((state) => state.cart.guestCart || []);
   const currentUserRole = currentUser?.role || "customer";
+
+  const cartItems = isLogin ? (currentUser?.myCart || []) : guestCart;
+
+  // Helper to commit new cart state (logged in vs guest)
+  const commitCartUpdate = async (updatedCart, newStoreId) => {
+    if (isLogin) {
+      dispatch(updateUser({ myCart: updatedCart }));
+      if (newStoreId !== undefined) {
+        dispatch(setStoreId(newStoreId));
+      }
+    } else {
+      dispatch(setGuestCart(updatedCart));
+      if (newStoreId !== undefined) {
+        dispatch(setStoreId(newStoreId));
+      }
+    }
+  };
 
   // ============== ADD TO CART ====================
   async function onAddToCart(itemId) {
-    const { data } = await api.get(`/cart/${itemId}`);
-
-    if (!data.success) {
-      return toast.error(data.message);
+    if (is_product_in_stock === false) {
+      return toast.error("Product is currently out of stock");
     }
 
-    const productToAdd = data.product;
-    const user = currentUser || {};
-    const cartItems = user.myCart || [];
-
-    const newProduct = {
-      ...productToAdd,
-      product_qty: 1,
-      store_id: restId,
-    };
-
-    // ============== VALIDATION ====================
-    const handleUserCanItemInCartFromOnlyOneStore = () => {
-      const currentRestId = restId;
-      if (storeId && storeId !== currentRestId) {
-        return false;
+    try {
+      const { data } = await api.get(`/cart/${itemId}`);
+      if (!data.success) {
+        return toast.error(data.message);
       }
-      return true;
-    };
 
-    if (cartItems && cartItems.length > 0) {
-      if (handleUserCanItemInCartFromOnlyOneStore()) {
-        const isProductAlreadyExist = cartItems.some((p) => p._id === itemId);
+      const productToAdd = data.product;
+      const newProduct = {
+        ...productToAdd,
+        product_qty: 1,
+        store_id: restId,
+      };
 
-        if (isProductAlreadyExist) {
-          toast.info("product already exist");
-          return;
-        }
-        dispatch(
-          updateUser({ myCart: [...(user.myCart || []), newProduct] })
-        );
-      } else {
-        alert("first clear previous stores cart");
+      // Store isolation check
+      if (cartItems && cartItems.length > 0 && storeId && storeId !== restId) {
+        openModal(MODAL_TYPES.CONFIRM, {
+          title: "Replace cart items?",
+          message:
+            "Your cart contains items from another store. Do you want to clear your cart and add this item from the new store?",
+          confirmText: "Clear & Add",
+          cancelText: "Cancel",
+          type: "warning",
+          onConfirm: async () => {
+            await commitCartUpdate([newProduct], restId);
+            if (isLogin && currentUser?._id) {
+              try {
+                await addToCartApi(currentUser._id, itemId, restId, 1);
+              } catch (err) {
+                console.error("Failed to sync store switch to DB:", err);
+              }
+            }
+            toast.success("Cart replaced with item from new store");
+          },
+        });
         return;
       }
-    } else {
-      dispatch(updateUser({ myCart: [newProduct] }));
-    }
 
-    if (isLogin && currentUser?._id) {
-      try {
-        await addToCartApi(currentUser._id, itemId, restId, 1);
-      } catch (error) {
-        console.error("Failed to sync add to cart with DB:", error);
+      const isProductAlreadyExist = cartItems.some((p) => p._id === itemId);
+      if (isProductAlreadyExist) {
+        toast.info("Product is already in your cart");
+        return;
       }
-    }
 
-    dispatch(setStoreId(restId));
-    toast.success("Added");
+      const updatedCart = [...cartItems, newProduct];
+      await commitCartUpdate(updatedCart, restId);
+
+      if (isLogin && currentUser?._id) {
+        try {
+          await addToCartApi(currentUser._id, itemId, restId, 1);
+        } catch (error) {
+          console.error("Failed to sync add to cart with DB:", error);
+        }
+      }
+
+      toast.success("Added to cart");
+    } catch (error) {
+      toast.error("Failed to add product to cart");
+    }
   }
 
   // ============== INCREASE QUANTITY ====================
   const onIncreaseQty = async (itemId) => {
-    const user = currentUser;
-    if (!user) return;
-    const itemToUpdate = user.myCart?.find((item) => item._id === itemId);
+    const itemToUpdate = cartItems.find((item) => item._id === itemId);
     if (!itemToUpdate) return;
     const newQty = itemToUpdate.product_qty + 1;
-    if (newQty > 10) return;
+    if (newQty > 10) {
+      return toast.warning("Maximum limit is 10 items per product");
+    }
 
-    const updatedCart = user.myCart.map((item) => {
+    const updatedCart = cartItems.map((item) => {
       if (item._id === itemId) {
         return { ...item, product_qty: newQty };
       }
       return item;
     });
 
-    dispatch(updateUser({ myCart: updatedCart }));
+    await commitCartUpdate(updatedCart);
 
     if (isLogin && currentUser?._id) {
       try {
@@ -115,21 +144,19 @@ function ProductBuyCard({
 
   // ============== DECREASE QUANTITY ====================
   const onDecreaseQty = async (itemId) => {
-    const user = currentUser;
-    if (!user) return;
-    const itemToUpdate = user.myCart?.find((item) => item._id === itemId);
+    const itemToUpdate = cartItems.find((item) => item._id === itemId);
     if (!itemToUpdate) return;
     const newQty = itemToUpdate.product_qty - 1;
 
     let updatedCart;
     if (newQty > 0) {
-      updatedCart = user.myCart.map((item) => {
+      updatedCart = cartItems.map((item) => {
         if (item._id === itemId) {
           return { ...item, product_qty: newQty };
         }
         return item;
       });
-      dispatch(updateUser({ myCart: updatedCart }));
+      await commitCartUpdate(updatedCart);
 
       if (isLogin && currentUser?._id) {
         try {
@@ -139,8 +166,9 @@ function ProductBuyCard({
         }
       }
     } else {
-      updatedCart = user.myCart.filter((item) => item._id !== itemId);
-      dispatch(updateUser({ myCart: updatedCart }));
+      updatedCart = cartItems.filter((item) => item._id !== itemId);
+      const newStoreId = updatedCart.length === 0 ? null : storeId;
+      await commitCartUpdate(updatedCart, newStoreId);
 
       if (isLogin && currentUser?._id) {
         try {
@@ -149,12 +177,14 @@ function ProductBuyCard({
         } catch (error) {
           console.error("Failed to remove item from DB:", error);
         }
+      } else {
+        toast.success("Item removed from cart");
       }
     }
   };
 
   // to see currentQty.
-  const currentProduct = currentUser?.myCart?.find((p) => p._id === id);
+  const currentProduct = cartItems.find((p) => p._id === id);
   const currentQty = currentProduct?.product_qty || 0;
 
   // Offer calculation

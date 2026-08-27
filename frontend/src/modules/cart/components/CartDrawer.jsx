@@ -57,9 +57,10 @@ export default function CartDrawer() {
   };
 
   const handleCheckoutOrder = () => {
+    if (!isLogin) {
+      dispatch(closeCartDrawer());
+    }
     handlePlaceOrder();
-    // Close drawer after starting order process
-    dispatch(closeCartDrawer());
   };
 
   const cartItems = currentUser?.myCart || [];
@@ -308,7 +309,7 @@ export default function CartDrawer() {
               onClick={handleCheckoutOrder}
               className="w-full flex items-center justify-between bg-green-700 hover:bg-green-800 text-white font-bold text-sm py-3.5 px-5 rounded-2xl shadow-lg shadow-green-700/25 transition-all cursor-pointer border-none active:scale-[0.99]"
             >
-              <span>Place Order</span>
+              <span>{isLogin ? "Place Order" : "Login to Place Order"}</span>
               <div className="flex items-center gap-2">
                 <span className="text-xs bg-white/20 px-2 py-0.5 rounded-md font-extrabold">
                   ₹{orderPriceDetails?.finalPrice?.toFixed(2) || "0.00"}

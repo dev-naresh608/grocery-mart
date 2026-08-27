@@ -59,10 +59,10 @@ export const handleGetAllOrders = async (req, res) => {
 export const handleAddOrder = async (req, res) => {
   try {
     const payload = req.body;
-    if (!payload) {
-      return res.status(400).json({
+    if (!payload || !payload.customerId) {
+      return res.status(401).json({
         success: false,
-        message: "Payload is required",
+        message: "You must be logged in to place an order.",
       });
     }
     const result = await addOrderSvc(payload);

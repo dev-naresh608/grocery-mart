@@ -4,7 +4,7 @@ import {
   CreditCard,
   DollarSign,
   User,
-  Dot,
+  Activity,
   Clock,
   Package,
   Store,
@@ -26,7 +26,7 @@ function OrdersTable({ currentUserRole, allOrders }) {
   const TABLE_CONFIG = [
     { colLabel: "Order ID", icon: Package },
     {
-      colLabel: cfg?.colLabel  || "nothing",
+      colLabel: cfg?.colLabel  || "Details",
       icon:
         currentUserRole === "customer"
           ? Store
@@ -34,34 +34,32 @@ function OrdersTable({ currentUserRole, allOrders }) {
             ? Store
             : CarIcon,
     },
-    { colLabel: "Created By", icon: Clock },
+    { colLabel: "Created Date", icon: Clock },
     { colLabel: "Payment", icon: CreditCard },
     { colLabel: "Total", icon: DollarSign },
-    { colLabel: "Status", icon: Dot },
   ];
-
 
   const renderTableHeader = (label) => {
     const Icon = label?.icon;
 
     return (
-      <th key={label.colLabel} className="p-4">
-        <div className="flex items-center gap-1">
-          <Icon size={17} />
-          {label?.colLabel}
+      <th key={label.colLabel} className="px-5 py-3.5 whitespace-nowrap text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
+        <div className="flex items-center gap-2">
+          {Icon && <Icon className="w-4 h-4 text-gray-400 shrink-0" />}
+          <span className="whitespace-nowrap">{label?.colLabel}</span>
         </div>
       </th>
     );
   };
 
   return (
-    <div className="min-h-[300px] overflow-hidden border rounded-lg">
+    <div className="min-h-[300px] overflow-x-auto scrollbar-none [&::-webkit-scrollbar]:hidden border border-gray-200/90 rounded-2xl bg-white shadow-xs">
       <table className="w-full text-left text-sm">
         {/* TABLE HEAD */}
-        <thead className="border-b bg-gray-50 text-gray-500">
+        <thead className="border-b border-gray-200/80 bg-gray-50/80 text-gray-600">
           <tr>
             {TABLE_CONFIG.map((label) => renderTableHeader(label))}
-            <th> </th>
+            <th className="px-4 py-3.5"> </th>
           </tr>
         </thead>
 
@@ -71,52 +69,47 @@ function OrdersTable({ currentUserRole, allOrders }) {
             <tr
               key={o._id}
               onClick={() => navigate(`/orders/${o._id}`)}
-              className="cursor-pointer border-b transition-colors duration-150 hover:bg-gray-100/70"
+              className="cursor-pointer border-b border-gray-100 transition-colors duration-150 hover:bg-gray-50/80"
             >
               {/* ORDER ID */}
-              <td className="p-4 font-medium text-gray-600">
+              <td className="px-5 py-4 whitespace-nowrap font-medium text-gray-700">
                 #{o._id?.slice(0, 8).toUpperCase()}
               </td>
 
               {/* CUSTOMER / STORE */}
-              <td className="p-4">
-                <div>
-                  <p className="font-medium text-gray-700">
+              <td className="px-5 py-4 whitespace-nowrap">
+                <div className="max-w-[220px]">
+                  <p className="font-semibold text-gray-800 truncate">
                     {o[cfg?.fromKey] || "-"}
                   </p>
 
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500 font-medium truncate" title={typeof o[cfg?.subKey] === "string" ? o[cfg?.subKey] : ""}>
                     {o[cfg?.subKey] || "-"}
                   </p>
                 </div>
               </td>
 
               {/* DATE / TIME */}
-              <td className="p-4 text-sm text-gray-600">
+              <td className="px-5 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
                 <p>{formateDateTime(o.createdAt, "date")}</p>
               </td>
 
               {/* PAYMENT */}
-              <td className="p-4 text-gray-600">
+              <td className="px-5 py-4 whitespace-nowrap text-gray-600 font-medium">
                 {o.payment_method === "cashOnDelivery" ? "Cash" : "Online"}
               </td>
 
               {/* TOTAL */}
-              <td className="p-4 font-semibold text-gray-700">
+              <td className="px-5 py-4 whitespace-nowrap font-bold text-gray-800">
                 ${o.price_detail?.finalPrice}
               </td>
 
-              {/* STATUS */}
-              <td className="p-4">
-                <OrderStatusPill status={o.order_status} />
-              </td>
-
               {/* ARROW */}
-              <td className="p-4">
+              <td className="px-4 py-4 whitespace-nowrap text-right">
                 <ChevronRight
-                  size={14}
-                  strokeWidth={3}
-                  className="text-gray-500"
+                  size={16}
+                  strokeWidth={2.5}
+                  className="text-gray-400"
                 />
               </td>
             </tr>

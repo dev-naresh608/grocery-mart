@@ -9,7 +9,6 @@ const DEFAULT_CATEGORIES = [
   { catName: "Packaged Foods", catIcon: "📦" },
   { catName: "Cleaning & Household", catIcon: "🧹" },
   { catName: "Personal Care", catIcon: "🧴" },
-  { catName: "Others", catIcon: "🧺" },
 ];
 
 const initialState = {

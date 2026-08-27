@@ -305,11 +305,29 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   }
 }
 
-/* ================= CUSTOM SLEEK SCROLLBAR ================= */
+/* ================= CUSTOM SLEEK & SUBTLE SCROLLBAR ================= */
+
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(156, 163, 175, 0.45);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 114, 128, 0.7);
+}
 
 .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {
@@ -317,10 +335,10 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #cbd5e1; /* Gray-300 sleek texture */
+  background: rgba(156, 163, 175, 0.45);
   border-radius: 9999px;
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8; /* Gray-400 on hover */
+  background: rgba(107, 114, 128, 0.7);
 }

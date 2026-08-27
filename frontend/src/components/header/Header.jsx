@@ -83,7 +83,8 @@ function Header() {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const rightNavRef = useRef(null);
   const { isAuthenticated: isLogin, user: currentUser } = useSelector((state) => state.auth);
-  const cartItems = currentUser?.myCart || [];
+  const guestCart = useSelector((state) => state.cart.guestCart || []);
+  const cartItems = isLogin ? (currentUser?.myCart || []) : guestCart;
   const navigate = useNavigate();
   const { openModal } = useModal();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -112,12 +113,33 @@ function Header() {
     setSearchValue(searchValFromUrl);
   }, [searchValFromUrl]);
 
+  function handleSearchInputChange(val) {
+    setSearchValue(val);
+    if (val.trim() === "" && searchValFromUrl) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("search");
+      setSearchParams(newParams);
+    }
+  }
+
+  function clearHeaderSearch() {
+    setSearchValue("");
+    if (searchValFromUrl) {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("search");
+      setSearchParams(newParams);
+    }
+  }
+
   function handleSearch(e) {
     e.preventDefault();
     const trimmed = searchValue.trim();
     if (trimmed.length > 0) {
-      navigate(`/stores?search=${trimmed}`);
+      navigate(`/stores?search=${encodeURIComponent(trimmed)}`);
     } else {
+      const newParams = new URLSearchParams(searchParams);
+      newParams.delete("search");
+      setSearchParams(newParams);
       navigate("/stores");
     }
     setIsMobileMenuOpen(false);
@@ -150,8 +172,17 @@ function Header() {
                 type="text"
                 value={searchValue}
                 placeholder="Search stores by name..."
-                onChange={(e) => setSearchValue(e.target.value)}
+                onChange={(e) => handleSearchInputChange(e.target.value)}
               />
+              {searchValue && (
+                <button
+                  type="button"
+                  onClick={clearHeaderSearch}
+                  className="text-gray-400 hover:text-gray-600 transition-colors border-none bg-transparent cursor-pointer outline-none"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
               <button
                 type="submit"
                 aria-label="Search"
@@ -268,8 +299,17 @@ function Header() {
                       type="text"
                       value={searchValue}
                       placeholder="Search stores by name..."
-                      onChange={(e) => setSearchValue(e.target.value)}
+                      onChange={(e) => handleSearchInputChange(e.target.value)}
                     />
+                    {searchValue && (
+                      <button
+                        type="button"
+                        onClick={clearHeaderSearch}
+                        className="text-gray-400 hover:text-gray-600 border-none bg-transparent cursor-pointer outline-none"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    )}
                     <button
                       type="submit"
                       aria-label="Search"

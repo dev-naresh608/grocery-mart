@@ -2,7 +2,7 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 
-import { StoreCard } from "../..";
+import { StoreCard } from "../components";
 import { defaultRest } from "@/assets";
 import { Store } from "lucide-react";
 
