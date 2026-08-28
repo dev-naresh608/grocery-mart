@@ -35,7 +35,6 @@ app.use(
   }),
 );
 
-app.use(morgan("dev"));
 app.use(cookieParser());
 
 // Health check endpoint

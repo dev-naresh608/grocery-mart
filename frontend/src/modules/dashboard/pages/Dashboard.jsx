@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import CustomerDashboard from "./CustomerDashboard.jsx";
-import SellerDashboard from "./SellerDashboard.jsx";
-import DriverDashboard from "./DriverDashboard.jsx";
 import { useNavigate } from "react-router-dom";
+import { CustomerDashboard } from "../customer";
+import { SellerDashboard } from "../seller";
+import { DriverDashboard } from "../driver";
 
 function Dashboard() {
   const navigate = useNavigate();
@@ -31,7 +31,7 @@ function Dashboard() {
     return <DriverDashboard />;
   }
   if (currentUser?.role === "admin") {
-    return <h2> Admin Dashboard</h2>;
+    return <h2>Admin Dashboard</h2>;
   }
   return null;
 }

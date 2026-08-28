@@ -195,7 +195,7 @@ function ProductBuyCard({
     <>
       <div className="relative bg-white border rounded-2xl shadow-md p-2 group overflow-hidden">
         <div className="flex bg-gray-200 rounded-2xl items-center justify-center">
-          <ProductImageLoader src={src} alt={name} />
+          <ProductImageLoader src={src} alt={name}/>
         </div>
 
         <div className="px-2 my-2 space-y-0.5">

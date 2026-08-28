@@ -4,13 +4,9 @@ import {
   Package,
   User,
   Truck,
-  Clock,
   Gift,
   BadgePercent,
-  Clock3,
   Heart,
-  Eye,
-  MapPin,
   CheckCircle,
 } from "lucide-react";
 

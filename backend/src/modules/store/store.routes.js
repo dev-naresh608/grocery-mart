@@ -3,7 +3,7 @@ import {
   handleGetAllStores,
   handlegetAllStoreProduct,
   handleGetOneStore,
-} from "./store.js";
+} from "./store.controller.js";
 
 const storeRouter = express.Router();
 
