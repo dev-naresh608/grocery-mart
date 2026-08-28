@@ -1,1 +1,1 @@
-export * from "@/modules/wishlist";
+export * from "./profile.api";

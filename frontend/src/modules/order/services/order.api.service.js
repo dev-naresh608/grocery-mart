@@ -1,7 +1,9 @@
 import api from "@/configs/api";
 
-export const getAllOrdersApi = async (userId, role) => {
-  const { data } = await api.get(`/order/${userId}?role=${role}`);
+export const getAllOrdersApi = async (userId, role, page = 1, limit = 10, search = "") => {
+  const { data } = await api.get(
+    `/order/${userId}?role=${role}&page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`
+  );
   return data;
 };
 
@@ -26,6 +28,8 @@ export const deleteOrderApi = async (orderId) => {
 };
 
 // Aliases for compatibility
-export const getAllOrdersSvc = async (userId, role) => {
-  return await api.get(`/order/${userId}?role=${role}`);
+export const getAllOrdersSvc = async (userId, role, page = 1, limit = 10, search = "") => {
+  return await api.get(
+    `/order/${userId}?role=${role}&page=${page}&limit=${limit}&search=${encodeURIComponent(search)}`
+  );
 };

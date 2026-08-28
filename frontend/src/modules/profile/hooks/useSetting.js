@@ -2,8 +2,13 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateUser } from "@/modules/auth/store/authSlice";
 import { toast } from "react-toastify";
-import api from "@/configs/api";
 import { useModal, MODAL_TYPES } from "../../../components";
+import {
+  updateAccountFieldApi,
+  uploadProfilePictureApi,
+  removeProfilePictureApi,
+  changePasswordApi,
+} from "../services";
 import {
   handleGetAddressApi,
   handleDeleteAddressApi,
@@ -14,14 +19,89 @@ export const useSetting = () => {
   const { user: currentUser } = useSelector((state) => state.auth);
   const { openModal } = useModal();
 
+  // Account Info Form State
+  const [accountData, setAccountData] = useState({
+    username: currentUser?.username || "",
+    email: currentUser?.email || "",
+    phone: currentUser?.phone || "",
+  });
+
+  const [editingField, setEditingField] = useState(null); // 'username' | 'email' | 'phone' | null
+  const [savingAccount, setSavingAccount] = useState(false);
+
+  useEffect(() => {
+    if (currentUser) {
+      setAccountData({
+        username: currentUser.username || "",
+        email: currentUser.email || "",
+        phone: currentUser.phone || "",
+      });
+    }
+  }, [currentUser?.username, currentUser?.email, currentUser?.phone]);
+
+  const onAccountChange = (e) => {
+    const { name, value } = e.target;
+    setAccountData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const cancelEdit = (fieldName) => {
+    setAccountData((prev) => ({
+      ...prev,
+      [fieldName]: currentUser?.[fieldName] || "",
+    }));
+    setEditingField(null);
+  };
+
+  // Submit ONLY the single updated field in API payload
+  const handleSingleFieldSubmit = async (e, fieldName) => {
+    if (e) e.preventDefault();
+    const val = (accountData[fieldName] || "").trim();
+    if (!val) {
+      return toast.error(`${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} cannot be empty`);
+    }
+
+    // Comparison Check: If unchanged, skip server request!
+    const currentValue = (currentUser?.[fieldName] || "").trim();
+    if (val.toLowerCase() === currentValue.toLowerCase()) {
+      toast.info("No changes detected");
+      setEditingField(null);
+      return;
+    }
+
+    try {
+      setSavingAccount(true);
+      const userId = currentUser?._id || currentUser?.id;
+
+      // Call modular service with single field payload { userId, [fieldName]: val }
+      const data = await updateAccountFieldApi(userId, fieldName, val);
+
+      if (data && data.success) {
+        dispatch(updateUser(data.user));
+        toast.success(`${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} updated successfully!`);
+        setEditingField(null);
+      } else {
+        toast.error(data.message || "Failed to update account info");
+      }
+    } catch (error) {
+      console.error("Account update error:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to update account info"
+      );
+    } finally {
+      setSavingAccount(false);
+    }
+  };
+
+  // Password Form State
   const [formData, setFormData] = useState({
     oldPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
 
-  const [isOldPassMatch, setIsOldPassMatch] = useState(true);
+  const [oldPasswordError, setOldPasswordError] = useState("");
   const [isConfirmPassMatch, setIsConfirmPassMatch] = useState(true);
+  const [changingPassword, setChangingPassword] = useState(false);
 
   // Address State
   const [addresses, setAddresses] = useState([]);
@@ -88,27 +168,24 @@ export const useSetting = () => {
     });
   };
 
-  // Live password validation
+  // Live confirm password match
   useEffect(() => {
-    if (formData.oldPassword.length > 0) {
-      setIsOldPassMatch(formData.oldPassword === currentUser?.password);
-    } else {
-      setIsOldPassMatch(true);
-    }
-
     if (formData.confirmPassword.length > 0) {
       setIsConfirmPassMatch(formData.newPassword === formData.confirmPassword);
     } else {
       setIsConfirmPassMatch(true);
     }
-  }, [formData.oldPassword, formData.newPassword, formData.confirmPassword, currentUser?.password]);
+  }, [formData.newPassword, formData.confirmPassword]);
 
   const onPasswordChange = (e) => {
     const { name, value } = e.target;
+    if (name === "oldPassword") {
+      setOldPasswordError("");
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Profile picture upload via Cloudinary
+  // Profile picture upload via Cloudinary service
   const handleImageUpload = async (e) => {
     try {
       const file = e.target.files?.[0];
@@ -125,15 +202,13 @@ export const useSetting = () => {
         return toast.error("File size exceeds 5MB limit. Please select a smaller image.");
       }
 
-      const formData = new FormData();
-      formData.append("image", file);
-      formData.append("userId", currentUser?._id || currentUser?.id);
+      const uploadData = new FormData();
+      uploadData.append("image", file);
+      uploadData.append("userId", currentUser?._id || currentUser?.id);
 
-      const { data } = await api.post("/profile/upload-picture", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const data = await uploadProfilePictureApi(uploadData);
 
-      if (data.success) {
+      if (data && data.success) {
         dispatch(updateUser({ imageUrl: data.imageUrl, profile_picture: data.imageUrl }));
         toast.success("Profile photo updated successfully!");
       } else {
@@ -147,7 +222,7 @@ export const useSetting = () => {
     }
   };
 
-  // Remove profile picture (DB-first remove + Cloudinary background delete + Error popup on DB failure)
+  // Remove profile picture via service
   const handleRemoveProfilePicture = async () => {
     if (!currentUser?.imageUrl && !currentUser?.profile_picture) {
       return toast.info("No profile picture to remove");
@@ -161,9 +236,8 @@ export const useSetting = () => {
       type: "danger",
       onConfirm: async () => {
         try {
-          const { data } = await api.post("/profile/remove-picture", {
-            userId: currentUser?._id || currentUser?.id,
-          });
+          const userId = currentUser?._id || currentUser?.id;
+          const data = await removeProfilePictureApi(userId);
 
           if (data && data.success) {
             dispatch(updateUser({ imageUrl: "", profile_picture: "" }));
@@ -181,38 +255,69 @@ export const useSetting = () => {
     });
   };
 
-  // Submit password change
+  // Submit password change with error highlighting for wrong current password
   const onFormDataSubmit = async (e) => {
     e.preventDefault();
+    setOldPasswordError("");
 
-    if (formData.oldPassword !== currentUser?.password) {
-      toast.error("Current password is incorrect");
-      return;
+    if (!formData.oldPassword) {
+      setOldPasswordError("Please enter your current password");
+      return toast.error("Please enter your current password");
+    }
+    if (!formData.newPassword) {
+      return toast.error("Please enter a new password");
     }
     if (formData.newPassword !== formData.confirmPassword) {
-      toast.error("New passwords don't match");
-      return;
+      return toast.error("New passwords don't match");
     }
     if (formData.oldPassword === formData.newPassword) {
-      toast.error("New password must be different from current password");
-      return;
+      return toast.error("New password must be different from current password");
     }
     if (formData.newPassword.length < 3) {
-      toast.error("Password must be at least 3 characters");
-      return;
+      return toast.error("Password must be at least 3 characters");
     }
 
-    dispatch(updateUser({ password: formData.newPassword }));
+    try {
+      setChangingPassword(true);
+      const userId = currentUser?._id || currentUser?.id;
+      const data = await changePasswordApi(userId, formData.oldPassword, formData.newPassword);
 
-    toast.success("Password updated successfully!");
-    setFormData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+      if (data && data.success) {
+        toast.success("Password updated successfully!");
+        setFormData({ oldPassword: "", newPassword: "", confirmPassword: "" });
+        setOldPasswordError("");
+      } else {
+        const msg = data.message || "Failed to update password";
+        if (msg.toLowerCase().includes("current password")) {
+          setOldPasswordError(msg);
+        }
+        toast.error(msg);
+      }
+    } catch (error) {
+      console.error("Password update error:", error);
+      const msg = error.response?.data?.message || "Failed to update password. Check current password.";
+      if (msg.toLowerCase().includes("current password")) {
+        setOldPasswordError(msg);
+      }
+      toast.error(msg);
+    } finally {
+      setChangingPassword(false);
+    }
   };
 
   return {
     currentUser,
+    accountData,
+    onAccountChange,
+    editingField,
+    setEditingField,
+    cancelEdit,
+    handleSingleFieldSubmit,
+    savingAccount,
     formData,
-    isOldPassMatch,
+    oldPasswordError,
     isConfirmPassMatch,
+    changingPassword,
     onPasswordChange,
     handleImageUpload,
     handleRemoveProfilePicture,

@@ -7,13 +7,14 @@ import {
   deleteTempFolder,
   findProductSvc,
 } from "./product.service.js";
-
 import { uploadOnCloudinary } from "../../utils/cloudinary.js";
+import { paginate, getPaginationParams } from "../../utils/pagination.js";
 
 export const handleGetAllProducts = async (req, res) => {
   try {
     const { userId } = req.params;
-    
+    const { page, limit, search } = getPaginationParams(req);
+
     if (!userId) {
       return res.status(400).json({
         success: false,
@@ -27,14 +28,22 @@ export const handleGetAllProducts = async (req, res) => {
       sellerStoreId = seller._id;
     }
 
-    const allProducts = await Product.find({
+    const filter = {
       $or: [{ store_id: userId }, { store_id: sellerStoreId }],
-    });
+    };
+
+    if (search) {
+      filter.name = { $regex: search, $options: "i" };
+    }
+
+    const paginated = await paginate(Product, filter, { page, limit });
 
     return res.status(200).json({
       success: true,
-      message: "Your products",
-      result: allProducts || [],
+      message: "Your products fetched successfully",
+      result: paginated.data,
+      products: paginated.data,
+      pagination: paginated.pagination,
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

@@ -35,15 +35,6 @@ export const leftPanelItems = [
     showToAdmin: false,
     showToDriver: true,
   },
-  {
-    children: "Notifications",
-    to: "/allnotifications",
-    svg: <Bell size={18} />,
-    showToCustomer: true,
-    showToSeller: true,
-    showToAdmin: false,
-    showToDriver: true,
-  },
 
   {
     children: "Stores",

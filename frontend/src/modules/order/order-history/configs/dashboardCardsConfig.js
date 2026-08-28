@@ -4,25 +4,28 @@ const dashboardCardsConfig = (
   currentUser,
   setActiveCard,
   allOrders = [],
+  summaryStats = null
 ) => {
-  const completedOrders =
-    allOrders.filter(
-      (o) => o.order_status === "completed" || o.order_status === "delivered",
-    ) || [];
-
-  const cancelledOrders =
-    allOrders.filter(
-      (o) => o.order_status === "rejected" || o.order_status === "cancelled",
-    ) || [];
+  const totalVal = summaryStats ? summaryStats.total : allOrders.length || 0;
+  const completedVal = summaryStats
+    ? summaryStats.completed
+    : allOrders.filter(
+        (o) => o.order_status === "completed" || o.order_status === "delivered"
+      ).length;
+  const cancelledVal = summaryStats
+    ? summaryStats.cancelled
+    : allOrders.filter(
+        (o) => o.order_status === "rejected" || o.order_status === "cancelled"
+      ).length;
 
   return [
     {
       icon: Store,
       text: "VIEWING AS",
       value:
-        currentUser?.role?.charAt(0).toUpperCase() +
-        currentUser?.role?.slice(1),
-
+        currentUser?.role
+          ? currentUser.role.charAt(0).toUpperCase() + currentUser.role.slice(1)
+          : "User",
       cardStyle: "bg-blue-100 text-blue-500 border border-blue-200",
     },
 
@@ -30,12 +33,12 @@ const dashboardCardsConfig = (
       id: "total",
       icon: Package,
       text: "TOTAL HISTORY",
-      value: allOrders.length || 0,
-
+      value: totalVal,
       onClick: () => {
         setActiveCard("total");
       },
-      cardStyle: "bg-orange-100 text-orange-500 border border-orange-200 cursor-pointer",
+      cardStyle:
+        "bg-orange-100 text-orange-500 border border-orange-200 cursor-pointer",
       borderStyle: "border-b-[3px] border-orange-400",
     },
 
@@ -43,13 +46,12 @@ const dashboardCardsConfig = (
       id: "completed",
       icon: CheckCircle2,
       text: "COMPLETED",
-      value: completedOrders.length,
-
+      value: completedVal,
       onClick: () => {
         setActiveCard("completed");
       },
-
-      cardStyle: "bg-emerald-100 text-emerald-600 border border-emerald-200 cursor-pointer",
+      cardStyle:
+        "bg-emerald-100 text-emerald-600 border border-emerald-200 cursor-pointer",
       borderStyle: "border-b-[3px] border-emerald-500",
     },
 
@@ -57,13 +59,12 @@ const dashboardCardsConfig = (
       id: "cancelled",
       icon: XCircle,
       text: "CANCELLED / REJECTED",
-      value: cancelledOrders.length,
-
+      value: cancelledVal,
       onClick: () => {
         setActiveCard("cancelled");
       },
-
-      cardStyle: "bg-red-100 text-red-600 border border-red-200 cursor-pointer",
+      cardStyle:
+        "bg-red-100 text-red-600 border border-red-200 cursor-pointer",
       borderStyle: "border-b-[3px] border-red-500",
     },
   ];

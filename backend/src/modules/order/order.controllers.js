@@ -5,11 +5,13 @@ import Seller from "../seller/seller.model.js";
 
 import { addOrderSvc, findSingleOrderSvc } from "./order.service.js";
 import { createNotificationSvc } from "../notification/notification.service.js";
+import { paginate, getPaginationParams } from "../../utils/pagination.js";
 
 export const handleGetAllOrders = async (req, res) => {
   try {
     const { userId } = req.params;
     const { role } = req.query;
+    const { page, limit, sort, search } = getPaginationParams(req);
 
     if (!userId) {
       return res.status(400).json({
@@ -18,11 +20,11 @@ export const handleGetAllOrders = async (req, res) => {
       });
     }
 
-    let allOrders = [];
+    let filter = {};
 
     switch (role) {
       case "customer": {
-        allOrders = await Order.find({ customer_id: userId }).sort({ createdAt: -1 });
+        filter = { customer_id: userId };
         break;
       }
       case "seller": {
@@ -33,23 +35,48 @@ export const handleGetAllOrders = async (req, res) => {
         if (seller) {
           sellerStoreId = seller._id;
         }
-        allOrders = await Order.find({
+        filter = {
           $or: [{ store_id: userId }, { store_id: sellerStoreId }],
-        }).sort({ createdAt: -1 });
+        };
         break;
       }
       default: {
-        allOrders = await Order.find({
+        filter = {
           $or: [{ customer_id: userId }, { store_id: userId }],
-        }).sort({ createdAt: -1 });
+        };
         break;
       }
     }
 
+    if (search) {
+      filter.$or = [
+        { payment_method: { $regex: search, $options: "i" } },
+        { order_status: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    const [paginated, completedCount, cancelledCount] = await Promise.all([
+      paginate(Order, filter, { page, limit, sort }),
+      Order.countDocuments({
+        ...filter,
+        order_status: { $in: ["completed", "delivered"] },
+      }),
+      Order.countDocuments({
+        ...filter,
+        order_status: { $in: ["rejected", "cancelled"] },
+      }),
+    ]);
+
     return res.json({
       success: true,
-      message: "All orders",
-      allOrders: allOrders || [],
+      message: "All orders fetched successfully",
+      orders: paginated.data,
+      pagination: paginated.pagination,
+      summary: {
+        total: paginated.pagination.totalItems,
+        completed: completedCount,
+        cancelled: cancelledCount,
+      },
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

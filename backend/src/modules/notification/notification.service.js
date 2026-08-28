@@ -95,6 +95,17 @@ export const getUserNotificationsSvc = async (
       page: pageNum,
       limit: limitNum,
       totalPages,
+      pagination: {
+        totalItems: total,
+        totalPages,
+        currentPage: pageNum,
+        limit: limitNum,
+        hasNextPage: pageNum < totalPages,
+        hasPrevPage: pageNum > 1,
+        nextPage: pageNum < totalPages ? pageNum + 1 : null,
+        prevPage: pageNum > 1 ? pageNum - 1 : null,
+        skip,
+      },
     };
   } catch (error) {
     return {

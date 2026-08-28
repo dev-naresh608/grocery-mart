@@ -1,6 +1,7 @@
 import Order from "../order.model.js";
 import Seller from "../../seller/seller.model.js";
 import { addOrderSvc, findSingleOrderSvc } from "./orderHistory.service.js";
+import { paginate, getPaginationParams } from "../../../utils/pagination.js";
 
 const HISTORICAL_STATUSES = ["completed", "delivered", "rejected", "cancelled"];
 
@@ -8,6 +9,7 @@ export const handleGetAllOrders = async (req, res) => {
   try {
     const { userId } = req.params;
     const { role } = req.query;
+    const { page, limit, sort, search } = getPaginationParams(req);
 
     if (!userId) {
       return res.status(400).json({
@@ -16,14 +18,14 @@ export const handleGetAllOrders = async (req, res) => {
       });
     }
 
-    let allOrders = [];
+    let filter = {};
 
     switch (role) {
       case "customer": {
-        allOrders = await Order.find({
+        filter = {
           customer_id: userId,
           order_status: { $in: HISTORICAL_STATUSES },
-        }).sort({ createdAt: -1 });
+        };
         break;
       }
       case "seller": {
@@ -34,36 +36,62 @@ export const handleGetAllOrders = async (req, res) => {
         if (seller) {
           sellerStoreId = seller._id;
         }
-        allOrders = await Order.find({
+        filter = {
           $or: [{ store_id: userId }, { store_id: sellerStoreId }],
           order_status: { $in: HISTORICAL_STATUSES },
-        }).sort({ createdAt: -1 });
+        };
         break;
       }
       case "driver": {
-        allOrders = await Order.find({
+        filter = {
           driver_id: userId,
           order_status: { $in: HISTORICAL_STATUSES },
-        }).sort({ createdAt: -1 });
+        };
         break;
       }
       default: {
-        allOrders = await Order.find({
+        filter = {
           $or: [
             { customer_id: userId },
             { store_id: userId },
             { driver_id: userId },
           ],
           order_status: { $in: HISTORICAL_STATUSES },
-        }).sort({ createdAt: -1 });
+        };
         break;
       }
     }
 
+    if (search) {
+      filter.$or = [
+        { payment_method: { $regex: search, $options: "i" } },
+        { order_status: { $regex: search, $options: "i" } },
+      ];
+    }
+
+    // Run pagination and summary counts in parallel for optimal speed
+    const [paginated, completedCount, cancelledCount] = await Promise.all([
+      paginate(Order, filter, { page, limit, sort }),
+      Order.countDocuments({
+        ...filter,
+        order_status: { $in: ["completed", "delivered"] },
+      }),
+      Order.countDocuments({
+        ...filter,
+        order_status: { $in: ["rejected", "cancelled"] },
+      }),
+    ]);
+
     return res.json({
       success: true,
-      message: "Order history",
-      allOrders: allOrders || [],
+      message: "Order history fetched successfully",
+      orders: paginated.data,
+      pagination: paginated.pagination,
+      summary: {
+        total: paginated.pagination.totalItems,
+        completed: completedCount,
+        cancelled: cancelledCount,
+      },
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
