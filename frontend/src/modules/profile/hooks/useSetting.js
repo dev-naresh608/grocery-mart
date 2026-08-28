@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { updateUser } from "@/modules/auth/store/authSlice";
 import { toast } from "react-toastify";
+import api from "@/configs/api";
 import { useModal, MODAL_TYPES } from "../../../components";
 import {
   handleGetAddressApi,
@@ -107,24 +108,77 @@ export const useSetting = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Profile picture upload
-  const handleImageUpload = (e) => {
+  // Profile picture upload via Cloudinary
+  const handleImageUpload = async (e) => {
     try {
-      const file = e.target.files[0];
+      const file = e.target.files?.[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        dispatch(updateUser({ imageUrl: reader.result }));
-      };
-      reader.readAsDataURL(file);
+
+      if (!file.type.startsWith("image/")) {
+        if (e.target) e.target.value = "";
+        return toast.error("Please select a valid image file (JPG, PNG, WEBP).");
+      }
+
+      const MAX_SIZE = 5 * 1024 * 1024;
+      if (file.size > MAX_SIZE) {
+        if (e.target) e.target.value = "";
+        return toast.error("File size exceeds 5MB limit. Please select a smaller image.");
+      }
+
+      const formData = new FormData();
+      formData.append("image", file);
+      formData.append("userId", currentUser?._id || currentUser?.id);
+
+      const { data } = await api.post("/profile/upload-picture", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      if (data.success) {
+        dispatch(updateUser({ imageUrl: data.imageUrl, profile_picture: data.imageUrl }));
+        toast.success("Profile photo updated successfully!");
+      } else {
+        toast.error(data.message || "Failed to upload profile photo");
+      }
     } catch (err) {
-      console.log("Upload error:", err);
+      console.error("Upload error:", err);
+      toast.error(err.response?.data?.message || "Failed to upload profile photo");
+    } finally {
+      if (e.target) e.target.value = "";
     }
   };
 
-  // Remove profile picture
+  // Remove profile picture (DB-first remove + Cloudinary background delete + Error popup on DB failure)
   const handleRemoveProfilePicture = async () => {
-    dispatch(updateUser({ imageUrl: null }));
+    if (!currentUser?.imageUrl && !currentUser?.profile_picture) {
+      return toast.info("No profile picture to remove");
+    }
+
+    openModal(MODAL_TYPES.CONFIRM, {
+      title: "Remove Profile Photo",
+      message: "Are you sure you want to remove your profile photo?",
+      confirmText: "Remove",
+      cancelText: "Cancel",
+      type: "danger",
+      onConfirm: async () => {
+        try {
+          const { data } = await api.post("/profile/remove-picture", {
+            userId: currentUser?._id || currentUser?.id,
+          });
+
+          if (data && data.success) {
+            dispatch(updateUser({ imageUrl: "", profile_picture: "" }));
+            toast.success("Profile photo removed successfully");
+          } else {
+            toast.error(data.message || "Failed to remove profile picture from database");
+          }
+        } catch (error) {
+          console.error("Remove profile photo error:", error);
+          toast.error(
+            error.response?.data?.message || "Failed to remove profile picture from database"
+          );
+        }
+      },
+    });
   };
 
   // Submit password change

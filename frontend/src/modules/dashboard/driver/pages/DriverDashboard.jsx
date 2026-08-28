@@ -1,5 +1,5 @@
 import React from "react";
-import { defaultPP } from "@/assets";
+import { User } from "lucide-react";
 import { useDriverDashboard } from "../hooks/useDriverDashboard.js";
 
 function DriverDashboard() {
@@ -12,11 +12,17 @@ function DriverDashboard() {
         <div className="bg-white rounded-2xl shadow p-6 mb-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-5">
-              <img
-                src={currentUser?.imageUrl ? currentUser.imageUrl : defaultPP}
-                alt="Driver profile"
-                className="w-20 h-20 rounded-full object-cover"
-              />
+              {currentUser?.imageUrl || currentUser?.profile_picture ? (
+                <img
+                  src={currentUser.imageUrl || currentUser.profile_picture}
+                  alt="Driver profile"
+                  className="w-20 h-20 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-100 to-amber-100 text-orange-600 flex items-center justify-center">
+                  <User size={40} strokeWidth={1.75} />
+                </div>
+              )}
 
               <div className="font-medium">
                 <h1 className="text-2xl">{currentUser?.username || "Driver"}</h1>

@@ -1,4 +1,4 @@
-import api from "../../../configs/api";
+import api from "@/configs/api";
 
 export const toggleWishlistApi = async (userId, storeId) => {
   const { data } = await api.post("/wishlist/toggle", { userId, storeId });

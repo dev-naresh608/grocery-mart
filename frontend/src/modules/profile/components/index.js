@@ -1,4 +1,4 @@
-export { default as Payments } from "./Payments";
+export { Payments } from "@/modules/payment";
 export { default as PersonalInfo } from "./PersonalInfo";
 export { default as Setting } from "./Setting";
 export { default as ProfileToggle } from "./ProfileToggle";

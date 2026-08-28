@@ -9,7 +9,7 @@ export const useProfile = () => {
   const navigate = useNavigate();
   const { openModal } = useModal();
   const { user: currentUser, isAuthenticated: isLogin } = useSelector(
-    (state) => state.auth
+    (state) => state.auth,
   );
   const [activeTab, setActiveTab] = useState("personalinformation");
 

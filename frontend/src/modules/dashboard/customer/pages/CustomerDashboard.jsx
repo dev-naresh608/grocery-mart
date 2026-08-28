@@ -1,10 +1,9 @@
 import React from "react";
-import { defaultPP } from "@/assets";
 import { NavLink, useNavigate } from "react-router-dom";
 import DashboardCards from "../../common/components/DashboardCards.jsx";
 import { dashboardCards } from "../../common/configs/dashboardCards.js";
 import { MiniProfileContainer } from "@/modules/profile";
-import { ChevronRight, MapPin, Phone, ShoppingBag, ArrowRight, RotateCcw, Loader2 } from "lucide-react";
+import { ChevronRight, MapPin, Phone, ShoppingBag, ArrowRight, RotateCcw, Loader2, User } from "lucide-react";
 import { useCustomerDashboard } from "../hooks/useCustomerDashboard.js";
 
 // Status badge helper rendered in JSX component
@@ -81,12 +80,18 @@ function CustomerDashboard() {
             </p>
           </div>
 
-          <div className="border rounded-full border-orange-200">
-            <img
-              src={currentUser?.imageUrl ? currentUser.imageUrl : defaultPP}
-              alt="profile picture"
-              className="w-16 h-16 rounded-full"
-            />
+          <div className="border rounded-full border-orange-200 overflow-hidden">
+            {currentUser?.imageUrl || currentUser?.profile_picture ? (
+              <img
+                src={currentUser.imageUrl || currentUser.profile_picture}
+                alt="profile picture"
+                className="w-16 h-16 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-100 to-amber-100 text-orange-600 flex items-center justify-center">
+                <User size={32} strokeWidth={1.75} />
+              </div>
+            )}
           </div>
         </div>
       </div>

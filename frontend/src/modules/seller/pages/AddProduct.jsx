@@ -2,8 +2,6 @@ import React, { useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import { ArrowLeftIcon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import { defaultPP } from "@/assets";
 import { addProductApi } from "../services/product.api.service";
 
 function AddProduct() {
@@ -197,7 +195,7 @@ function AddProduct() {
                 ) : (
                   <>
                     <img
-                      src={productImg || defaultPP}
+                      src={productImg}
                       alt="preview"
                       className="w-full h-full object-contain z-[50]"
                     />

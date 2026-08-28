@@ -1,7 +1,6 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { defaultPP } from "@/assets";
-import { Mail } from "lucide-react";
+import { Mail, User } from "lucide-react";
 
 function MiniProfileContainer() {
   const { user: currentUser } = useSelector((state) => state.auth);
@@ -9,12 +8,18 @@ function MiniProfileContainer() {
   return (
     <div className="flex items-center gap-2">
       <div className="h-9 w-9 flex-shrink-0">
-        <img
-          loading="lazy"
-          className="object-cover h-full w-full border border-amber-300 rounded-full"
-          src={currentUser?.imageUrl || defaultPP}
-          alt="profile picture"
-        />
+        {currentUser?.imageUrl || currentUser?.profile_picture ? (
+          <img
+            loading="lazy"
+            className="object-cover h-full w-full border border-orange-400 rounded-full"
+            src={currentUser.imageUrl || currentUser.profile_picture}
+            alt="profile picture"
+          />
+        ) : (
+          <div className="h-full w-full border border-orange-400 rounded-full bg-orange-100 text-orange-700 flex items-center justify-center">
+            <User size={18} strokeWidth={2} />
+          </div>
+        )}
       </div>
       <div className="overflow-hidden">
         <p className="text-base font-semibold truncate">

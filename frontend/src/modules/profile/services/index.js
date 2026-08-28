@@ -1,1 +1,1 @@
-// Export services here
+export * from "@/modules/wishlist";

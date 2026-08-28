@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "@/modules/auth/store/authThunk";
-import { defaultPP } from "@/assets";
 import MiniProfileContainer from "./MiniProfileContainer";
 import { useModal, MODAL_TYPES } from "@/components";
 import { Home, LogOut, User } from "lucide-react";
@@ -26,7 +25,7 @@ function ProfileToggle({ isOpen, onToggle, onClose }) {
     },
     {
       label: "Profile",
-      to: "profile",
+      to: "profile/personalinformation",
       icon: <User size={17} strokeWidth={2.5} />,
       onClick: onClose,
     },
@@ -54,13 +53,17 @@ function ProfileToggle({ isOpen, onToggle, onClose }) {
           onClick={onToggle}
           className="block"
         >
-          <div className="flex items-center justify-center overflow-hidden rounded-full h-7 w-7 border border-green-800">
-            <img
-              loading="lazy"
-              className="active:h-6 active:w-6 object-cover h-full w-full"
-              src={currentUser?.imageUrl || defaultPP}
-              alt="profile picture"
-            />
+          <div className="flex items-center justify-center overflow-hidden rounded-full h-7 w-7 border border-orange-500 bg-orange-100 text-orange-700">
+            {currentUser?.imageUrl || currentUser?.profile_picture ? (
+              <img
+                loading="lazy"
+                className="active:h-6 active:w-6 object-cover h-full w-full"
+                src={currentUser.imageUrl || currentUser.profile_picture}
+                alt="profile picture"
+              />
+            ) : (
+              <User size={16} strokeWidth={2} />
+            )}
           </div>
         </button>
 

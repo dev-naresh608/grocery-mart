@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import { updateUser } from "@/modules/auth/store/authSlice";
-import { toggleWishlistApi } from "@/modules/profile/services/wishlist.api";
+import { toggleWishlistApi } from "@/modules/wishlist";
 
 function StoreCard({ defaultRest, name, address, id, storeType }) {
   const dispatch = useDispatch();

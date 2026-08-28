@@ -1,7 +1,7 @@
 import React from "react";
 import { CreditCard, Clock } from "lucide-react";
 
-function Payment() {
+function Payments() {
   return (
     <div className="bg-white h-full p-6 font-sans space-y-6">
       {/* Header */}
@@ -29,4 +29,4 @@ function Payment() {
   );
 }
 
-export default Payment;
+export default Payments;

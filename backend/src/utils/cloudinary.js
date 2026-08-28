@@ -10,6 +10,49 @@ if (config.cloudinary.cloudName && config.cloudinary.apiKey) {
   });
 }
 
+export const getCloudinaryPublicId = (url) => {
+  if (!url || typeof url !== "string" || !url.includes("cloudinary.com")) {
+    return null;
+  }
+  try {
+    const parts = url.split("/upload/");
+    if (parts.length < 2) return null;
+    let pathAfterUpload = parts[1];
+    // Strip version prefix if present e.g. v12345678/
+    pathAfterUpload = pathAfterUpload.replace(/^v\d+\//, "");
+    // Strip file extension
+    const publicId = pathAfterUpload.replace(/\.[^/.]+$/, "");
+    return publicId;
+  } catch (err) {
+    return null;
+  }
+};
+
+export const deleteFromCloudinary = async (publicId) => {
+  try {
+    if (!publicId) return { success: false, message: "No public ID provided" };
+
+    if (
+      !config.cloudinary.cloudName ||
+      config.cloudinary.cloudName === "your_cloud_name" ||
+      !config.cloudinary.apiKey
+    ) {
+      console.warn("Cloudinary credentials missing. Simulating Cloudinary delete fallback.");
+      return { success: true, message: "Mock deletion success" };
+    }
+
+    const result = await cloudinary.uploader.destroy(publicId);
+    if (result.result === "ok" || result.result === "not found") {
+      return { success: true, message: "Image deleted from Cloudinary", result };
+    } else {
+      return { success: false, message: `Cloudinary returned status: ${result.result}`, result };
+    }
+  } catch (error) {
+    console.error("Cloudinary Delete Error:", error);
+    return { success: false, message: error.message || "Failed to delete image from Cloudinary" };
+  }
+};
+
 export const uploadOnCloudinary = async (
   localFilePath,
   folder = "novexa/products",

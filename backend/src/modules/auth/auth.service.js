@@ -60,6 +60,8 @@ const getUserWithRoleDetails = async (user) => {
     console.error("Failed fetching role details:", err);
   }
 
+  const avatarUrl = user.imageUrl || user.profile_picture || "";
+
   return {
     id: user._id,
     _id: user._id,
@@ -67,7 +69,8 @@ const getUserWithRoleDetails = async (user) => {
     email: user.email,
     role: user.role,
     phone: user.phone,
-    profile_picture: user.profile_picture,
+    profile_picture: avatarUrl,
+    imageUrl: avatarUrl,
     ...roleDetails,
   };
 };

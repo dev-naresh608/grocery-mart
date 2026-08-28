@@ -7,3 +7,5 @@ export * from "./profile";
 export * from "./dashboard";
 export * from "./driver";
 export * from "./notification";
+export * from "./wishlist";
+export * from "./payment";

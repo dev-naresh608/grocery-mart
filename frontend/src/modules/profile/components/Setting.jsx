@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useSetting } from "../hooks";
-import { defaultPP } from "@/assets";
 import {
   User,
   Mail,
@@ -105,11 +104,17 @@ function Setting() {
           Profile Photo
         </p>
         <div className="flex items-center gap-5">
-          <img
-            src={currentUser?.imageUrl ?? defaultPP}
-            alt="profile"
-            className="w-20 h-20 rounded-full object-cover border-2 border-[#E7E5E4] flex-shrink-0"
-          />
+          {currentUser?.imageUrl || currentUser?.profile_picture ? (
+            <img
+              src={currentUser.imageUrl || currentUser.profile_picture}
+              alt="profile"
+              className="w-20 h-20 rounded-full object-cover border-2 border-orange-400 flex-shrink-0"
+            />
+          ) : (
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-orange-50 to-amber-100 text-orange-600 border-2 border-orange-300 flex items-center justify-center flex-shrink-0">
+              <User size={36} strokeWidth={1.75} />
+            </div>
+          )}
           <div className="space-y-2">
             <label className="flex items-center gap-1.5 text-xs font-semibold text-[#6366F1] cursor-pointer hover:text-[#4F46E5] transition-colors">
               <Camera size={13} strokeWidth={2} />
