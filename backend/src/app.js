@@ -38,9 +38,11 @@ app.use(
 
 app.use(cookieParser());
 
-// Health check endpoint
-app.get("/api/working", (req, res) => {
-  res.json({ message: "api running" });
+app.get("/", (req, res) => {
+  res.json({
+    success: true,
+    message: "Novexa API is running 🚀",
+  });
 });
 
 // Mounted Routes
