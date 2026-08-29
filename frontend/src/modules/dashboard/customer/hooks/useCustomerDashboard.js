@@ -17,8 +17,9 @@ export function useCustomerDashboard() {
   const guestCart = useSelector((state) => state.cart.guestCart || []);
   const { openModal } = useModal();
 
-  const [ordersList, setOrdersList] = useState(currentUser?.myOrders || []);
-  const [loadingOrders, setLoadingOrders] = useState(!currentUser?.myOrders);
+  const [recentOrders, setRecentOrders] = useState([]);
+  const [totalOrdersCount, setTotalOrdersCount] = useState(currentUser?.myOrders?.length || 0);
+  const [loadingOrders, setLoadingOrders] = useState(true);
   const [reorderingOrderId, setReorderingOrderId] = useState(null);
 
   let currentUserAddress = "";
@@ -44,33 +45,32 @@ export function useCustomerDashboard() {
     fetchAddress();
   }, [currentUser?._id, currentUser?.myAddress, dispatch]);
 
-  // Load orders from database only if not already present in Redux store
+  // Load only 2 latest orders directly from backend with sorting & limit
   useEffect(() => {
-    if (currentUser?.myOrders) {
-      const sorted = sortOrderByDate(currentUser.myOrders, "desc");
-      setOrdersList(sorted);
-      setLoadingOrders(false);
-      return;
-    }
-
-    const fetchOrders = async () => {
+    const fetchRecentOrders = async () => {
       if (!currentUser?._id) return;
       try {
         setLoadingOrders(true);
-        const res = await getAllOrdersSvc(currentUser._id, currentUser.role || "customer");
-        if (res?.data?.success && res?.data?.allOrders) {
-          const sorted = sortOrderByDate(res.data.allOrders, "desc");
-          setOrdersList(sorted);
-          dispatch(updateUser({ myOrders: res.data.allOrders }));
-        }
+        const res = await getAllOrdersSvc(currentUser._id, currentUser.role || "customer", {
+          page: 1,
+          limit: 2,
+          sortBy: "createdAt",
+          sortOrder: "desc",
+        });
+
+        const orders = res?.data?.orders || res?.data?.allOrders || [];
+        const total = res?.data?.pagination?.totalItems ?? res?.data?.summary?.total ?? orders.length;
+
+        setRecentOrders(orders);
+        setTotalOrdersCount(total);
       } catch (error) {
-        console.error("Failed to load orders for dashboard:", error);
+        console.error("Failed to load recent orders for dashboard:", error);
       } finally {
         setLoadingOrders(false);
       }
     };
-    fetchOrders();
-  }, [currentUser?._id, currentUser?.role, currentUser?.myOrders, dispatch]);
+    fetchRecentOrders();
+  }, [currentUser?._id, currentUser?.role]);
 
   const handleAddAddress = () => {
     openModal(MODAL_TYPES.ADDRESS, {
@@ -256,10 +256,10 @@ export function useCustomerDashboard() {
   };
 
   const customerStats = {
-    orders: ordersList?.length || 0,
+    orders: totalOrdersCount || recentOrders?.length || 0,
     wishlist: currentUser?.myWishlist?.length || 0,
     rewardPoints:
-      ordersList?.reduce(
+      recentOrders?.reduce(
         (total, order) =>
           total + Math.floor(((order?.price_detail?.finalPrice ?? order?.priceDetails?.finalPrice) || 0) / 10),
         0,
@@ -267,14 +267,14 @@ export function useCustomerDashboard() {
     savings: "$122",
   };
 
-  const pastTwoOrders = ordersList.slice(0, 2);
+  const pastTwoOrders = recentOrders.slice(0, 2);
 
   return {
     currentUser,
     currentUserAddress,
     isAddressAvailable,
     handleAddAddress,
-    ordersList,
+    ordersList: recentOrders,
     loadingOrders,
     pastTwoOrders,
     customerStats,

@@ -71,6 +71,7 @@ export const handleGetAllOrders = async (req, res) => {
       success: true,
       message: "All orders fetched successfully",
       orders: paginated.data,
+      allOrders: paginated.data,
       pagination: paginated.pagination,
       summary: {
         total: paginated.pagination.totalItems,

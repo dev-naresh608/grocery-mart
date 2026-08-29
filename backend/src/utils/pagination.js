@@ -21,7 +21,29 @@ export const getPaginationParams = (req = {}, defaults = {}) => {
     Math.min(100, parseInt(query.limit, 10) || defaults.limit || 10),
   );
   const skip = (page - 1) * limit;
-  const sort = query.sort || defaults.sort || { createdAt: -1 };
+
+  let sort = query.sort || defaults.sort;
+  if (!sort) {
+    const sortBy = query.sortBy || query.sortField || "createdAt";
+    const sortOrder = query.sortOrder || query.order || query.sortDir || "desc";
+    const orderDirection = String(sortOrder).toLowerCase() === "asc" || String(sortOrder) === "1" ? 1 : -1;
+    sort = { [sortBy]: orderDirection };
+  } else if (typeof sort === "string") {
+    if (sort.startsWith("{")) {
+      try {
+        sort = JSON.parse(sort);
+      } catch (e) {
+        sort = { createdAt: -1 };
+      }
+    } else if (sort.startsWith("-")) {
+      sort = { [sort.substring(1)]: -1 };
+    } else if (sort.startsWith("+")) {
+      sort = { [sort.substring(1)]: 1 };
+    } else {
+      sort = { [sort]: 1 };
+    }
+  }
+
   const search = query.search ? String(query.search).trim() : "";
 
   return { page, limit, skip, sort, search };
