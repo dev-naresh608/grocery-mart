@@ -28,7 +28,11 @@ export const useCart = () => {
   const storeId = useSelector((state) => state.cart.storeId);
   const guestCart = useSelector((state) => state.cart.guestCart || []);
 
-  const [address, setAddress] = useState("");
+  const isCartDrawerOpen = useSelector((state) => state.cart.isCartDrawerOpen);
+  const locationPath = typeof window !== "undefined" ? window.location.pathname : "";
+  const isCartRoute = locationPath.includes("/cart");
+
+  const [address, setAddress] = useState(currentUser?.myAddress || "");
   const [addressList, setAddressList] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("cashOnDelivery");
   const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
@@ -36,21 +40,46 @@ export const useCart = () => {
   const cartItems = isLogin ? (currentUser?.myCart || []) : guestCart;
   const isCartEmpty = !cartItems || cartItems.length === 0;
 
-  // Retrieve delivery addresses if logged in
+  // Retrieve delivery addresses only when needed (cart drawer open or on cart page)
   useEffect(() => {
+    const cachedAddress = currentUser?.myAddress;
+    if (cachedAddress && !address) {
+      setAddress(cachedAddress);
+    }
+
     const fetchAddress = async () => {
-      if (!currentUser?._id) return;
-      const data = await handleGetAddressApi(currentUser._id);
-      if (data && data.success && data.addressList && data.addressList.length > 0) {
-        setAddressList(data.addressList);
-        setAddress(data.addressList[0]);
-        dispatch(updateUser({ address: data.addressList[0] }));
+      if (!currentUser?._id || addressList) return;
+      if (!isCartDrawerOpen && !isCartRoute) return;
+
+      try {
+        const data = await handleGetAddressApi(currentUser._id);
+        if (data && data.success && data.addressList && data.addressList.length > 0) {
+          setAddressList(data.addressList);
+          setAddress(data.addressList[0]);
+          dispatch(
+            updateUser({
+              myAddress: data.addressList[0],
+            })
+          );
+        }
+      } catch (err) {
+        console.error("Failed to fetch address in useCart:", err);
       }
     };
-    if (isLogin) {
+
+    if (isLogin && (isCartDrawerOpen || isCartRoute)) {
       fetchAddress();
     }
-  }, [isLogin, currentUser?._id, dispatch]);
+  }, [
+    isLogin,
+    isCartDrawerOpen,
+    isCartRoute,
+    currentUser?._id,
+    currentUser?.myAddress,
+    address,
+    addressList,
+    dispatch,
+  ]);
 
   // Compute subtotal, tax, delivery fee and final price reactively
   const orderPriceDetails = calculateCartTotals(cartItems);

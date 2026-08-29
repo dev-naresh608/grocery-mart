@@ -1,35 +1,43 @@
 import api from "@/configs/api";
 
-export const getAllOrdersApi = async (userId, role, options = {}) => {
+export const getAllOrdersApi = async (
+  userId,
+  role,
+  pageOrOptions = 1,
+  limit = 10,
+  search = "",
+  sortBy = "createdAt",
+  sortOrder = "desc"
+) => {
   let page = 1;
-  let limit = 10;
-  let search = "";
-  let sortBy = "createdAt";
-  let sortOrder = "desc";
+  let lim = 10;
+  let s = "";
+  let sBy = "createdAt";
+  let sOrder = "desc";
 
-  if (typeof options === "number" || typeof options === "string") {
-    page = options;
-    limit = arguments[3] || 10;
-    search = arguments[4] || "";
-    sortBy = arguments[5] || "createdAt";
-    sortOrder = arguments[6] || "desc";
-  } else if (typeof options === "object") {
-    page = options.page ?? 1;
-    limit = options.limit ?? 10;
-    search = options.search ?? "";
-    sortBy = options.sortBy ?? "createdAt";
-    sortOrder = options.sortOrder ?? "desc";
+  if (typeof pageOrOptions === "object" && pageOrOptions !== null) {
+    page = pageOrOptions.page ?? 1;
+    lim = pageOrOptions.limit ?? 10;
+    s = pageOrOptions.search ?? "";
+    sBy = pageOrOptions.sortBy ?? "createdAt";
+    sOrder = pageOrOptions.sortOrder ?? "desc";
+  } else {
+    page = pageOrOptions || 1;
+    lim = limit || 10;
+    s = search || "";
+    sBy = sortBy || "createdAt";
+    sOrder = sortOrder || "desc";
   }
 
   const queryParams = new URLSearchParams({
     role: role || "customer",
-    page,
-    limit,
-    sortBy,
-    sortOrder,
+    page: String(page),
+    limit: String(lim),
+    sortBy: sBy,
+    sortOrder: sOrder,
   });
 
-  if (search) queryParams.append("search", search);
+  if (s) queryParams.append("search", s);
 
   const { data } = await api.get(`/order/${userId}?${queryParams.toString()}`);
   return data;
@@ -56,37 +64,46 @@ export const deleteOrderApi = async (orderId) => {
 };
 
 // Aliases for compatibility
-export const getAllOrdersSvc = async (userId, role, options = {}) => {
+export const getAllOrdersSvc = async (
+  userId,
+  role,
+  pageOrOptions = 1,
+  limit = 10,
+  search = "",
+  sortBy = "createdAt",
+  sortOrder = "desc"
+) => {
   let page = 1;
-  let limit = 10;
-  let search = "";
-  let sortBy = "createdAt";
-  let sortOrder = "desc";
+  let lim = 10;
+  let s = "";
+  let sBy = "createdAt";
+  let sOrder = "desc";
 
-  if (typeof options === "number" || typeof options === "string") {
-    page = options;
-    limit = arguments[3] || 10;
-    search = arguments[4] || "";
-    sortBy = arguments[5] || "createdAt";
-    sortOrder = arguments[6] || "desc";
-  } else if (typeof options === "object") {
-    page = options.page ?? 1;
-    limit = options.limit ?? 10;
-    search = options.search ?? "";
-    sortBy = options.sortBy ?? "createdAt";
-    sortOrder = options.sortOrder ?? "desc";
+  if (typeof pageOrOptions === "object" && pageOrOptions !== null) {
+    page = pageOrOptions.page ?? 1;
+    lim = pageOrOptions.limit ?? 10;
+    s = pageOrOptions.search ?? "";
+    sBy = pageOrOptions.sortBy ?? "createdAt";
+    sOrder = pageOrOptions.sortOrder ?? "desc";
+  } else {
+    page = pageOrOptions || 1;
+    lim = limit || 10;
+    s = search || "";
+    sBy = sortBy || "createdAt";
+    sOrder = sortOrder || "desc";
   }
 
   const queryParams = new URLSearchParams({
     role: role || "customer",
-    page,
-    limit,
-    sortBy,
-    sortOrder,
+    page: String(page),
+    limit: String(lim),
+    sortBy: sBy,
+    sortOrder: sOrder,
   });
 
-  if (search) queryParams.append("search", search);
+  if (s) queryParams.append("search", s);
 
   return await api.get(`/order/${userId}?${queryParams.toString()}`);
 };
+
 

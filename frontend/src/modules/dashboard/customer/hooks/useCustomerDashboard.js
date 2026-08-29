@@ -23,16 +23,17 @@ export function useCustomerDashboard() {
   const [reorderingOrderId, setReorderingOrderId] = useState(null);
 
   let currentUserAddress = "";
-  const isAddressAvailable = Boolean(currentUser?.myAddress);
+  const activeAddress = currentUser?.myAddress;
+  const isAddressAvailable = Boolean(activeAddress);
 
   if (isAddressAvailable) {
-    currentUserAddress = `${currentUser.myAddress.name || ""} ${currentUser.myAddress.phone || ""} ${currentUser.myAddress.street || ""} ${currentUser.myAddress.city || ""} ${currentUser.myAddress.state || ""}, ${currentUser.myAddress.pincode || ""} `;
+    currentUserAddress = `${activeAddress.name || ""} ${activeAddress.phone || ""} ${activeAddress.street || ""} ${activeAddress.city || ""} ${activeAddress.state || ""}, ${activeAddress.pincode || ""} `;
   }
 
   // Load address only if not already present in Redux store
   useEffect(() => {
+    if (!currentUser?._id || currentUser?.myAddress) return;
     const fetchAddress = async () => {
-      if (!currentUser?._id || currentUser?.myAddress) return;
       try {
         const data = await handleGetAddressApi(currentUser._id);
         if (data && data.success && data.addressList && data.addressList.length > 0) {

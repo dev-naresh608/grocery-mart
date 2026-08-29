@@ -12,6 +12,7 @@ import User from "../user/user.model.js";
 import Customer from "../customer/customer.model.js";
 import Seller from "../seller/seller.model.js";
 import Driver from "../driver/driver.model.js";
+import Address from "../address/address.model.js";
 
 import { createCustomerSvc } from "../customer/customer.services.js";
 import { createDriverSvc } from "../driver/driver.services.js";
@@ -47,14 +48,17 @@ const getUserWithRoleDetails = async (user) => {
         };
       }
     } else if (user.role === "customer") {
-      const customer = await Customer.findOne({ user_id: user._id });
-      if (customer) {
-        roleDetails = {
-          myCart: customer.myCart || [],
-          myWishlist: customer.myWishlist || [],
-          myOrders: customer.myOrders || [],
-        };
-      }
+      const [customer, latestAddress] = await Promise.all([
+        Customer.findOne({ user_id: user._id }),
+        Address.findOne({ user_id: user._id }).sort({ updatedAt: -1, createdAt: -1 }),
+      ]);
+
+      roleDetails = {
+        myCart: customer?.myCart || [],
+        myWishlist: customer?.myWishlist || [],
+        myOrders: customer?.myOrders || [],
+        myAddress: latestAddress || null,
+      };
     }
   } catch (err) {
     console.error("Failed fetching role details:", err);

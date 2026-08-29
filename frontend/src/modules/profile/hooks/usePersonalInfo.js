@@ -29,7 +29,7 @@ export const usePersonalInfo = () => {
     fetchAddresses();
   }, [currentUser?._id]);
 
-  const lastUsedAddress = currentUser?.address || addresses[0] || null;
+  const lastUsedAddress = currentUser?.myAddress || addresses[0] || null;
 
   const totalOrders = currentUser?.myOrders?.length || 0;
 
