@@ -6,7 +6,6 @@ import { useSelector } from "react-redux";
 import { leftPanelItems } from "@/constants/navigation";
 import { Menu, X, Truck, Leaf, Coins, ShieldCheck } from "lucide-react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
-import { useNotificationToggle } from "@/modules/notification";
 
 function Home() {
   const location = useLocation();
@@ -14,7 +13,7 @@ function Home() {
     (state) => state.auth
   );
   const guestCart = useSelector((state) => state.cart.guestCart || []);
-  const { unreadCount } = useNotificationToggle();
+  const unreadCount = useSelector((state) => state.notification?.unreadCount || 0);
 
   const cartItems = isLogin ? (currentUser?.myCart || []) : guestCart;
   const userRole = currentUser?.role || "customer";

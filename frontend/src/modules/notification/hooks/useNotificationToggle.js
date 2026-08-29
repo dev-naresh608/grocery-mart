@@ -40,27 +40,12 @@ export const useNotificationToggle = (isOpen = false) => {
     }
   }, [userId, dispatch]);
 
-  // Fetch when component mounts, userId changes, or dropdown opens
-  useEffect(() => {
-    if (userId) {
-      fetchUnread();
-    }
-  }, [userId, fetchUnread]);
-
+  // Fetch notifications only when user opens the notification dropdown
   useEffect(() => {
     if (isOpen && userId) {
       fetchUnread();
     }
   }, [isOpen, userId, fetchUnread]);
-
-  // Periodic poll every 30 seconds for new notifications
-  useEffect(() => {
-    if (!userId) return;
-    const interval = setInterval(() => {
-      fetchUnread();
-    }, 30000);
-    return () => clearInterval(interval);
-  }, [userId, fetchUnread]);
 
   const handleMarkAsRead = async (notificationId) => {
     if (!notificationId || !userId) return;

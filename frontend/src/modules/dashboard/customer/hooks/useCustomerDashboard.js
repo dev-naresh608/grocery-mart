@@ -28,10 +28,10 @@ export function useCustomerDashboard() {
     currentUserAddress = `${currentUser.myAddress.name || ""} ${currentUser.myAddress.phone || ""} ${currentUser.myAddress.street || ""} ${currentUser.myAddress.city || ""} ${currentUser.myAddress.state || ""}, ${currentUser.myAddress.pincode || ""} `;
   }
 
-  // Load latest address from database on dashboard load
+  // Load address only if not already present in Redux store
   useEffect(() => {
     const fetchAddress = async () => {
-      if (!currentUser?._id) return;
+      if (!currentUser?._id || currentUser?.myAddress) return;
       try {
         const data = await handleGetAddressApi(currentUser._id);
         if (data && data.success && data.addressList && data.addressList.length > 0) {
@@ -42,10 +42,17 @@ export function useCustomerDashboard() {
       }
     };
     fetchAddress();
-  }, [currentUser?._id, dispatch]);
+  }, [currentUser?._id, currentUser?.myAddress, dispatch]);
 
-  // Load latest orders from database on dashboard load
+  // Load orders from database only if not already present in Redux store
   useEffect(() => {
+    if (currentUser?.myOrders) {
+      const sorted = sortOrderByDate(currentUser.myOrders, "desc");
+      setOrdersList(sorted);
+      setLoadingOrders(false);
+      return;
+    }
+
     const fetchOrders = async () => {
       if (!currentUser?._id) return;
       try {
@@ -63,7 +70,7 @@ export function useCustomerDashboard() {
       }
     };
     fetchOrders();
-  }, [currentUser?._id, currentUser?.role, dispatch]);
+  }, [currentUser?._id, currentUser?.role, currentUser?.myOrders, dispatch]);
 
   const handleAddAddress = () => {
     openModal(MODAL_TYPES.ADDRESS, {

@@ -50,6 +50,7 @@ import { ToastContainer } from "react-toastify";
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { rotateToken } from "./modules/auth/store/authThunk";
+import { fetchUnreadCountThunk } from "./modules/notification/store/notificationSlice";
 
 const LoginRedirect = () => {
   const { openModal } = useModal();
@@ -108,13 +109,20 @@ const ProtectedRoute = () => {
 
 function App() {
   const dispatch = useDispatch();
-  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (!isAuthenticated) {
       dispatch(rotateToken());
     }
   }, [dispatch, isAuthenticated]);
+
+  useEffect(() => {
+    const userId = user?._id || user?.id;
+    if (isAuthenticated && userId) {
+      dispatch(fetchUnreadCountThunk(userId));
+    }
+  }, [dispatch, isAuthenticated, user?._id, user?.id]);
 
   const router = createBrowserRouter(
     createRoutesFromElements(
