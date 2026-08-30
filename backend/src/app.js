@@ -23,7 +23,7 @@ app.use(
     origin: [
       "http://localhost:3000",
       "http://localhost:5173",
-      "https://novexa-indol.vercel.app/",
+      "https://novexa-indol.vercel.app",
     ],
     credentials: true,
   }),
