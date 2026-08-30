@@ -15,6 +15,7 @@ export const searchOrdersSvc = (allOrders, searchValue) => {
       o.order_status?.toLowerCase().includes(search) ||
       o.payment_method?.toLowerCase().includes(search) ||
       String(o.price_detail?.finalPrice).includes(search) ||
+      ("₹" + o.price_detail?.finalPrice).includes(search) ||
       ("$" + o.price_detail?.finalPrice).includes(search)
     );
   });

@@ -1,5 +1,5 @@
 import React from "react";
-import { Hash,Package,BadgeDollarSign,DollarSign,Weight,Ruler, Scale,CalendarDays, ChevronRight } from "lucide-react";
+import { Hash, Package, IndianRupee, Weight, Ruler, Scale, CalendarDays, ChevronRight } from "lucide-react";
 
 import { useNavigate } from "react-router-dom";
 
@@ -13,8 +13,8 @@ function ProductTable({ allProducts }) {
   const TABLE_HEADER_CONFIG = [
     { colLabel: "ProductId", icon: Hash },
     { colLabel: "Name", icon: Package },
-    { colLabel: "Cost Price", icon: BadgeDollarSign },
-    { colLabel: "Selling Price", icon: DollarSign },
+    { colLabel: "Cost Price", icon: IndianRupee },
+    { colLabel: "Selling Price", icon: IndianRupee },
     { colLabel: "Weight", icon: Weight },
     { colLabel: "UOM", icon: Ruler },
     { colLabel: "Created At", icon: CalendarDays },
@@ -64,12 +64,12 @@ function ProductTable({ allProducts }) {
 
               {/* SELLING PRICE */}
               <td className="p-4 font-semibold text-gray-700">
-                ${p.product_selling_price}
+                ₹{p.product_selling_price}
               </td>
 
               {/* CONST PRICE */}
               <td className="p-4 font-semibold text-gray-700">
-                ${p.product_cost_price}
+                ₹{p.product_cost_price}
               </td>
 
               {/* WEIGHT */}

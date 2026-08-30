@@ -2,7 +2,7 @@ import React from "react";
 import {
   ChevronRight,
   CreditCard,
-  DollarSign,
+  IndianRupee,
   Activity,
   Clock,
   Package,
@@ -31,7 +31,7 @@ function OrdersTable({ currentUserRole, allOrders }) {
     },
     { colLabel: "Created Date", icon: Clock },
     { colLabel: "Payment", icon: CreditCard },
-    { colLabel: "Total", icon: DollarSign },
+    { colLabel: "Total", icon: IndianRupee },
   ];
 
   const renderTableHeader = (label) => {

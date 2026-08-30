@@ -16,10 +16,10 @@ function ConfirmModal() {
   } = payload;
 
   const handleConfirm = async () => {
+    closeModal();
     if (onConfirm) {
       await onConfirm();
     }
-    closeModal();
   };
 
   const getThemeStyles = () => {

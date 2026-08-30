@@ -21,8 +21,8 @@ export const useProfile = () => {
       cancelText: "Cancel",
       type: "danger",
       onConfirm: async () => {
+        navigate("/", { replace: true });
         await dispatch(logout());
-        navigate("/");
       },
     });
   };

@@ -51,7 +51,7 @@ const OrderItems = ({ order ,orderItems}) => {
                   </p>
                   <div>
                     <span className="font-semibold text-gray-500">
-                      ${product.product_selling_price} x {product.product_qty} = $
+                      ₹{product.product_selling_price} x {product.product_qty} = ₹
                       {total.toFixed(2)}
                     </span>
                   </div>

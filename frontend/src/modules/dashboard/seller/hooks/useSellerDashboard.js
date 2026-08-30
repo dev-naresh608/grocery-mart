@@ -6,7 +6,7 @@ export function useSellerDashboard() {
   // Set Seller Stats
   const sellerStats = {
     totalOrders: currentUser?.myOrders?.length || "0",
-    revenue: `$${currentUser?.myRevanue?.length || "0"}`,
+    revenue: `₹${currentUser?.myRevanue?.length || "0"}`,
     products: currentUser?.productList?.length || "0",
     customers: currentUser?.myCustomers?.length || "0",
   };

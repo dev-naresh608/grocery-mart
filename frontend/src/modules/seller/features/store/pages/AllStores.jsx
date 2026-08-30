@@ -20,6 +20,7 @@ const STORE_CATEGORIES = [
 
 function AllStores() {
   const [allStores, setAllStores] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [selectedCategories, setSelectedCategories] = useState([]);
   const { user: currentUser, isAuthenticated: isLogin } = useSelector(
     (state) => state.auth
@@ -59,23 +60,31 @@ function AllStores() {
   }, [catParam]);
 
   useEffect(() => {
-    try {
-      const getStores = async () => {
+    let isMounted = true;
+    const getStores = async () => {
+      setIsLoading(true);
+      try {
         const url = searchQuery
           ? `/stores?search=${encodeURIComponent(searchQuery)}`
           : "/stores";
         const { data } = await api.get(url);
 
+        if (!isMounted) return;
         if (!data.success) {
           toast.error(data.message);
           return;
         }
         setAllStores(data.result || []);
-      };
-      getStores();
-    } catch (error) {
-      console.log(error);
-    }
+      } catch (error) {
+        if (isMounted) console.log(error);
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
+    getStores();
+    return () => {
+      isMounted = false;
+    };
   }, [currentUser, searchQuery]);
 
   const toggleCategory = (catName) => {
@@ -279,8 +288,43 @@ function AllStores() {
         </div>
       </div>
 
-      {/* Stores List */}
-      {filteredStores.length === 0 ? (
+      {/* Loading Progress Bar */}
+      {isLoading && (
+        <div className="w-full bg-emerald-50 h-1.5 overflow-hidden rounded-full mb-6 border border-emerald-100/50">
+          <div className="h-full bg-gradient-to-r from-emerald-500 via-green-400 to-emerald-600 rounded-full animate-indeterminate"></div>
+        </div>
+      )}
+
+      {/* Stores List / Skeletons / Empty State */}
+      {isLoading ? (
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-6">
+          {[...Array(6)].map((_, idx) => (
+            <div
+              key={idx}
+              className="flex gap-3 sm:gap-4 bg-white p-3 sm:p-4 rounded-2xl border border-gray-100 shadow-sm animate-pulse"
+            >
+              {/* Image Skeleton */}
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-gray-200 shrink-0"></div>
+
+              {/* Content Skeleton */}
+              <div className="flex flex-col justify-between flex-1 min-w-0 py-0.5">
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="h-4 bg-gray-200 rounded-md w-3/5"></div>
+                    <div className="h-3.5 bg-gray-200 rounded-md w-8"></div>
+                  </div>
+                  <div className="h-3 bg-emerald-100 rounded-md w-24"></div>
+                  <div className="h-3 bg-gray-100 rounded-md w-4/5"></div>
+                </div>
+                <div className="flex items-center justify-between mt-3">
+                  <div className="h-3.5 bg-gray-200 rounded-md w-20"></div>
+                  <div className="h-4 bg-gray-200 rounded-md w-5"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : filteredStores.length === 0 ? (
         <div className="bg-white rounded-3xl p-10 text-center border border-gray-100 shadow-sm">
           <EmptyStore searchQuery={searchQuery} />
           {selectedCategories.length > 0 && (

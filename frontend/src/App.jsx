@@ -96,7 +96,7 @@ const ProtectedRoute = () => {
 
   useEffect(() => {
     if (!isAuthenticated && !isLoading) {
-      navigate("/login", { replace: true });
+      navigate("/", { replace: true });
     }
   }, [isAuthenticated, isLoading, navigate]);
 

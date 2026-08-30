@@ -99,7 +99,7 @@ export function useCustomerDashboard() {
   // Helper function for price formatting
   const getOrderPrice = (order) => {
     const price = order?.price_detail?.finalPrice ?? order?.priceDetails?.finalPrice ?? 0;
-    return `$${price}`;
+    return `₹${price}`;
   };
 
   // Reorder functionality with full store & product validations
@@ -265,7 +265,7 @@ export function useCustomerDashboard() {
           total + Math.floor(((order?.price_detail?.finalPrice ?? order?.priceDetails?.finalPrice) || 0) / 10),
         0,
       ) || 0,
-    savings: "$122",
+    savings: "₹122",
   };
 
   const pastTwoOrders = recentOrders.slice(0, 2);

@@ -288,7 +288,7 @@ function AddProduct() {
         {/* ================= PRODUCT PRICING ================= */}
         <div className="flex items-center gap-3">
           <div className="w-full">
-            <p>Product Cost Price ($)</p>
+            <p>Product Cost Price (₹)</p>
 
             <input
               type="number"
@@ -302,7 +302,7 @@ function AddProduct() {
           </div>
 
           <div className="w-full">
-            <p>Product Selling Price ($)</p>
+            <p>Product Selling Price (₹)</p>
 
             <input
               type="number"
@@ -316,7 +316,7 @@ function AddProduct() {
           </div>
 
           <div className="w-full">
-            <p>Offer Price ($)</p>
+            <p>Offer Price (₹)</p>
 
             <input
               type="number"

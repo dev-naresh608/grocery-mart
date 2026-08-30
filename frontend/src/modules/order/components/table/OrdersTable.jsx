@@ -2,7 +2,7 @@ import React from "react";
 import {
   ChevronRight,
   CreditCard,
-  DollarSign,
+  IndianRupee,
   User,
   Activity,
   Clock,
@@ -36,7 +36,7 @@ function OrdersTable({ currentUserRole, allOrders }) {
     },
     { colLabel: "Created Date", icon: Clock },
     { colLabel: "Payment", icon: CreditCard },
-    { colLabel: "Total", icon: DollarSign },
+    { colLabel: "Total", icon: IndianRupee },
   ];
 
   const renderTableHeader = (label) => {
@@ -101,7 +101,7 @@ function OrdersTable({ currentUserRole, allOrders }) {
 
               {/* TOTAL */}
               <td className="px-5 py-4 whitespace-nowrap font-bold text-gray-800">
-                ${o.price_detail?.finalPrice}
+                ₹{o.price_detail?.finalPrice}
               </td>
 
               {/* ARROW */}

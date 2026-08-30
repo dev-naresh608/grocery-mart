@@ -1,5 +1,5 @@
 import React from "react";
-import { BadgeDollarSign, DollarSign, Tag, TrendingUp, Percent, AlertCircle } from "lucide-react";
+import { IndianRupee, Tag, TrendingUp, Percent, AlertCircle } from "lucide-react";
 import { SectionCard, SectionLabel } from "../../../../index";
 
 function ProductPricingCard({
@@ -29,13 +29,13 @@ function ProductPricingCard({
         {/* Cost Price */}
         <div className="flex justify-between items-center pb-3 border-b border-gray-100">
           <div className="flex items-center gap-2 text-gray-500 text-xs">
-            <BadgeDollarSign size={16} className="text-gray-400" />
+            <IndianRupee size={16} className="text-gray-400" />
             <span>Cost Price</span>
           </div>
           <div className="font-semibold text-sm">
             {isEditing ? (
               <div className="flex items-center border rounded-lg px-2 bg-white max-w-[120px]">
-                <span className="text-gray-400 text-xs mr-1">$</span>
+                <span className="text-gray-400 text-xs mr-1">₹</span>
                 <input
                   type="number"
                   name="product_cost_price"
@@ -47,7 +47,7 @@ function ProductPricingCard({
                 />
               </div>
             ) : (
-              <span className="text-gray-800">${costPrice.toFixed(2)}</span>
+              <span className="text-gray-800">₹{costPrice.toFixed(2)}</span>
             )}
           </div>
         </div>
@@ -55,13 +55,13 @@ function ProductPricingCard({
         {/* Selling Price */}
         <div className="flex justify-between items-center pb-3 border-b border-gray-100">
           <div className="flex items-center gap-2 text-gray-500 text-xs">
-            <DollarSign size={16} className="text-gray-400" />
+            <IndianRupee size={16} className="text-gray-400" />
             <span>Selling Price</span>
           </div>
           <div className="font-semibold text-sm">
             {isEditing ? (
               <div className="flex items-center border rounded-lg px-2 bg-white max-w-[120px]">
-                <span className="text-gray-400 text-xs mr-1">$</span>
+                <span className="text-gray-400 text-xs mr-1">₹</span>
                 <input
                   type="number"
                   name="product_selling_price"
@@ -73,7 +73,7 @@ function ProductPricingCard({
                 />
               </div>
             ) : (
-              <span className="text-green-700">${sellingPrice.toFixed(2)}</span>
+              <span className="text-green-700">₹{sellingPrice.toFixed(2)}</span>
             )}
           </div>
         </div>
@@ -125,7 +125,7 @@ function ProductPricingCard({
             <div className="font-semibold text-sm">
               {isEditing ? (
                 <div className="flex items-center border rounded-lg px-2 bg-white max-w-[120px]">
-                  <span className="text-gray-400 text-xs mr-1">$</span>
+                  <span className="text-gray-400 text-xs mr-1">₹</span>
                   <input
                     type="number"
                     name="product_offer_price"
@@ -138,7 +138,7 @@ function ProductPricingCard({
                   />
                 </div>
               ) : (
-                <span className="text-amber-600">${offerPrice.toFixed(2)}</span>
+                <span className="text-amber-600">₹{offerPrice.toFixed(2)}</span>
               )}
             </div>
           </div>
@@ -154,7 +154,7 @@ function ProductPricingCard({
                 <span>Est. Profit Margin</span>
               </div>
               <span className="font-bold text-green-700">
-                ${profit.toFixed(2)} ({profitPercentage.toFixed(0)}%)
+                ₹{profit.toFixed(2)} ({profitPercentage.toFixed(0)}%)
               </span>
             </div>
 
@@ -166,7 +166,7 @@ function ProductPricingCard({
                   <span>Offer Discount</span>
                 </div>
                 <span className="font-bold text-amber-700">
-                  -${discount.toFixed(2)} ({discountPercentage.toFixed(0)}% off)
+                  -₹{discount.toFixed(2)} ({discountPercentage.toFixed(0)}% off)
                 </span>
               </div>
             )}

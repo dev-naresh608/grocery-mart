@@ -176,21 +176,22 @@ h2 {
   fill: rgb(15, 91, 15);
 }
 
-/* ================= FADE IN ================= */
-
-@keyframes fade-in {
-  from {
-    opacity: 0;
+@keyframes indeterminate {
+  0% {
+    transform: translateX(-100%) scaleX(0.2);
   }
-
-  to {
-    opacity: 1;
+  50% {
+    transform: translateX(0%) scaleX(0.6);
+  }
+  100% {
+    transform: translateX(100%) scaleX(0.2);
   }
 }
 
-.animate-fade-in {
-  animation: fade-in 1s ease-in-out;
+.animate-indeterminate {
+  animation: indeterminate 1.4s infinite ease-in-out;
 }
+
 
 /* ================= DATE INPUT ================= */
 

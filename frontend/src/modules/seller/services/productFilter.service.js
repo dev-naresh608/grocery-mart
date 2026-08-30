@@ -14,6 +14,9 @@ export const searchProductsSvc = (allProducts, searchValue) => {
       String(p.product_offer_price).includes(search) ||
       String(p.product_selling_price).includes(search) ||
       String(p.product_weight).includes(search) ||
+      ("₹" + String(p.product_cost_price)).includes(search) ||
+      ("₹" + String(p.product_offer_price)).includes(search) ||
+      ("₹" + String(p.product_selling_price)).includes(search) ||
       ("$" + String(p.product_cost_price)).includes(search) ||
       ("$" + String(p.product_offer_price)).includes(search) ||
       ("$" + String(p.product_selling_price)).includes(search) ||

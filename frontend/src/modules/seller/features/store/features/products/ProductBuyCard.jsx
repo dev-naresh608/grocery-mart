@@ -221,15 +221,15 @@ function ProductBuyCard({
                   </div>
                   <span>
                     <span className="text-md text-blue-700">
-                      ${offer_price}
+                      ₹{offer_price}
                     </span>{" "}
-                    <del className="text-sm text-gray-600">${price}</del>
+                    <del className="text-sm text-gray-600">₹{price}</del>
                   </span>
                   <span className="text-gray-500 text-sm">/pre kg</span>
                 </>
               ) : (
                 <>
-                  <span className="text-md text-blue-700">${price}</span>
+                  <span className="text-md text-blue-700">₹{price}</span>
                   <span className="text-gray-500 text-sm">/pre kg</span>
                 </>
               )}

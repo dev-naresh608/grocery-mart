@@ -46,7 +46,7 @@ export default function CartItemCard({ product, onQtyChange, onDelete }) {
       {/* Subtotal Column */}
       <div className="flex items-center">
         <span className="font-semibold text-gray-700">
-          ${(product.product_selling_price * product.product_qty).toFixed(2)}
+          ₹{(product.product_selling_price * product.product_qty).toFixed(2)}
         </span>
       </div>
 
