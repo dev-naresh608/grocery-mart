@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { pointSchema } from "../../utils/geo.schema.js";
 
 const addressSchema = new mongoose.Schema(
   {
@@ -31,8 +30,15 @@ const addressSchema = new mongoose.Schema(
       required: true,
     },
     location: {
-      type: pointSchema,
-      required: true,
+      type: {
+        type: String,
+        enum: ["Point"],
+        default: "Point",
+      },
+      coordinates: {
+        type: [Number],
+        required: true,
+      },
     },
   },
   { timestamps: true },

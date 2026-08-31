@@ -22,7 +22,6 @@ export default function Signup() {
     isPassVisible,
     isLoading,
     handleChange,
-    handleSetCoordinates,
     handleShowPassword,
     handleSubmit,
   } = useSignupForm();
@@ -115,7 +114,6 @@ export default function Signup() {
             formData={formData}
             formErrors={formErrors}
             onChange={handleChange}
-            onSetCoordinates={handleSetCoordinates}
             categories={STORE_CATEGORIES}
           />
         )}

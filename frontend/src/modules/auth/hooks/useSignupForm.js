@@ -18,7 +18,6 @@ const INITIAL_FORM_DATA = {
   store_name: "",
   store_address: "",
   store_type: "",
-  coordinates: null, // [longitude, latitude]
 };
 
 export function useSignupForm() {
@@ -37,9 +36,7 @@ export function useSignupForm() {
   const roleParam = searchParams.get("role");
   const validRoles = ["customer", "seller", "driver"];
 
-  const currentRole = validRoles.includes(roleParam)
-    ? roleParam
-    : "customer";
+  const currentRole = validRoles.includes(roleParam) ? roleParam : "customer";
 
   const setCurrentRole = (role) => {
     setSearchParams({ role }, { replace: true });
@@ -64,13 +61,6 @@ export function useSignupForm() {
     });
   };
 
-  const handleSetCoordinates = (coords) => {
-    setFormData((prev) => ({
-      ...prev,
-      coordinates: coords,
-    }));
-  };
-
   const handleShowPassword = () => {
     setIsPassVisible((prev) => !prev);
   };
@@ -85,22 +75,13 @@ export function useSignupForm() {
     };
 
     if (currentRole === "seller") {
-      const sellerPayload = {
+      return {
         ...base,
         store_owner_name: formData.username,
         store_name: formData.store_name,
         store_type: formData.store_type,
         store_address: formData.store_address,
       };
-
-      if (
-        Array.isArray(formData.coordinates) &&
-        formData.coordinates.length === 2
-      ) {
-        sellerPayload.coordinates = formData.coordinates;
-      }
-
-      return sellerPayload;
     }
 
     if (currentRole === "driver") {
@@ -144,8 +125,6 @@ export function useSignupForm() {
 
   return {
     formData,
-    setFormData,
-    handleSetCoordinates,
     formErrors,
     currentRole,
     setCurrentRole,

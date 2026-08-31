@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import { pointSchema } from "../../utils/geo.schema.js";
 
 const sellerSchema = new mongoose.Schema({
   user_id: {
@@ -30,21 +29,16 @@ const sellerSchema = new mongoose.Schema({
     default: true,
   },
   location: {
-    type: pointSchema,
-    default: undefined,
-    required: false,
+    type: {
+      type: String,
+      enum: ["Point"],
+      default: "Point",
+    },
+    coordinates: {
+      type: [Number],
+      required: true,
+    },
   },
-});
-
-sellerSchema.pre("validate", function () {
-  if (
-    this.location &&
-    (!this.location.coordinates ||
-      !Array.isArray(this.location.coordinates) ||
-      this.location.coordinates.length === 0)
-  ) {
-    this.location = undefined;
-  }
 });
 
 sellerSchema.index({ location: "2dsphere" });

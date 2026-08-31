@@ -94,7 +94,7 @@ function ProductHeaderDetail({
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <button
                   onClick={() => setIsEditing(true)}
-                  className="flex items-center justify-center gap-1.5 px-4 py-2 bg-green-700 hover:bg-green-800 text-white rounded-lg text-sm font-semibold transition-colors duration-150 w-1/2 sm:w-auto"
+                  className="flex items-center justify-center gap-1.5 px-4 py-2 bg-blue-100 hover:bg-blue-200 text-blue-500 border border-blue-300 rounded-lg text-sm font-semibold transition-colors duration-150 w-1/2 sm:w-auto"
                 >
                   <Edit2 size={16} />
                   Edit Product
@@ -102,7 +102,7 @@ function ProductHeaderDetail({
                 <button
                   type="button"
                   onClick={onDelete}
-                  className="flex items-center justify-center gap-1.5 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg text-sm font-semibold transition-colors duration-150 w-1/2 sm:w-auto"
+                  className="flex items-center justify-center gap-1.5 px-4 py-2 bg-red-100 hover:bg-red-200 border border-red-300 text-red-500 rounded-lg text-sm font-semibold transition-colors duration-150 w-1/2 sm:w-auto"
                 >
                   <Trash2 size={16} />
                   Delete Product

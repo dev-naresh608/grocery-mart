@@ -19,7 +19,7 @@ export const getDistance = async (lat1, lon1, lat2, lon2) => {
   }
 };
 
-// Geocode address text to coordinates
+// Geocode address text
 export const getAddress = async (userAddress) => {
   if (!userAddress) {
     return {
@@ -44,7 +44,7 @@ export const getAddress = async (userAddress) => {
   }
 };
 
-// Reverse geocode coordinates to human-readable address
+// Reverse geocode
 export const reverseGeocodeApi = async (latitude, longitude) => {
   if (latitude === undefined || longitude === undefined) {
     return { success: false, error: "Coordinates are required" };

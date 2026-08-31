@@ -4,7 +4,6 @@ import User from "../modules/user/user.model.js";
 import Customer from "../modules/customer/customer.model.js";
 import Seller from "../modules/seller/seller.model.js";
 import Driver from "../modules/driver/driver.model.js";
-import Address from "../modules/address/address.model.js";
 import { registerSvc, loginSvc, getMeSvc } from "../modules/auth/auth.service.js";
 import { registerSchema, loginSchema } from "../modules/auth/auth.schema.js";
 
@@ -140,14 +139,6 @@ async function runAuthAudit() {
       "Coordinates safely ingested during signup"
     );
 
-    // Verify stored coordinates in MongoDB
-    const gpsSellerDoc = await Seller.findById(sellerResWithCoords.user.store_id);
-    const hasCorrectCoords =
-      gpsSellerDoc &&
-      gpsSellerDoc.location?.coordinates[0] === 77.6413 &&
-      gpsSellerDoc.location?.coordinates[1] === 12.9784;
-    recordTest("Seller MongoDB GeoJSON Location Record", hasCorrectCoords, `Location: ${JSON.stringify(gpsSellerDoc?.location)}`);
-
     // 5. Driver Registration Flow
     const driverRes = await registerSvc(validDriverData);
     const isDriverCreated =
@@ -173,18 +164,15 @@ async function runAuthAudit() {
     recordTest("Driver Login Flow", isDriverLoggedIn, `Role: ${driverLoginRes.user?.role}`);
 
     // 6. Test Error Cases & Security
-    // Duplicate Email Check
     const dupEmailRes = await registerSvc(validCustData);
     recordTest("Security: Reject Duplicate Email", !dupEmailRes.success, dupEmailRes.message);
 
-    // Invalid Password Login
     const wrongPassRes = await loginSvc({
       email: validCustData.email,
       password: "WrongPassword!99",
     });
     recordTest("Security: Reject Wrong Password", !wrongPassRes.success, wrongPassRes.message);
 
-    // Non-existent Email Login
     const noUserRes = await loginSvc({
       email: `nonexistent_${timestamp}@example.com`,
       password: "pass1234Password",

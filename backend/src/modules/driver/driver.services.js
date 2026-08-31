@@ -34,7 +34,6 @@ export const updateDriverLocationSvc = async (userId, coordinates) => {
         coordinates: [Number(longitude), Number(latitude)],
       },
     },
-    { new: true, runValidators: true },
+    { returnDocument: "after", runValidators: true },
   );
 };
-

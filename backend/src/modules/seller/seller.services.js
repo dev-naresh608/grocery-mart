@@ -39,14 +39,19 @@ export const createSellerSvc = async (userId, payload, session) => {
   if (!storeLocation && typeof store_address === "string" && store_address.trim()) {
     try {
       const geoResult = await findAddress(store_address);
-      if (geoResult && geoResult.success && geoResult.longitude !== undefined && geoResult.latitude !== undefined) {
+      if (
+        geoResult &&
+        geoResult.success &&
+        geoResult.longitude !== undefined &&
+        geoResult.latitude !== undefined
+      ) {
         storeLocation = {
           type: "Point",
           coordinates: [Number(geoResult.longitude), Number(geoResult.latitude)],
         };
       }
     } catch {
-      // Graceful fallback during initial signup: allow registration and let seller set location in dashboard
+      // Graceful fallback: allow registration and let seller set location in dashboard
     }
   }
 
