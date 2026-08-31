@@ -5,8 +5,7 @@ import { setStoreId, setGuestCart, openCartDrawer } from "@/modules/cart/store/c
 import { getStoreApi, addToCartApi } from "@/modules/cart/services/cart.api";
 import { useModal, MODAL_TYPES } from "@/components";
 import { handleGetAddressApi } from "@/modules/address/services/address.service.api";
-import { getAllOrdersSvc } from "@/modules/order/services/order.api.service";
-import { sortOrderByDate } from "@/modules/order/services/orderFilterService";
+import { getAllOrdersSvc, sortOrderByDate } from "@/modules/order";
 import { toast } from "react-toastify";
 import api from "@/configs/api";
 

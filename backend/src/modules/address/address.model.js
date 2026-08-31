@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { pointSchema } from "../../utils/geo.schema.js";
 
 const addressSchema = new mongoose.Schema(
   {
@@ -29,9 +30,14 @@ const addressSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    location: {
+      type: pointSchema,
+      required: true,
+    },
   },
   { timestamps: true },
 );
 
+addressSchema.index({ location: "2dsphere" });
 const Address = mongoose.model("Address", addressSchema);
 export default Address;

@@ -65,3 +65,66 @@ export const updateAddressThunk = createAsyncThunk(
     }
   }
 );
+
+export const detectUserLocationThunk = createAsyncThunk(
+  "address/detectUserLocation",
+  async (_, { rejectWithValue }) => {
+    if (typeof window === "undefined" || !navigator?.geolocation) {
+      return rejectWithValue({
+        code: "UNSUPPORTED",
+        message:
+          "Geolocation is not supported by your browser. Please enter your address manually.",
+      });
+    }
+
+    return new Promise((resolve) => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          resolve({
+            latitude: position.coords.latitude,
+            longitude: position.coords.longitude,
+            accuracy: position.coords.accuracy,
+          });
+        },
+        (error) => {
+          let message =
+            "Unable to retrieve your location. Please enter your address manually.";
+          let code = "UNKNOWN";
+
+          switch (error.code) {
+            case 1: // PERMISSION_DENIED
+              code = "PERMISSION_DENIED";
+              message =
+                "Location permission was denied. Enter your address manually to continue.";
+              break;
+            case 2: // POSITION_UNAVAILABLE
+              code = "POSITION_UNAVAILABLE";
+              message =
+                "Location information is unavailable. You can enter your address manually.";
+              break;
+            case 3: // TIMEOUT
+              code = "TIMEOUT";
+              message =
+                "Location request timed out. You can enter your address manually.";
+              break;
+            default:
+              break;
+          }
+
+          resolve(
+            rejectWithValue({
+              code,
+              message,
+            })
+          );
+        },
+        {
+          enableHighAccuracy: true,
+          timeout: 10000,
+          maximumAge: 60000,
+        }
+      );
+    });
+  }
+);
+

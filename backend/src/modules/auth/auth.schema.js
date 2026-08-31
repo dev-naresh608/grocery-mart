@@ -7,11 +7,7 @@ const baseSignupSchema = {
     .min(2, "Username must be at least 2 characters")
     .max(50, "Username must not exceed 50 characters"),
 
-  email: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .email("Invalid email address"),
+  email: z.string().trim().toLowerCase().email("Invalid email address"),
 
   password: z
     .string()
@@ -81,13 +77,7 @@ export const registerSchema = z.discriminatedUnion("role", [
 ]);
 
 export const loginSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .email("Invalid email address"),
+  email: z.string().trim().toLowerCase().email("Invalid email address"),
 
-  password: z
-    .string()
-    .min(1, "Password is required"),
+  password: z.string().min(1, "Password is required"),
 });

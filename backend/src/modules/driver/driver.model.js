@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import { pointSchema } from "../../utils/geo.schema.js";
 
 const driverSchema = new mongoose.Schema({
   user_id: {
@@ -29,7 +30,25 @@ const driverSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  currentLocation: {
+    type: pointSchema,
+    default: undefined,
+    required: false,
+  },
 });
+
+driverSchema.pre("validate", function () {
+  if (
+    this.currentLocation &&
+    (!this.currentLocation.coordinates ||
+      !Array.isArray(this.currentLocation.coordinates) ||
+      this.currentLocation.coordinates.length === 0)
+  ) {
+    this.currentLocation = undefined;
+  }
+});
+
+driverSchema.index({ currentLocation: "2dsphere" });
 
 const Driver = mongoose.model("Driver", driverSchema);
 export default Driver;
