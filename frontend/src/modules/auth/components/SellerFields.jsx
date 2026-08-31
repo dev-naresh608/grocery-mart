@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Store, ChevronDown, Navigation, Loader2, CheckCircle2 } from "lucide-react";
+import { Store, ChevronDown, Navigation, Loader2, CheckCircle2, MapPin } from "lucide-react";
 import { toast } from "react-toastify";
 import { reverseGeocodeApi } from "@/services/DistanceCalculator";
 
@@ -10,7 +10,7 @@ export default function SellerFields({
   categories,
 }) {
   const [isDetecting, setIsDetecting] = useState(false);
-  const [locationStatus, setLocationStatus] = useState("");
+  const [locationBadge, setLocationBadge] = useState("");
 
   const handleDetectLocation = () => {
     if (typeof window === "undefined" || !navigator?.geolocation) {
@@ -19,7 +19,7 @@ export default function SellerFields({
     }
 
     setIsDetecting(true);
-    setLocationStatus("Detecting GPS and fetching street address...");
+    setLocationBadge("Detecting GPS coordinates...");
 
     navigator.geolocation.getCurrentPosition(
       async (position) => {
@@ -28,58 +28,43 @@ export default function SellerFields({
           onSetCoordinates([longitude, latitude]);
         }
 
+        setLocationBadge(`📍 GPS Location Attached (${latitude.toFixed(4)}, ${longitude.toFixed(4)})`);
+
+        // Attempt reverse geocoding to suggest address text only if address field is empty
         try {
           const geoRes = await reverseGeocodeApi(latitude, longitude);
           if (geoRes && geoRes.success && geoRes.formattedAddress) {
-            // Auto-fill store_address in formData
-            const synthEvent = {
-              target: {
-                name: "store_address",
-                value: geoRes.formattedAddress,
-              },
-            };
-            onChange(synthEvent);
-            setLocationStatus("📍 Address auto-filled from current location!");
-            toast.success("Current address detected & filled successfully!");
-          } else {
-            // Fallback address text so required field is never empty
-            const fallbackText = `Current Location (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
-            if (!formData.store_address?.trim()) {
+            // Only auto-fill if user hasn't already typed their address
+            if (!formData.store_address || formData.store_address.startsWith("Current Location")) {
               const synthEvent = {
                 target: {
                   name: "store_address",
-                  value: fallbackText,
+                  value: geoRes.formattedAddress,
                 },
               };
               onChange(synthEvent);
+              toast.success("Current address auto-filled! You can edit or add shop/room details.");
+            } else {
+              toast.success("GPS coordinates attached to your store address!");
             }
-            setLocationStatus(`📍 GPS Set: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
-            toast.success("GPS location set!");
+          } else {
+            toast.success("GPS coordinates attached! Please enter your store street address below.");
           }
         } catch {
-          const fallbackText = `Current Location (${latitude.toFixed(5)}, ${longitude.toFixed(5)})`;
-          if (!formData.store_address?.trim()) {
-            onChange({
-              target: {
-                name: "store_address",
-                value: fallbackText,
-              },
-            });
-          }
-          setLocationStatus(`📍 GPS Set: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}`);
+          toast.success("GPS coordinates attached! Please enter your store street address below.");
         } finally {
           setIsDetecting(false);
         }
       },
       (error) => {
         setIsDetecting(false);
-        let msg = "Location permission was denied. Enter store address manually to continue.";
+        let msg = "Location permission was denied. Please enter your store address manually.";
         if (error.code === 2) {
-          msg = "Store location unavailable. Enter store address manually to continue.";
+          msg = "GPS location unavailable. Please enter your store address manually.";
         } else if (error.code === 3) {
-          msg = "Location request timed out. Enter store address manually to continue.";
+          msg = "GPS request timed out. Please enter your store address manually.";
         }
-        setLocationStatus(msg);
+        setLocationBadge("");
         toast.info(msg);
       },
       { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
@@ -134,10 +119,13 @@ export default function SellerFields({
         </div>
       </div>
 
-      {/* STORE ADDRESS WITH GEOLOCATION AUTO-FILL */}
+      {/* STORE ADDRESS WITH GPS ATTACH BUTTON */}
       <div>
         <div className="flex items-center justify-between mb-1.5">
-          <p className="text-[#989da4] text-sm font-semibold">Store Address</p>
+          <div className="flex items-center gap-1.5">
+            <MapPin size={15} className="text-emerald-600" />
+            <p className="text-[#989da4] text-sm font-semibold">Store Address</p>
+          </div>
 
           <button
             type="button"
@@ -148,17 +136,17 @@ export default function SellerFields({
             {isDetecting ? (
               <>
                 <Loader2 size={13} className="animate-spin text-emerald-600" />
-                <span>Fetching Address...</span>
+                <span>Locating...</span>
               </>
             ) : hasCoordinates ? (
               <>
                 <CheckCircle2 size={13} className="text-emerald-600" />
-                <span>GPS & Address Set</span>
+                <span>GPS Attached</span>
               </>
             ) : (
               <>
                 <Navigation size={13} className="text-emerald-600" />
-                <span>Use Current Location</span>
+                <span>Attach Current Location</span>
               </>
             )}
           </button>
@@ -169,16 +157,16 @@ export default function SellerFields({
             required
             name="store_address"
             value={formData.store_address}
-            placeholder="Enter full store address (street, area, city, pincode)..."
+            placeholder="Enter store postal address (e.g., Shop 4, Main Street, Indiranagar, Bengaluru, 560038)..."
             onChange={onChange}
             rows={3}
             className="w-full resize-none bg-transparent outline-none text-gray-600 placeholder:text-gray-400 text-sm"
           />
         </div>
 
-        {locationStatus && (
+        {locationBadge && (
           <p className="text-xs mt-1.5 text-emerald-700 font-medium">
-            {locationStatus}
+            {locationBadge}
           </p>
         )}
       </div>
