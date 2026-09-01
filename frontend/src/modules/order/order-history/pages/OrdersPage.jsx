@@ -29,7 +29,7 @@ function Orders() {
   const [limit, setLimit] = useState(10);
   const [paginationMeta, setPaginationMeta] = useState(null);
   const [summaryStats, setSummaryStats] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchOrderData = async () => {
@@ -95,11 +95,6 @@ function Orders() {
     setPage(1);
   };
 
-  // ===================== EMPTY STATE =====================
-  if (!loading && allOrders.length === 0 && !searchValue && page === 1) {
-    return <EmptyOrders />;
-  }
-
   // ===================== RENDER DASHBOARD CARDS =====================
   const dashboardCards = dashboardCardsConfig(
     currentUser,
@@ -108,11 +103,11 @@ function Orders() {
     summaryStats
   );
 
-  const commonCss = "bg-white rounded-xl border border-[#E7E5E4] shadow-xs";
+  const commonCss = "bg-white rounded-2xl border border-gray-200/90 shadow-xs";
 
   return (
-    <div className="space-y-4 font-sans">
-      {/* ================= HEADER ================= */}
+    <div className="space-y-4 font-sans max-w-7xl mx-auto">
+      {/* ================= HEADER CARDS ================= */}
       <div className={`${commonCss} p-3`}>
         <div className="flex items-center gap-3 overflow-x-auto">
           {dashboardCards.map((card, i) => (
@@ -136,12 +131,12 @@ function Orders() {
           </div>
 
           {/* Items Per Page Selector */}
-          <div className="flex items-center gap-2 text-xs text-[#78716C] self-end sm:self-auto shrink-0">
+          <div className="flex items-center gap-2 text-xs text-gray-500 self-end sm:self-auto shrink-0">
             <span>Per page:</span>
             <select
               value={limit}
               onChange={handleLimitChange}
-              className="bg-[#F5F5F4] border border-[#E7E5E4] text-[#1C1917] font-semibold text-xs rounded-lg px-2 py-1.5 outline-none cursor-pointer"
+              className="bg-gray-50 border border-gray-200 text-gray-800 font-semibold text-xs rounded-xl px-2.5 py-1.5 outline-none cursor-pointer"
             >
               <option value={5}>5</option>
               <option value={10}>10</option>
@@ -151,12 +146,19 @@ function Orders() {
           </div>
         </div>
 
-        {/* ================= LOADING STATE ================= */}
+        {/* ================= LOADING & CONTENT STATE ================= */}
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-12 text-[#78716C] space-y-2">
-            <Loader2 size={24} className="animate-spin text-[#6366F1]" />
+          <div className="flex flex-col items-center justify-center py-16 text-gray-400 space-y-2">
+            <Loader2 size={26} className="animate-spin text-emerald-600" />
             <p className="text-xs font-medium">Loading orders...</p>
           </div>
+        ) : filteredOrders.length === 0 ? (
+          <EmptyOrders
+            currentUserRole={currentUser?.role}
+            isSearchResult={Boolean(searchValue)}
+            searchValue={searchValue}
+            onClearSearch={() => setSearchValue("")}
+          />
         ) : (
           /* ================= ORDER LIST TABLE ================= */
           <OrdersTable
