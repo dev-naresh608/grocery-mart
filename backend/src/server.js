@@ -10,8 +10,10 @@ import connectDB from "./configs/database.js";
 const startServer = async () => {
   await connectDB();
 
-  app.listen(config.server.port || 5000, () => {
-    console.log(`Server running on port ${config.server.port || 5000}`);
+  const PORT = process.env.PORT || config.server.port || 5000;
+
+  app.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on port ${PORT}`);
   });
 };
 
