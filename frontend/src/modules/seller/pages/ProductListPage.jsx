@@ -27,9 +27,7 @@ import {
   deleteProductApi,
   ProductTable,
   ProductGridView,
-  ProductStatsCards,
   filterProductsSvc,
-  calculateProductStats,
 } from "../index";
 import { useModal, MODAL_TYPES } from "@/components";
 
@@ -101,21 +99,6 @@ function ProductListPage() {
     fetchProducts();
   }, [fetchProducts]);
 
-  // ================= STATS CALCULATION =================
-  const stats = useMemo(() => {
-    return calculateProductStats(allProducts);
-  }, [allProducts]);
-
-  // Derived active card filter to keep UI 100% in sync without bugs
-  const activeCardId = useMemo(() => {
-    if (menuFilter === "in_menu") return "in_menu";
-    if (menuFilter === "hidden") return "hidden";
-    if (stockFilter === "in_stock") return "in_stock";
-    if (stockFilter === "out_of_stock") return "out_of_stock";
-    if (offerFilter === "offers_only") return "offers_only";
-    return "all";
-  }, [menuFilter, stockFilter, offerFilter]);
-
   // ================= COMBINED FILTER & SORT =================
   const filteredProducts = useMemo(() => {
     return filterProductsSvc(allProducts, {
@@ -149,35 +132,6 @@ function ProductListPage() {
     const startIndex = (currentPage - 1) * itemsPerPage;
     return filteredProducts.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredProducts, currentPage, itemsPerPage]);
-
-  // ================= STAT CARD FILTER CLICK (SEAMLESS SYNC) =================
-  const handleStatCardClick = (cardId) => {
-    if (cardId === "all") {
-      setMenuFilter("all");
-      setStockFilter("all");
-      setOfferFilter("all");
-    } else if (cardId === "in_menu") {
-      setMenuFilter((prev) => (prev === "in_menu" ? "all" : "in_menu"));
-      setStockFilter("all");
-      setOfferFilter("all");
-    } else if (cardId === "hidden") {
-      setMenuFilter((prev) => (prev === "hidden" ? "all" : "hidden"));
-      setStockFilter("all");
-      setOfferFilter("all");
-    } else if (cardId === "in_stock") {
-      setStockFilter((prev) => (prev === "in_stock" ? "all" : "in_stock"));
-      setMenuFilter("all");
-      setOfferFilter("all");
-    } else if (cardId === "out_of_stock") {
-      setStockFilter((prev) => (prev === "out_of_stock" ? "all" : "out_of_stock"));
-      setMenuFilter("all");
-      setOfferFilter("all");
-    } else if (cardId === "offers_only") {
-      setOfferFilter((prev) => (prev === "offers_only" ? "all" : "offers_only"));
-      setMenuFilter("all");
-      setStockFilter("all");
-    }
-  };
 
   // ================= TOGGLE MENU STATUS (OPTIMISTIC) =================
   const handleToggleMenuStatus = async (productId, newStatus) => {
@@ -411,14 +365,7 @@ function ProductListPage() {
         </div>
       </div>
 
-      {/* ================= 2. METRIC STATS CARDS (ONE-LINE TITLES & MOBILE HORIZONTAL SCROLL) ================= */}
-      <ProductStatsCards
-        stats={stats}
-        activeFilter={activeCardId}
-        onFilterChange={handleStatCardClick}
-      />
-
-      {/* ================= 3. FILTER, SEARCH & CONTROLS ================= */}
+      {/* ================= 2. FILTER, SEARCH & CONTROLS ================= */}
       <div className="bg-white rounded-2xl border border-gray-200/90 p-3.5 sm:p-4 shadow-xs space-y-3">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-2.5">
           {/* Live Search Input */}
