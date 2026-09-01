@@ -36,6 +36,7 @@ function ProductDetailPage() {
     product_description: "",
     is_product_in_stock: true,
     is_offer_available: false,
+    show_in_menu: true,
   });
 
   useEffect(() => {
@@ -57,6 +58,7 @@ function ProductDetailPage() {
           product_description: data.product.product_description || "",
           is_product_in_stock: data.product.is_product_in_stock !== false,
           is_offer_available: data.product.is_offer_available === true,
+          show_in_menu: data.product.show_in_menu !== false,
         });
       } catch (error) {
         return toast.error(error.message);
@@ -91,6 +93,7 @@ function ProductDetailPage() {
         product_description: product.product_description || "",
         is_product_in_stock: product.is_product_in_stock !== false,
         is_offer_available: product.is_offer_available === true,
+        show_in_menu: product.show_in_menu !== false,
       });
     }
     setIsEditing(false);
@@ -131,6 +134,7 @@ function ProductDetailPage() {
         product_description: formData.product_description.trim(),
         is_product_in_stock: formData.is_product_in_stock,
         is_offer_available: formData.is_offer_available,
+        show_in_menu: formData.show_in_menu,
       };
 
       const data = await updateProductApi(productId, currentUser._id, updates);
@@ -190,6 +194,7 @@ function ProductDetailPage() {
         onCancel={handleCancel}
         isInStock={isEditing ? formData.is_product_in_stock : product.is_product_in_stock}
         isOfferAvailable={isEditing ? formData.is_offer_available : product.is_offer_available}
+        showInMenu={isEditing ? formData.show_in_menu : product.show_in_menu}
         onDelete={handleDelete}
       />
 

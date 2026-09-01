@@ -116,6 +116,49 @@ function ProductSpecsCard({
             )}
           </div>
         </div>
+
+        {/* Show in Menu Toggle */}
+        <div className="flex justify-between items-center">
+          <div className="flex flex-col">
+            <div className="flex items-center gap-2 text-gray-500 text-xs font-semibold">
+              <span>Show in Store Menu</span>
+            </div>
+            <span className="text-[11px] text-gray-400">
+              Control if visible on buyer storefront
+            </span>
+          </div>
+          <div>
+            {isEditing ? (
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="show_in_menu"
+                  checked={formData.show_in_menu !== false}
+                  onChange={(e) =>
+                    onChange({
+                      target: {
+                        name: "show_in_menu",
+                        value: e.target.checked,
+                      },
+                    })
+                  }
+                  className="sr-only peer"
+                />
+                <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+              </label>
+            ) : (
+              <span
+                className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
+                  product?.show_in_menu !== false
+                    ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
+                    : "bg-gray-100 text-gray-700 border border-gray-200"
+                }`}
+              >
+                {product?.show_in_menu !== false ? "Visible in Menu" : "Hidden"}
+              </span>
+            )}
+          </div>
+        </div>
       </div>
     </SectionCard>
   );

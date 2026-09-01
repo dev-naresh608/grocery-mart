@@ -22,6 +22,7 @@ function AddProduct() {
     product_description: "",
     isProductInStock: true,
     isOfferAvailable: false,
+    show_in_menu: true,
     store_id: "",
   };
 
@@ -119,6 +120,7 @@ function AddProduct() {
         product_weight: Number(formData.product_weight),
 
         isOfferAvailable: false,
+        show_in_menu: formData.show_in_menu !== false,
       };
 
       // ================= ADD PRODUCT IN DATABASE =================
@@ -342,6 +344,39 @@ function AddProduct() {
             placeholder="Type here..."
             className="bg-transparent w-full outline-none border border-gray-600 rounded-md py-1 px-2"
           />
+        </div>
+
+        {/* ================= SHOW IN STORE MENU ================= */}
+        <div className="flex items-center justify-between p-3 rounded-lg bg-emerald-50 border border-emerald-200">
+          <div>
+            <p className="text-xs font-semibold text-gray-800 flex items-center gap-1.5">
+              <span>List in Store Menu</span>
+              {formData.show_in_menu ? (
+                <span className="text-[10px] bg-emerald-200 text-emerald-800 px-2 py-0.5 rounded-full font-bold">
+                  Visible to Buyers
+                </span>
+              ) : (
+                <span className="text-[10px] bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full font-bold">
+                  Hidden
+                </span>
+              )}
+            </p>
+            <p className="text-[11px] text-gray-500 font-normal mt-0.5">
+              Enable to show this product in your public store catalog and menu.
+            </p>
+          </div>
+          <label className="relative inline-flex items-center cursor-pointer">
+            <input
+              type="checkbox"
+              name="show_in_menu"
+              checked={formData.show_in_menu}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, show_in_menu: e.target.checked }))
+              }
+              className="sr-only peer"
+            />
+            <div className="w-10 h-5 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-emerald-600"></div>
+          </label>
         </div>
 
         {/* ================= BUTTONS ================= */}

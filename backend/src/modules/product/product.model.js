@@ -49,6 +49,10 @@ const productSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    show_in_menu: {
+      type: Boolean,
+      default: true,
+    },
     is_offer_available: {
       type: Boolean,
       default: false,

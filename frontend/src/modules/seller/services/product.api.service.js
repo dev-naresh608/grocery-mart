@@ -32,6 +32,10 @@ export const updateProductApi = async (productId, storeId, updates) => {
   return data;
 };
 
+export const toggleProductMenuStatusApi = async (productId, storeId, showInMenu) => {
+  return updateProductApi(productId, storeId, { show_in_menu: showInMenu });
+};
+
 export const deleteProductApi = async (productId, storeId) => {
   const { data } = await api.delete(`/product/${productId}`, {
     data: { store_id: storeId },

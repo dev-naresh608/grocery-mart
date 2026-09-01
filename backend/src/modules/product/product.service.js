@@ -15,6 +15,7 @@ export const addProductSvc = async (payload, url, product_id) => {
     product_selling_price,
     product_offer_price,
     product_description,
+    show_in_menu,
   } = payload;
 
   if (!store_id) {
@@ -30,6 +31,11 @@ export const addProductSvc = async (payload, url, product_id) => {
     actualStoreId = seller._id;
   }
 
+  const isShowInMenu =
+    show_in_menu !== undefined && show_in_menu !== null
+      ? show_in_menu === true || show_in_menu === "true" || show_in_menu === 1 || show_in_menu === "1"
+      : true;
+
   const product = await Product.create({
     store_id: actualStoreId,
     product_name: product_name,
@@ -41,6 +47,7 @@ export const addProductSvc = async (payload, url, product_id) => {
     product_selling_price: Number(product_selling_price) || 0,
     product_offer_price: Number(product_offer_price) || 0,
     product_description: product_description || "",
+    show_in_menu: isShowInMenu,
   });
 
   return {
@@ -61,6 +68,7 @@ export const updateProductSvc = async (product_id, store_id, updates) => {
     "product_description",
     "is_product_in_stock",
     "is_offer_available",
+    "show_in_menu",
   ];
 
   const filteredUpdates = {};

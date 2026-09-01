@@ -50,9 +50,14 @@ export const handlegetAllStoreProduct = async (req, res) => {
       sellerStoreId = seller._id;
     }
 
+    const { includeHidden } = req.query;
     const filter = {
       $or: [{ store_id: store_id }, { store_id: sellerStoreId }],
     };
+
+    if (includeHidden !== "true") {
+      filter.show_in_menu = { $ne: false };
+    }
 
     const paginated = await paginate(Product, filter, { page, limit });
 

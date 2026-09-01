@@ -1,6 +1,18 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeftIcon, Edit2, Save, X, Package, CheckCircle2, AlertCircle, Percent, Trash2 } from "lucide-react";
+import {
+  ArrowLeftIcon,
+  Edit2,
+  Save,
+  X,
+  Package,
+  CheckCircle2,
+  AlertCircle,
+  Percent,
+  Trash2,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { SectionCard } from "../../../../index";
 
 function ProductHeaderDetail({
@@ -12,6 +24,7 @@ function ProductHeaderDetail({
   onCancel,
   isInStock,
   isOfferAvailable,
+  showInMenu,
   onDelete,
 }) {
   const navigate = useNavigate();
@@ -48,6 +61,19 @@ function ProductHeaderDetail({
 
             {/* Badges */}
             <div className="flex flex-wrap gap-2 text-xs">
+              {/* Menu status badge */}
+              {showInMenu !== false ? (
+                <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                  <Eye size={12} />
+                  Listed in Menu
+                </span>
+              ) : (
+                <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full font-semibold bg-gray-100 text-gray-700 border border-gray-200">
+                  <EyeOff size={12} />
+                  Hidden from Menu
+                </span>
+              )}
+
               {isInStock ? (
                 <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full font-medium bg-green-100 text-green-800">
                   <CheckCircle2 size={12} />
