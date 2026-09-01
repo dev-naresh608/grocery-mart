@@ -152,9 +152,15 @@ export default function CartDrawer() {
               </h3>
               <div className="space-y-3">
                 {cartItems.map((item, index) => {
-                  const finalPrice =
-                    item.product_offer_price || item.product_selling_price || 0;
-                  const itemSubtotal = (finalPrice * item.product_qty).toFixed(2);
+                  const isOfferActive =
+                    item.is_offer_available === true &&
+                    Number(item.product_offer_price) > 0;
+                  const unitPrice = isOfferActive
+                    ? Number(item.product_offer_price)
+                    : Number(item.product_selling_price || 0);
+                  const itemSubtotal = (
+                    unitPrice * (Number(item.product_qty) || 1)
+                  ).toFixed(2);
 
                   return (
                     <div
@@ -199,9 +205,16 @@ export default function CartDrawer() {
                           </div>
 
                           <div className="text-right">
-                            <span className="text-sm font-bold text-gray-900">
-                              ₹{itemSubtotal}
-                            </span>
+                            <div className="flex items-baseline justify-end gap-1">
+                              <span className="text-sm font-bold text-gray-900">
+                                ₹{itemSubtotal}
+                              </span>
+                            </div>
+                            {isOfferActive && item.product_selling_price && (
+                              <del className="text-[10px] text-gray-400 font-medium">
+                                ₹{(Number(item.product_selling_price) * (Number(item.product_qty) || 1)).toFixed(2)}
+                              </del>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -276,25 +289,29 @@ export default function CartDrawer() {
               <div className="flex justify-between text-xs text-gray-600">
                 <span>Items Subtotal</span>
                 <span className="font-semibold text-gray-800">
-                  ₹{orderPriceDetails?.subtotal?.toFixed(2) || "0.00"}
+                  ₹{Number(orderPriceDetails?.subTotal || orderPriceDetails?.subtotal || 0).toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between text-xs text-gray-600">
-                <span>GST & Taxes</span>
+                <span>GST & Taxes (2%)</span>
                 <span className="font-semibold text-gray-800">
-                  ₹{orderPriceDetails?.taxPrice?.toFixed(2) || "0.00"}
+                  ₹{Number(orderPriceDetails?.taxPrice || 0).toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between text-xs text-gray-600">
                 <span>Delivery Charge</span>
                 <span className="font-semibold text-gray-800">
-                  ₹{orderPriceDetails?.shippingPrice?.toFixed(2) || "0.00"}
+                  {orderPriceDetails?.deliveryCharge === 0 ? (
+                    <span className="text-green-600 font-bold">Free</span>
+                  ) : (
+                    `₹${Number(orderPriceDetails?.deliveryCharge || 0).toFixed(2)}`
+                  )}
                 </span>
               </div>
               <div className="flex justify-between text-sm font-bold text-gray-900 pt-2 border-t border-gray-200/80">
                 <span>Total Amount</span>
                 <span className="text-green-700">
-                  ₹{orderPriceDetails?.finalPrice?.toFixed(2) || "0.00"}
+                  ₹{Number(orderPriceDetails?.finalPrice || 0).toFixed(2)}
                 </span>
               </div>
             </div>

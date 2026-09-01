@@ -29,11 +29,6 @@ function ProductGridView({
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
       {products.map((p) => {
         const isSelected = selectedIds.includes(p._id);
-        const profit = Number(p.product_selling_price || 0) - Number(p.product_cost_price || 0);
-        const marginPct =
-          Number(p.product_cost_price) > 0
-            ? Math.round((profit / Number(p.product_cost_price)) * 100)
-            : 0;
         const isVisibleInMenu = p.show_in_menu !== false;
         const isInStock = p.is_product_in_stock !== false;
         const isToggling = menuToggleLoadingId === p._id;
@@ -128,14 +123,15 @@ function ProductGridView({
                 </div>
 
                 {/* Offer Price badge */}
-                {(p.is_offer_available || Number(p.product_offer_price) > 0) && (
-                  <div className="absolute top-2 right-2">
-                    <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white shadow-xs">
-                      <Sparkles size={9} />
-                      Offer
-                    </span>
-                  </div>
-                )}
+                {p.is_offer_available === true &&
+                  Number(p.product_offer_price) > 0 && (
+                    <div className="absolute top-2 right-2">
+                      <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-black bg-rose-500 text-white shadow-xs">
+                        <Sparkles size={9} />
+                        Offer
+                      </span>
+                    </div>
+                  )}
               </div>
 
               {/* Product Info */}
@@ -152,27 +148,27 @@ function ProductGridView({
               </div>
             </div>
 
-            {/* Price, Margin & Bottom Bar */}
+            {/* Price & Bottom Bar */}
             <div className="p-3.5 pt-2 border-t border-gray-100 bg-gray-50/50 rounded-b-2xl">
               {/* Pricing section */}
               <div className="flex items-baseline justify-between gap-1 mb-2">
                 <div>
-                  <span className="text-lg font-black text-gray-900">
-                    ₹{p.product_selling_price}
-                  </span>
-                  {p.product_cost_price && (
-                    <span className="text-xs text-gray-600 ml-1.5">
-                      Cost: ₹{p.product_cost_price}
+                  {p.is_offer_available === true &&
+                  Number(p.product_offer_price) > 0 ? (
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-lg font-black text-gray-900">
+                        ₹{p.product_offer_price}
+                      </span>
+                      <del className="text-xs text-gray-400 font-medium">
+                        ₹{p.product_selling_price}
+                      </del>
+                    </div>
+                  ) : (
+                    <span className="text-lg font-black text-gray-900">
+                      ₹{p.product_selling_price}
                     </span>
                   )}
                 </div>
-
-                {/* Profit Margin Pill */}
-                {profit > 0 && (
-                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-800 flex items-center gap-0.5 border border-emerald-200/60">
-                    <TrendingUp size={10} />+₹{profit} ({marginPct}%)
-                  </span>
-                )}
               </div>
 
               {/* Meta: Weight & Actions */}

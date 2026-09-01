@@ -146,6 +146,7 @@ function App() {
           />
           <Route path="cart" element={<CartPage />}></Route>
           <Route path="stores" element={<AllStores />}></Route>
+          <Route path="/stores/menu/:restId" element={<AllProducts />} />
           <Route path="/stores/allproducts/:restId" element={<AllProducts />} />
           <Route path="allproduct" element={<AllProducts />}></Route>
           <Route

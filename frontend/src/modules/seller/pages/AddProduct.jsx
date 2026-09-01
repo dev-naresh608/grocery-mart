@@ -160,7 +160,7 @@ function AddProduct() {
             className="flex items-center gap-1 text-gray-700 hover:text-green-800 font-semibold duration-100"
           >
             <ArrowLeftIcon size={18} strokeWidth={2.5} />
-            <span className="text-sm">Back to Orders</span>
+            <span className="text-sm">Back to Menu</span>
           </button>
         </div>
         <p>Please add products related to the: {currentUser.store_type}</p>

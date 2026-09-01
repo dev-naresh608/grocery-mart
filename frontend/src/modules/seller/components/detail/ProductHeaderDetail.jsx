@@ -39,7 +39,7 @@ function ProductHeaderDetail({
             className="flex items-center gap-1.5 text-green-700 hover:text-green-800 font-semibold transition-colors duration-150"
           >
             <ArrowLeftIcon size={18} strokeWidth={2.5} />
-            <span className="text-sm">Back to Products</span>
+            <span className="text-sm">Back to Menu</span>
           </button>
         </div>
 

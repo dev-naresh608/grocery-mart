@@ -83,7 +83,7 @@ export const leftPanelItems = [
     showToDriver: false,
   },
   {
-    children: "Product List",
+    children: "Menu",
     to: "/product-list",
     svg: <ScrollText size={18} />,
     showToCustomer: false,

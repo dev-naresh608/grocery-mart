@@ -319,19 +319,19 @@ function ProductListPage() {
                 Dashboard
               </Link>
               <span>/</span>
-              <span className="text-emerald-700 font-bold">Products</span>
+              <span className="text-emerald-700 font-bold">Menu</span>
             </div>
 
             <div className="flex items-center gap-2.5 flex-wrap">
               <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight whitespace-nowrap">
-                Products Inventory
+                Store Menu
               </h1>
               <span className="px-2 py-0.5 rounded-full text-xs font-black bg-emerald-100 text-emerald-800 border border-emerald-200/80 whitespace-nowrap">
                 {allProducts.length} Items
               </span>
             </div>
             <p className="text-xs text-gray-500 mt-0.5 font-medium whitespace-normal sm:whitespace-nowrap truncate">
-              Manage product pricing, stock availability, and store menu visibility.
+              Manage menu items, pricing, stock availability, and visibility.
             </p>
           </div>
 

@@ -58,6 +58,13 @@ export const getStoreProductsApi = async (storeId) => {
   return data;
 };
 
+export const toggleStoreStatusApi = async (storeId, isStoreOpen) => {
+  const { data } = await api.patch(`/stores/status/${storeId}`, {
+    is_store_open: isStoreOpen,
+  });
+  return data;
+};
+
 export const searchProductsSvc = (products = [], searchValue = "") => {
   if (!products) return [];
   if (!searchValue) return products;

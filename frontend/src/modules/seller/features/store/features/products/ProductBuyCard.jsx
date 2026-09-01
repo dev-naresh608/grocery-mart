@@ -20,6 +20,7 @@ function ProductBuyCard({
   is_product_in_stock,
   is_offer_available,
   offer_price,
+  is_store_open = true,
 }) {
   const dispatch = useDispatch();
   const { restId } = useParams();
@@ -51,6 +52,10 @@ function ProductBuyCard({
 
   // ============== ADD TO CART ====================
   async function onAddToCart(itemId) {
+    if (is_store_open === false) {
+      return toast.error("This store is currently closed and not accepting orders");
+    }
+
     if (is_product_in_stock === false) {
       return toast.error("Product is currently out of stock");
     }
@@ -269,16 +274,22 @@ function ProductBuyCard({
                     </svg>
                   </button>
                 </div>
+              ) : !is_store_open ? (
+                <div className="absolute inset-0 bg-white/70 backdrop-blur-[1px] flex items-center justify-center transition-all duration-300 rounded-2xl z-10">
+                  <span className="bg-amber-100 text-amber-800 text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-md shadow-xs border border-amber-200">
+                    Store Closed
+                  </span>
+                </div>
               ) : is_product_in_stock ? (
                 <button
-                  className="flex items-center cursor-pointer justify-center gap-1  border border-green-600 h-7 w-16 text-sm px-1.5 py-1 text-green-700 bg-green-100 rounded"
+                  className="flex items-center cursor-pointer justify-center gap-1  border border-green-600 h-7 w-16 text-sm px-1.5 py-1 text-green-700 bg-green-100 rounded hover:bg-green-200 transition-colors"
                   onClick={() => onAddToCart(id)}
                 >
                   <ShoppingCartIcon size={18} />
                   Add
                 </button>
               ) : (
-                <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center transition-all duration-300 rounded-2xl">
+                <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] flex items-center justify-center transition-all duration-300 rounded-2xl z-10">
                   <span className="bg-red-200 text-red-500 text-xs font-bold uppercase tracking-wider px-3 py-1.5 rounded-md shadow-md transform scale-100 group-hover:scale-105 transition-transform">
                     Sold Out
                   </span>

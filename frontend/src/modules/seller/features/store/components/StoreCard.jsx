@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { updateUser } from "@/modules/auth/store/authSlice";
 import { toggleWishlistApi } from "@/modules/wishlist";
 
-function StoreCard({ defaultRest, name, address, id, storeType }) {
+function StoreCard({ defaultRest, name, address, id, storeType, is_store_open = true }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user: currentUser, isAuthenticated: isLogin } = useSelector(
@@ -24,7 +24,10 @@ function StoreCard({ defaultRest, name, address, id, storeType }) {
   );
 
   const goToStore = () => {
-    navigate(`/stores/allproducts/${id}`);
+    if (!is_store_open) {
+      return toast.info(`"${name}" is currently closed and not accepting orders.`);
+    }
+    navigate(`/stores/menu/${id}`);
   };
 
   const handleCardKeyDown = (e) => {
@@ -82,13 +85,26 @@ function StoreCard({ defaultRest, name, address, id, storeType }) {
       tabIndex={0}
       onClick={goToStore}
       onKeyDown={handleCardKeyDown}
-      className="flex gap-3 sm:gap-4 bg-white p-3 sm:p-4 rounded-2xl border border-gray-100 shadow-sm transition-all duration-300 ease-out hover:shadow-lg hover:-translate-y-0.5 hover:border-gray-200 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
+      className={`flex gap-3 sm:gap-4 bg-white p-3 sm:p-4 rounded-2xl border transition-all duration-300 ease-out outline-none focus-visible:ring-2 focus-visible:ring-gray-300 ${
+        is_store_open
+          ? "border-gray-100 shadow-sm hover:border-gray-200 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
+          : "border-gray-200 bg-gray-50/50 opacity-75 cursor-not-allowed"
+      }`}
     >
-      <img
-        src={defaultRest}
-        alt={name}
-        className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover shrink-0"
-      />
+      <div className="relative shrink-0">
+        <img
+          src={defaultRest}
+          alt={name}
+          className={`w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover shrink-0 ${
+            !is_store_open ? "grayscale-[60%] opacity-80" : ""
+          }`}
+        />
+        {!is_store_open && (
+          <span className="absolute bottom-1 left-1 right-1 bg-red-600/90 backdrop-blur-xs text-white text-[9px] font-black text-center py-0.5 rounded uppercase tracking-wider shadow-xs">
+            Closed
+          </span>
+        )}
+      </div>
 
       <div className="flex flex-col justify-between flex-1 min-w-0">
         <div>
@@ -102,11 +118,18 @@ function StoreCard({ defaultRest, name, address, id, storeType }) {
             </span>
           </div>
 
-          {storeType && (
-            <span className="inline-block mt-1 text-[11px] font-normal text-emerald-700/90 bg-emerald-50 px-2 py-0.5 rounded-md">
-              {storeType}
-            </span>
-          )}
+          <div className="flex items-center gap-1.5 flex-wrap mt-1">
+            {storeType && (
+              <span className="text-[11px] font-normal text-emerald-700/90 bg-emerald-50 px-2 py-0.5 rounded-md">
+                {storeType}
+              </span>
+            )}
+            {!is_store_open && (
+              <span className="text-[10px] font-bold text-red-700 bg-red-50 px-1.5 py-0.5 rounded border border-red-200/70">
+                Closed
+              </span>
+            )}
+          </div>
 
           <p className="text-xs sm:text-sm text-gray-400 flex items-center gap-1 mt-1.5 truncate">
             <MapPin size={14} className="shrink-0 text-gray-400" />
@@ -115,10 +138,16 @@ function StoreCard({ defaultRest, name, address, id, storeType }) {
         </div>
 
         <div className="flex items-center justify-between mt-2">
-          <span className="flex items-center gap-1 text-xs sm:text-sm font-medium text-gray-600">
-            Browse Store
-            <ArrowUpRight size={16} />
-          </span>
+          {is_store_open ? (
+            <span className="flex items-center gap-1 text-xs sm:text-sm font-medium text-gray-600 hover:text-emerald-700">
+              Browse Store
+              <ArrowUpRight size={16} />
+            </span>
+          ) : (
+            <span className="flex items-center gap-1 text-xs font-semibold text-red-600">
+              Closed Currently
+            </span>
+          )}
 
           {currentUserRole === "customer" && isLogin && (
             <button

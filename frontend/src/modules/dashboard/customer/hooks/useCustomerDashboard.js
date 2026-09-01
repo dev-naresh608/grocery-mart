@@ -226,7 +226,7 @@ export function useCustomerDashboard() {
 
         dispatch(openCartDrawer());
         toast.success("Items added to cart! Opening store page...");
-        navigate(`/stores/allproducts/${targetStoreId}`);
+        navigate(`/stores/menu/${targetStoreId}`);
       };
 
       if (currentCart.length > 0 && currentStoreId && currentStoreId !== targetStoreId) {

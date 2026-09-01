@@ -78,11 +78,11 @@ function ProductTable({
               <span>Product ID</span>
             </th>
 
-            {/* Pricing & Margins */}
+            {/* Pricing */}
             <th className="px-4 py-3.5 font-bold whitespace-nowrap">
               <div className="flex items-center gap-1.5">
                 <IndianRupee size={15} className="text-gray-400" />
-                <span>Pricing & Profit</span>
+                <span>Price</span>
               </div>
             </th>
 
@@ -126,13 +126,6 @@ function ProductTable({
         <tbody className="divide-y divide-gray-100">
           {allProducts.map((p) => {
             const isSelected = selectedIds.includes(p._id);
-            const profit =
-              Number(p.product_selling_price || 0) -
-              Number(p.product_cost_price || 0);
-            const marginPct =
-              Number(p.product_cost_price) > 0
-                ? Math.round((profit / Number(p.product_cost_price)) * 100)
-                : 0;
             const isVisibleInMenu = p.show_in_menu !== false;
             const isInStock = p.is_product_in_stock !== false;
             const isToggling = menuToggleLoadingId === p._id;
@@ -182,12 +175,12 @@ function ProductTable({
                         <p className="font-bold text-gray-800 text-sm truncate group-hover:text-emerald-700 transition-colors">
                           {p.product_name}
                         </p>
-                        {(p.is_offer_available ||
-                          Number(p.product_offer_price) > 0) && (
-                          <span className="flex items-center gap-0.5 px-1.5 py-0.2 rounded-full text-[9px] font-black bg-rose-100 text-rose-700 border border-rose-200">
-                            <Sparkles size={8} /> Offer
-                          </span>
-                        )}
+                        {p.is_offer_available === true &&
+                          Number(p.product_offer_price) > 0 && (
+                            <span className="flex items-center gap-0.5 px-1.5 py-0.2 rounded-full text-[9px] font-black bg-rose-100 text-rose-700 border border-rose-200">
+                              <Sparkles size={8} /> Offer
+                            </span>
+                          )}
                       </div>
                       <p
                         className="text-xs text-gray-600 truncate mt-0.5"
@@ -216,25 +209,23 @@ function ProductTable({
                   </button>
                 </td>
 
-                {/* Pricing & Profit Margin */}
+                {/* Pricing */}
                 <td className="px-4 py-3.5 whitespace-nowrap">
-                  <div className="flex flex-col">
-                    <div className="flex items-baseline gap-2">
+                  {p.is_offer_available === true &&
+                  Number(p.product_offer_price) > 0 ? (
+                    <div className="flex items-baseline gap-1.5">
                       <span className="font-bold text-gray-900 text-sm">
+                        ₹{p.product_offer_price}
+                      </span>
+                      <del className="text-xs text-gray-400 font-medium">
                         ₹{p.product_selling_price}
-                      </span>
-                      {p.product_cost_price && (
-                        <span className="text-xs text-gray-600 line-through">
-                          ₹{p.product_cost_price}
-                        </span>
-                      )}
+                      </del>
                     </div>
-                    {profit > 0 && (
-                      <span className="text-[10px] font-bold text-emerald-700 flex items-center gap-0.5 mt-0.5">
-                        <TrendingUp size={10} /> +₹{profit} ({marginPct}%)
-                      </span>
-                    )}
-                  </div>
+                  ) : (
+                    <span className="font-bold text-gray-900 text-sm">
+                      ₹{p.product_selling_price}
+                    </span>
+                  )}
                 </td>
 
                 {/* Stock Status Badge */}

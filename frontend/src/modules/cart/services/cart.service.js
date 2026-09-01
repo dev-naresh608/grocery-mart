@@ -38,6 +38,13 @@ export const onCartPlaceOrder = async (
       return;
     }
 
+    if (store.is_store_open === false) {
+      toast.error(
+        `"${store.store_name || "This store"}" is currently closed/inactive and not accepting orders.`
+      );
+      return;
+    }
+
     const createdAt = new Date();
     const orderData = {
       items: currentUser?.myCart,

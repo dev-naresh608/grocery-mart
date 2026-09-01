@@ -18,6 +18,8 @@ export const getCartByUserIdSvc = async (userId) => {
       product_name: item.product_id.product_name,
       product_url: item.product_id.product_url,
       product_selling_price: item.product_id.product_selling_price,
+      product_offer_price: item.product_id.product_offer_price,
+      is_offer_available: item.product_id.is_offer_available,
       product_weight: item.product_id.product_weight,
       product_weight_type: item.product_id.product_weight_type,
       product_qty: item.quantity,

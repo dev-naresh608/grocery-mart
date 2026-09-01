@@ -10,13 +10,21 @@ export const addOrderSvc = async (o) => {
 
     // Resolve seller store ID (o.storeId could be User._id or Seller._id)
     let sellerStoreId = o.storeId;
+    let sellerRecord = null;
     if (o.storeId) {
-      const seller = await Seller.findOne({
+      sellerRecord = await Seller.findOne({
         $or: [{ _id: o.storeId }, { user_id: o.storeId }],
       });
-      if (seller) {
-        sellerStoreId = seller._id;
+      if (sellerRecord) {
+        sellerStoreId = sellerRecord._id;
       }
+    }
+
+    if (sellerRecord && sellerRecord.is_store_open === false) {
+      return {
+        success: false,
+        message: `"${sellerRecord.store_name || "This store"}" is currently inactive/closed and not accepting orders.`,
+      };
     }
 
     const order = await Order.create({
@@ -52,9 +60,13 @@ export const addOrderSvc = async (o) => {
 
     // Create notification for Seller / Store
     let sellerUserId = sellerStoreId;
-    const sellerRecord = await Seller.findById(sellerStoreId);
     if (sellerRecord && sellerRecord.user_id) {
       sellerUserId = sellerRecord.user_id;
+    } else if (sellerStoreId) {
+      const fetchedSeller = await Seller.findById(sellerStoreId);
+      if (fetchedSeller && fetchedSeller.user_id) {
+        sellerUserId = fetchedSeller.user_id;
+      }
     }
     if (sellerUserId) {
       await createNotificationSvc({

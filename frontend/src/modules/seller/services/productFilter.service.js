@@ -66,7 +66,9 @@ export const filterProductsSvc = (
 
   // 5. Offer Filter
   if (offerFilter === "offers_only") {
-    result = result.filter((p) => p.is_offer_available === true || Number(p.product_offer_price) > 0);
+    result = result.filter(
+      (p) => p.is_offer_available === true && Number(p.product_offer_price) > 0
+    );
   }
 
   // 6. Sorting
@@ -145,7 +147,7 @@ export const calculateProductStats = (products = []) => {
       outOfStock += 1;
     }
 
-    if (p.is_offer_available === true || Number(p.product_offer_price) > 0) {
+    if (p.is_offer_available === true && Number(p.product_offer_price) > 0) {
       hasOffers += 1;
     }
   });

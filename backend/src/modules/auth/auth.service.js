@@ -17,6 +17,7 @@ import Address from "../address/address.model.js";
 import { createCustomerSvc } from "../customer/customer.services.js";
 import { createDriverSvc } from "../driver/driver.services.js";
 import { createSellerSvc } from "../seller/seller.services.js";
+import { getCartByUserIdSvc } from "../cart/cart.service.js";
 
 import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.js";
 
@@ -43,18 +44,24 @@ const getUserWithRoleDetails = async (user) => {
         roleDetails = {
           driver_status: driver.status ?? driver.driver_status ?? true,
           driver_dob: driver.dob ?? driver.driver_dob,
-          driver_vehicle_number: driver.vehicle_number ?? driver.driver_vehicle_number,
-          driver_aadhaar_number: driver.aadhaar_number ?? driver.driver_aadhaar_number,
+          driver_vehicle_number:
+            driver.vehicle_number ?? driver.driver_vehicle_number,
+          driver_aadhaar_number:
+            driver.aadhaar_number ?? driver.driver_aadhaar_number,
         };
       }
     } else if (user.role === "customer") {
-      const [customer, latestAddress] = await Promise.all([
+      const [customer, latestAddress, cartItems] = await Promise.all([
         Customer.findOne({ user_id: user._id }),
-        Address.findOne({ user_id: user._id }).sort({ updatedAt: -1, createdAt: -1 }),
+        Address.findOne({ user_id: user._id }).sort({
+          updatedAt: -1,
+          createdAt: -1,
+        }),
+        getCartByUserIdSvc(user._id).catch(() => []),
       ]);
 
       roleDetails = {
-        myCart: customer?.myCart || [],
+        myCart: cartItems || [],
         myWishlist: customer?.myWishlist || [],
         myOrders: customer?.myOrders || [],
         myAddress: latestAddress || null,

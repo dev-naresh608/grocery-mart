@@ -31,7 +31,13 @@ const OrderItems = ({ order, orderItems }) => {
   [&::-webkit-scrollbar-thumb]:rounded-full"
         >
           {orderItems.map((product, index) => {
-            const total = product.product_qty * (product.product_selling_price || product.product_offer_price || 0);
+            const isOffer =
+              product.is_offer_available === true &&
+              Number(product.product_offer_price) > 0;
+            const unitPrice = isOffer
+              ? Number(product.product_offer_price)
+              : Number(product.product_selling_price || 0);
+            const total = (Number(product.product_qty) || 1) * unitPrice;
 
             return (
               <div
@@ -51,8 +57,7 @@ const OrderItems = ({ order, orderItems }) => {
                   </p>
                   <div>
                     <span className="font-semibold text-gray-500">
-                      ₹{product.product_selling_price || product.product_offer_price} x {product.product_qty} = ₹
-                      {total.toFixed(2)}
+                      ₹{unitPrice} x {product.product_qty} = ₹{total.toFixed(2)}
                     </span>
                   </div>
                 </div>

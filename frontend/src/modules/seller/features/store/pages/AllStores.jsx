@@ -356,6 +356,7 @@ function AllStores() {
                 address={r.store_address}
                 id={r._id}
                 storeType={r.store_type}
+                is_store_open={r.is_store_open !== false}
               />
             );
           })}
