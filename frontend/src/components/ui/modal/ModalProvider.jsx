@@ -30,13 +30,24 @@ export const ModalProvider = ({ children }) => {
     }, 200);
   }, []);
 
-  // Close modal only when the route changes (not when isOpen changes)
+  const prevPathRef = useRef(location.pathname);
+
+  // Close modal only when user navigates away to a new page (excluding auth redirect routes)
   useEffect(() => {
-    if (isOpenRef.current) {
-      closeModal();
+    if (prevPathRef.current !== location.pathname) {
+      const prevPath = prevPathRef.current;
+      prevPathRef.current = location.pathname;
+
+      // If transition was from /login or /signup to /, do not immediately close the freshly opened modal
+      if (
+        isOpenRef.current &&
+        prevPath !== "/login" &&
+        prevPath !== "/signup"
+      ) {
+        closeModal();
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname]);
+  }, [location.pathname, closeModal]);
 
   return (
     <ModalContext.Provider

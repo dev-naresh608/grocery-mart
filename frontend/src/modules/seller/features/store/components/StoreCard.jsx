@@ -91,11 +91,11 @@ function StoreCard({ defaultRest, name, address, id, storeType, is_store_open = 
           : "border-gray-200 bg-gray-50/50 opacity-75 cursor-not-allowed"
       }`}
     >
-      <div className="relative shrink-0">
+      <div className="relative shrink-0 w-20 h-20 sm:w-24 sm:h-24 aspect-square">
         <img
           src={defaultRest}
           alt={name}
-          className={`w-20 h-20 sm:w-24 sm:h-24 rounded-xl object-cover shrink-0 ${
+          className={`w-full h-full rounded-xl object-cover shrink-0 aspect-square ${
             !is_store_open ? "grayscale-[60%] opacity-80" : ""
           }`}
         />

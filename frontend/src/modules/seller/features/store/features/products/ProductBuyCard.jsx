@@ -203,17 +203,17 @@ function ProductBuyCard({
           <ProductImageLoader src={src} alt={name}/>
         </div>
 
-        <div className="px-2 my-2 space-y-0.5">
-          <p className="w-28 whitespace-nowrap font-semibold capitalize">
+        <div className="px-2 my-2 space-y-1">
+          <p className="font-bold text-xs sm:text-sm text-gray-900 truncate capitalize" title={name}>
             {name}
           </p>
 
           <RatingStar />
 
-          <div className="flex items-center justify-between">
-            <div className="w-28 font-semibold">
+          <div className="flex items-center justify-between gap-2 mt-1">
+            <div className="min-w-0 flex-1 font-semibold">
               {is_offer_available && is_product_in_stock ? (
-                <>
+                <div className="flex flex-col">
                   {/* =====OFFER LABEL ======= */}
                   <div className={`offer-label ${offerBackgroundColor}`}>
                     <div className="offer-label-circle"></div>
@@ -224,19 +224,19 @@ function ProductBuyCard({
                   >
                     <span>-{offerPercent}% </span>
                   </div>
-                  <span>
-                    <span className="text-md text-blue-700">
+                  <div className="flex items-baseline gap-1 flex-wrap">
+                    <span className="text-sm sm:text-base font-bold text-emerald-700">
                       ₹{offer_price}
-                    </span>{" "}
-                    <del className="text-sm text-gray-600">₹{price}</del>
-                  </span>
-                  <span className="text-gray-500 text-sm">/pre kg</span>
-                </>
+                    </span>
+                    <del className="text-[11px] text-gray-400">₹{price}</del>
+                  </div>
+                  <span className="text-gray-400 text-[10px]">/per unit</span>
+                </div>
               ) : (
-                <>
-                  <span className="text-md text-blue-700">₹{price}</span>
-                  <span className="text-gray-500 text-sm">/pre kg</span>
-                </>
+                <div className="flex flex-col">
+                  <span className="text-sm sm:text-base font-bold text-emerald-700">₹{price}</span>
+                  <span className="text-gray-400 text-[10px]">/per unit</span>
+                </div>
               )}
             </div>
 

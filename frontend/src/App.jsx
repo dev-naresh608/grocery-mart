@@ -42,6 +42,7 @@ import {
   RouterProvider,
   useNavigate,
   useParams,
+  useSearchParams,
   Outlet,
   Navigate,
 } from "react-router-dom";
@@ -65,10 +66,13 @@ const LoginRedirect = () => {
 const SignupRedirect = () => {
   const { openModal } = useModal();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const role = searchParams.get("role");
+
   useEffect(() => {
-    navigate("/", { replace: true });
-    openModal(MODAL_TYPES.SIGNUP);
-  }, [openModal, navigate]);
+    navigate(role ? `/?role=${role}` : "/", { replace: true });
+    openModal(MODAL_TYPES.SIGNUP, { role: role || "customer" });
+  }, [openModal, navigate, role]);
   return null;
 };
 

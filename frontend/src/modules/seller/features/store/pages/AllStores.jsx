@@ -150,6 +150,14 @@ function AllStores() {
     });
   });
 
+  if (!isLoading && allStores.length === 0 && !searchQuery && selectedCategories.length === 0) {
+    return (
+      <div className={`min-h-[65vh] flex items-center justify-center p-4 ${isLogin ? "" : "max-w-7xl mx-auto w-full"}`}>
+        <EmptyStore searchQuery="" />
+      </div>
+    );
+  }
+
   return (
     <div className={`${isLogin ? "" : "px-4 sm:px-10 mb-10 max-w-7xl mx-auto w-full"}`}>
       {/* Breadcrumb */}
@@ -297,7 +305,7 @@ function AllStores() {
 
       {/* Stores List / Skeletons / Empty State */}
       {isLoading ? (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {[...Array(6)].map((_, idx) => (
             <div
               key={idx}
@@ -346,7 +354,7 @@ function AllStores() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {filteredStores.map((r, i) => {
             return (
               <StoreCard

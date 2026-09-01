@@ -4,11 +4,13 @@ import { Outlet } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import { ModalProvider } from "./ui/modal";
 import { CartDrawer } from "@/modules/cart";
+import ScrollToTop from "./common/ScrollToTop";
 
 function Layout() {
 
   return (
     <ModalProvider>
+      <ScrollToTop />
       <div className="flex flex-col h-screen overflow-hidden">
         <Header />
         <div className="flex-1 overflow-hidden">

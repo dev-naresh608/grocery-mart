@@ -6,6 +6,7 @@ import { useSelector } from "react-redux";
 import { leftPanelItems } from "@/constants/navigation";
 import { Menu, X, Truck, Leaf, Coins, ShieldCheck } from "lucide-react";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
+import MobileBottomNav from "@/components/navigation/MobileBottomNav";
 
 function Home() {
   const location = useLocation();
@@ -100,9 +101,9 @@ function Home() {
 
   // If user IS logged in: Render Dashboard / Sidebar panel layout!
   return (
-    <div className="flex h-full overflow-hidden">
-      {/* left panel */}
-      <div className="relative bg-white h-full shrink-0 pt-3 overflow-y-auto scrollbar-none [&::-webkit-scrollbar]:hidden border-r border-gray-100">
+    <div className="flex h-full overflow-hidden relative">
+      {/* Left panel (Desktop & Tablet only - hidden on mobile) */}
+      <aside className="hidden md:block relative bg-white h-full shrink-0 pt-3 overflow-y-auto scrollbar-none [&::-webkit-scrollbar]:hidden border-r border-gray-100">
         <div>
           <div className="p-3 space-y-1">
             {/* for customer  */}
@@ -181,12 +182,15 @@ function Home() {
             </button>
           </div>
         </div>
-      </div>
+      </aside>
 
-      {/* right panel  */}
-      <div className="flex-1 h-full bg-gray-100 p-4 sm:p-6 overflow-y-auto custom-scrollbar">
+      {/* Main content panel */}
+      <main className="flex-1 h-full bg-gray-100 p-4 sm:p-6 pb-20 md:pb-6 overflow-y-auto custom-scrollbar">
         <Outlet />
-      </div>
+      </main>
+
+      {/* Mobile Bottom Navigation Bar */}
+      <MobileBottomNav />
     </div>
   );
 }

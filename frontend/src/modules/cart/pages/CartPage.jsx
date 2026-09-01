@@ -33,13 +33,13 @@ export default function CartPage() {
   }
 
   return (
-    <section className="bg-white rounded-2xl p-5 shadow-sm">
-      <div className="flex flex-col lg:flex-row gap-6">
+    <section className="bg-white rounded-2xl p-3 sm:p-5 shadow-xs">
+      <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
         {/* Left Side - Shopping Cart & Item List */}
-        <div className="flex-1 relative rounded-2xl border p-4">
-          <div className="flex justify-between items-end border-b pb-2 mb-3 px-2 font-semibold">
-            <div className="flex items-center gap-3">
-              <span className="text-2xl text-gray-800">Shopping Cart</span>
+        <div className="flex-1 relative rounded-2xl border p-3 sm:p-4">
+          <div className="flex justify-between items-end border-b pb-2 mb-3 px-1 sm:px-2 font-semibold">
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap">
+              <span className="text-lg sm:text-2xl text-gray-900 font-bold">Shopping Cart</span>
               <button
                 type="button"
                 onClick={handleClearCart}
@@ -48,7 +48,7 @@ export default function CartPage() {
                 Clear Cart
               </button>
             </div>
-            <span className="text-indigo-600 text-sm">
+            <span className="text-emerald-700 font-bold text-xs sm:text-sm">
               {currentUser.myCart?.length || 0} items
             </span>
           </div>

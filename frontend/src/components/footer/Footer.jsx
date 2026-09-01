@@ -2,63 +2,14 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { Mail, Phone, MapPin, ArrowRight, CheckCircle2 } from "lucide-react";
+import { toast } from "react-toastify";
 
 import { novexa_logo } from "@/assets";
-
-const FOOTER_LINKS = {
-  Shop: [
-    { label: "All Products", to: "/allproducts" },
-    { label: "Stores", to: "/stores" },
-    { label: "My Cart", to: "/cart" },
-    { label: "Track Order", to: "/orders" },
-  ],
-  Company: [
-    { label: "About Novexa", to: "/about" },
-    { label: "Careers", to: "/careers" },
-    { label: "Blog", to: "/blog" },
-    { label: "Become a Seller", to: "/signup?role=seller" },
-    { label: "Join as a Driver", to: "/signup?role=driver" },
-  ],
-  Support: [
-    { label: "Help Center", to: "/help" },
-    { label: "Contact Us", to: "/contact" },
-    { label: "Privacy Policy", to: "/privacy" },
-    { label: "Terms of Service", to: "/terms" },
-    { label: "Refund Policy", to: "/refunds" },
-  ],
-};
-
-const SOCIAL_LINKS = [
-  { abbr: "f", href: "#", label: "Facebook" },
-  { abbr: "ig", href: "#", label: "Instagram" },
-  { abbr: "x", href: "#", label: "Twitter / X" },
-  { abbr: "in", href: "#", label: "LinkedIn" },
-];
-
-function FooterColumn({ title, links }) {
-  return (
-    <div>
-      <h3 className="text-xs font-semibold text-white tracking-widest uppercase mb-4">
-        {title}
-      </h3>
-      <ul className="space-y-2.5">
-        {links.map((link) => (
-          <li key={link.label}>
-            <Link
-              to={link.to}
-              className="text-sm text-gray-400 hover:text-white transition-colors"
-            >
-              {link.label}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
+import { useModal, MODAL_TYPES } from "@/components";
 
 function Footer() {
   const { isAuthenticated: isLogin } = useSelector((state) => state.auth);
+  const { openModal } = useModal();
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
 
@@ -68,10 +19,11 @@ function Footer() {
     if (!trimmed) return;
     setSubscribed(true);
     setEmail("");
+    toast.success("Thank you for subscribing to Novexa alerts!");
   }
 
   // Footer is only shown on the public/guest storefront, not inside
-  // the logged-in dashboards which have their own layout.
+  // the logged-in dashboards which have their own full sidebar layout.
   if (isLogin) return null;
 
   return (
@@ -89,9 +41,9 @@ function Footer() {
           </div>
 
           {subscribed ? (
-            <div className="flex items-center gap-2 text-sm font-medium text-green-400 bg-green-500/10 border border-green-500/20 rounded-xl px-4 py-3 w-full md:w-auto">
+            <div className="flex items-center gap-2 text-sm font-medium text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-xl px-4 py-3 w-full md:w-auto">
               <CheckCircle2 className="w-4 h-4 shrink-0" />
-              You're subscribed — check your inbox to confirm.
+              You're subscribed — welcome to Novexa deals!
             </div>
           ) : (
             <form onSubmit={handleSubscribe} className="flex w-full md:w-auto">
@@ -101,11 +53,11 @@ function Footer() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@email.com"
-                className="flex-1 md:w-72 bg-white/5 border border-white/10 rounded-l-xl px-4 py-3 text-sm text-white placeholder:text-gray-500 outline-none focus:border-green-500 transition-colors"
+                className="flex-1 md:w-72 bg-white/5 border border-white/10 rounded-l-xl px-4 py-3 text-sm text-white placeholder:text-gray-500 outline-none focus:border-emerald-500 transition-colors"
               />
               <button
                 type="submit"
-                className="flex items-center justify-center gap-1.5 bg-green-600 hover:bg-green-500 text-white text-sm font-semibold px-4 sm:px-5 rounded-r-xl transition-colors"
+                className="flex items-center justify-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold px-4 sm:px-5 rounded-r-xl transition-colors cursor-pointer"
               >
                 <span className="hidden sm:inline">Subscribe</span>
                 <ArrowRight className="w-4 h-4" />
@@ -126,17 +78,16 @@ function Footer() {
               alt="Novexa logo"
             />
           </Link>
-          <p className="text-sm text-gray-400 my-1.5 max-w-xs leading-relaxed">
-            From everyday essentials to lifestyle shopping, discover trusted
-            local stores all in one place.
+          <p className="text-sm text-gray-400 my-2.5 max-w-xs leading-relaxed">
+            From everyday essentials to fresh farm produce, discover and order from trusted local stores all in one place.
           </p>
-          <ul className="space-y-2.5 text-sm text-gray-400">
+          <ul className="space-y-2.5 text-sm text-gray-400 mt-4">
             <li className="flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-green-500 shrink-0" />
-              Bengaluru, Karnataka, India
+              <MapPin className="w-4 h-4 text-emerald-500 shrink-0" />
+              <span>Bengaluru, Karnataka, India</span>
             </li>
             <li className="flex items-center gap-2">
-              <Phone className="w-4 h-4 text-green-500 shrink-0" />
+              <Phone className="w-4 h-4 text-emerald-500 shrink-0" />
               <a
                 href="tel:+910123456789"
                 className="hover:text-white transition-colors"
@@ -145,7 +96,7 @@ function Footer() {
               </a>
             </li>
             <li className="flex items-center gap-2">
-              <Mail className="w-4 h-4 text-green-500 shrink-0" />
+              <Mail className="w-4 h-4 text-emerald-500 shrink-0" />
               <a
                 href="mailto:novexa@outlook.com"
                 className="hover:text-white transition-colors"
@@ -156,9 +107,122 @@ function Footer() {
           </ul>
         </div>
 
-        <FooterColumn title="Shop" links={FOOTER_LINKS.Shop} />
-        <FooterColumn title="Company" links={FOOTER_LINKS.Company} />
-        <FooterColumn title="Support" links={FOOTER_LINKS.Support} />
+        {/* Explore Column */}
+        <div>
+          <h3 className="text-xs font-bold text-white tracking-widest uppercase mb-4">
+            Explore
+          </h3>
+          <ul className="space-y-2.5">
+            <li>
+              <Link
+                to="/stores"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Browse Stores
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/cart"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Shopping Cart
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/orders"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Track Orders
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/wishlist"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Favourite Stores
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Partner Column */}
+        <div>
+          <h3 className="text-xs font-bold text-white tracking-widest uppercase mb-4">
+            Partner
+          </h3>
+          <ul className="space-y-2.5">
+            <li>
+              <button
+                type="button"
+                onClick={() => openModal(MODAL_TYPES.SIGNUP, { role: "seller" })}
+                className="text-sm text-gray-400 hover:text-white transition-colors text-left cursor-pointer border-none bg-transparent p-0"
+              >
+                Become a Seller
+              </button>
+            </li>
+            <li>
+              <button
+                type="button"
+                onClick={() => openModal(MODAL_TYPES.SIGNUP, { role: "driver" })}
+                className="text-sm text-gray-400 hover:text-white transition-colors text-left cursor-pointer border-none bg-transparent p-0"
+              >
+                Join as Driver
+              </button>
+            </li>
+            <li>
+              <Link
+                to="/dashboard"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Store Dashboard
+              </Link>
+            </li>
+          </ul>
+        </div>
+
+        {/* Legal & Help Column */}
+        <div>
+          <h3 className="text-xs font-bold text-white tracking-widest uppercase mb-4">
+            Legal & Support
+          </h3>
+          <ul className="space-y-2.5">
+            <li>
+              <Link
+                to="/privacy-policy"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/terms-and-conditions"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Terms of Service
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/refund-policy"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Refund Policy
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/help-support"
+                className="text-sm text-gray-400 hover:text-white transition-colors"
+              >
+                Help & Support
+              </Link>
+            </li>
+          </ul>
+        </div>
       </div>
 
       {/* Bottom bar */}
@@ -168,12 +232,18 @@ function Footer() {
             © {new Date().getFullYear()} Novexa. All rights reserved.
           </p>
           <div className="flex items-center gap-3">
-            {SOCIAL_LINKS.map(({ abbr, href, label }) => (
+            {[
+              { abbr: "f", label: "Facebook" },
+              { abbr: "ig", label: "Instagram" },
+              { abbr: "x", label: "Twitter / X" },
+              { abbr: "in", label: "LinkedIn" },
+            ].map(({ abbr, label }) => (
               <a
                 key={label}
-                href={href}
+                href="#"
+                onClick={(e) => e.preventDefault()}
                 aria-label={label}
-                className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-xs font-semibold text-gray-400 hover:bg-green-600 hover:text-white transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-full bg-white/5 text-xs font-semibold text-gray-400 hover:bg-emerald-600 hover:text-white transition-colors cursor-pointer"
               >
                 {abbr}
               </a>

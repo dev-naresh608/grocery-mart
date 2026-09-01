@@ -14,6 +14,7 @@ import distanceRouter from "./routes/distance.js";
 import notificationRouter from "./modules/notification/notification.routes.js";
 import wishlistRouter from "./modules/customer/wishlist.routes.js";
 import profileRouter from "./modules/profile/profile.routes.js";
+import driverRouter from "./modules/driver/driver.routes.js";
 
 const app = express();
 
@@ -56,6 +57,7 @@ app.use("/api/order", orderHistoryRouter);
 app.use("/api/active-orders", activeOrdersRouter);
 app.use("/api/cart", cartRouter);
 app.use("/api/address", addressRouter);
+app.use("/api/driver", driverRouter);
 app.use("/api/stores", storeRouter);
 app.use("/api/distance", distanceRouter);
 app.use("/api/notification", notificationRouter);

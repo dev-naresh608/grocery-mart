@@ -86,7 +86,7 @@ function OrderDetail() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-5">
+      <div className="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-5">
         <div className="md:col-span-12">
           {/* ============= ORDER - HEADER ============== */}
           <OrderHeaderDetail
@@ -96,11 +96,11 @@ function OrderDetail() {
           />
         </div>
 
-        <div className="md:col-span-4">
+        <div className="md:col-span-6 lg:col-span-4">
           {/* ================== CUSTOMER INFO COMPONENT ==================== */}
           <CustomerInfo order={order} />
         </div>
-        <div className="md:col-span-4">
+        <div className="md:col-span-6 lg:col-span-4">
           {/* ================== ADDRESS COMPONENT ==================== */}
           <Address
             order_address={order?.order_address}
@@ -108,15 +108,15 @@ function OrderDetail() {
             store_name={order?.store_name}
           />
         </div>
-        <div className="md:col-span-4">
+        <div className="md:col-span-12 lg:col-span-4">
           {/* ================== ORDER PRICE BREAKDOWN COMPONENT ==================== */}
           <PriceBreakdown price_detail={order?.price_detail} />
         </div>
-        <div className="md:col-span-8">
+        <div className="md:col-span-12 lg:col-span-8">
           {/* ================== ORDER ITEMS COMPONENT==================== */}
           <OrderItemsComponent order={order} orderItems={orderItems} />
         </div>
-        <div className="md:col-span-4 ">
+        <div className="md:col-span-12 lg:col-span-4">
           {/* ================== ORDER ID'S COMPONENT ==================== */}
           <OrderIdInfo order={order} />
         </div>

@@ -65,7 +65,7 @@ function Wishlist() {
             Favourite Stores
           </h1>
         </div>
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {wishlistStores.map((store) => (
             <StoreCard
               key={store._id}
@@ -74,6 +74,7 @@ function Wishlist() {
               address={store.store_address}
               id={store._id}
               storeType={store.store_type || store.category || "General Store"}
+              is_store_open={store.is_store_open !== false}
             />
           ))}
         </div>

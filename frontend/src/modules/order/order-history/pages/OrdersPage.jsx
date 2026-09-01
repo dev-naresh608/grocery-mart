@@ -95,7 +95,28 @@ function Orders() {
     setPage(1);
   };
 
-  // ===================== RENDER DASHBOARD CARDS =====================
+  // ===================== 1. LOADING STATE =====================
+  // While fetching data, show a centered spinner with zero card flashing
+  if (loading && allOrders.length === 0 && !searchValue) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-gray-400 space-y-3">
+        <Loader2 size={32} className="animate-spin text-emerald-600" />
+        <p className="text-sm font-medium text-gray-500">Loading orders...</p>
+      </div>
+    );
+  }
+
+  // ===================== 2. CLEAN EMPTY STATE =====================
+  // If no orders exist in history, render pure empty state with no cards/search bars
+  if (!loading && allOrders.length === 0 && !searchValue) {
+    return (
+      <div className="min-h-[65vh] flex items-center justify-center p-4">
+        <EmptyOrders currentUserRole={currentUser?.role} />
+      </div>
+    );
+  }
+
+  // ===================== 3. FULL ORDER HISTORY LAYOUT =====================
   const dashboardCards = dashboardCardsConfig(
     currentUser,
     setActiveCard,
@@ -150,7 +171,7 @@ function Orders() {
         {loading ? (
           <div className="flex flex-col items-center justify-center py-16 text-gray-400 space-y-2">
             <Loader2 size={26} className="animate-spin text-emerald-600" />
-            <p className="text-xs font-medium">Loading orders...</p>
+            <p className="text-xs font-medium">Updating orders...</p>
           </div>
         ) : filteredOrders.length === 0 ? (
           <EmptyOrders
@@ -169,22 +190,22 @@ function Orders() {
 
         {/* ================= PAGINATION CONTROLS UI ================= */}
         {paginationMeta && paginationMeta.totalItems > 0 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-[#E7E5E4] text-xs">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3 border-t border-gray-100 text-xs">
             {/* Range info */}
-            <div className="text-[#78716C]">
+            <div className="text-gray-500">
               Showing{" "}
-              <span className="font-semibold text-[#1C1917]">
+              <span className="font-semibold text-gray-900">
                 {paginationMeta.skip + 1}
               </span>{" "}
               to{" "}
-              <span className="font-semibold text-[#1C1917]">
+              <span className="font-semibold text-gray-900">
                 {Math.min(
                   paginationMeta.skip + paginationMeta.limit,
                   paginationMeta.totalItems
                 )}
               </span>{" "}
               of{" "}
-              <span className="font-semibold text-[#1C1917]">
+              <span className="font-semibold text-gray-900">
                 {paginationMeta.totalItems}
               </span>{" "}
               orders
@@ -197,7 +218,7 @@ function Orders() {
                 type="button"
                 disabled={!paginationMeta.hasPrevPage || loading}
                 onClick={() => setPage((prev) => Math.max(1, prev - 1))}
-                className="px-3 py-1.5 rounded-lg border border-[#E7E5E4] bg-white text-[#1C1917] hover:bg-[#F5F5F4] transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer font-semibold flex items-center gap-1"
+                className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer font-semibold flex items-center gap-1"
               >
                 <ChevronLeft size={14} /> Previous
               </button>
@@ -227,8 +248,8 @@ function Orders() {
                           onClick={() => setPage(p)}
                           className={`w-7 h-7 rounded-lg text-xs font-semibold transition-all cursor-pointer border ${
                             paginationMeta.currentPage === p
-                              ? "bg-[#6366F1] text-white border-[#6366F1] shadow-xs"
-                              : "bg-white text-[#1C1917] border-[#E7E5E4] hover:bg-[#F5F5F4]"
+                              ? "bg-emerald-700 text-white border-emerald-700 shadow-xs"
+                              : "bg-white text-gray-800 border-gray-200 hover:bg-gray-50"
                           }`}
                         >
                           {p}
@@ -243,7 +264,7 @@ function Orders() {
                 type="button"
                 disabled={!paginationMeta.hasNextPage || loading}
                 onClick={() => setPage((prev) => prev + 1)}
-                className="px-3 py-1.5 rounded-lg border border-[#E7E5E4] bg-white text-[#1C1917] hover:bg-[#F5F5F4] transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer font-semibold flex items-center gap-1"
+                className="px-3 py-1.5 rounded-lg border border-gray-200 bg-white text-gray-800 hover:bg-gray-50 transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer font-semibold flex items-center gap-1"
               >
                 Next <ChevronRight size={14} />
               </button>

@@ -21,19 +21,18 @@ const INITIAL_FORM_DATA = {
 };
 
 export function useSignupForm() {
+  const { closeModal, payload } = useModal();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
   const { isLoading } = useSelector((state) => state.auth);
 
-  const { closeModal } = useModal();
-
   const [isPassVisible, setIsPassVisible] = useState(false);
   const [formData, setFormData] = useState(INITIAL_FORM_DATA);
   const [formErrors, setFormErrors] = useState({});
 
-  const roleParam = searchParams.get("role");
+  const roleParam = searchParams.get("role") || payload?.role;
   const validRoles = ["customer", "seller", "driver"];
 
   const currentRole = validRoles.includes(roleParam) ? roleParam : "customer";
