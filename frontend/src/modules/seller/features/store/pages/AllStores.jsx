@@ -85,7 +85,7 @@ function AllStores() {
     return () => {
       isMounted = false;
     };
-  }, [currentUser, searchQuery]);
+  }, [searchQuery]);
 
   const toggleCategory = (catName) => {
     setSelectedCategories((prev) => {
@@ -305,28 +305,28 @@ function AllStores() {
 
       {/* Stores List / Skeletons / Empty State */}
       {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-5">
           {[...Array(6)].map((_, idx) => (
             <div
               key={idx}
-              className="flex gap-3 sm:gap-4 bg-white p-3 sm:p-4 rounded-2xl border border-gray-100 shadow-sm animate-pulse"
+              className="flex items-center gap-3 sm:gap-4 bg-white p-3 sm:p-3.5 rounded-2xl border border-gray-100 shadow-xs animate-pulse"
             >
               {/* Image Skeleton */}
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl bg-gray-200 shrink-0"></div>
+              <div className="w-20 h-20 sm:w-22 sm:h-22 rounded-xl bg-gray-200 shrink-0"></div>
 
               {/* Content Skeleton */}
-              <div className="flex flex-col justify-between flex-1 min-w-0 py-0.5">
+              <div className="flex flex-col justify-between flex-1 min-w-0 h-full py-0.5">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between gap-2">
                     <div className="h-4 bg-gray-200 rounded-md w-3/5"></div>
-                    <div className="h-3.5 bg-gray-200 rounded-md w-8"></div>
+                    <div className="h-3.5 bg-gray-200 rounded-full w-8"></div>
                   </div>
                   <div className="h-3 bg-emerald-100 rounded-md w-24"></div>
                   <div className="h-3 bg-gray-100 rounded-md w-4/5"></div>
                 </div>
-                <div className="flex items-center justify-between mt-3">
+                <div className="flex items-center justify-between mt-2 pt-1">
                   <div className="h-3.5 bg-gray-200 rounded-md w-20"></div>
-                  <div className="h-4 bg-gray-200 rounded-md w-5"></div>
+                  <div className="h-3.5 bg-gray-200 rounded w-10"></div>
                 </div>
               </div>
             </div>
@@ -354,7 +354,7 @@ function AllStores() {
           )}
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-5">
           {filteredStores.map((r, i) => {
             return (
               <StoreCard

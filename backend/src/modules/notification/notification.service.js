@@ -47,7 +47,7 @@ export const createNotificationSvc = async ({
  */
 export const getUserNotificationsSvc = async (
   userId,
-  { page = 1, limit = 10, filter = "all", type, search } = {}
+  { page = 1, limit = 10, filter = "all", type, search } = {},
 ) => {
   try {
     const pageNum = Math.max(1, parseInt(page, 10) || 1);
@@ -166,7 +166,7 @@ export const markAsReadSvc = async (notificationId, userId) => {
     const notification = await Notification.findOneAndUpdate(
       query,
       { isRead: true, readAt: new Date() },
-      { new: true }
+      { new: true },
     );
 
     if (!notification) {
@@ -192,7 +192,7 @@ export const markAsUnreadSvc = async (notificationId, userId) => {
     const notification = await Notification.findOneAndUpdate(
       query,
       { isRead: false, readAt: null },
-      { new: true }
+      { new: true },
     );
 
     if (!notification) {
@@ -212,7 +212,7 @@ export const markAllAsReadSvc = async (userId) => {
   try {
     const result = await Notification.updateMany(
       { recipient: userId, isRead: false },
-      { isRead: true, readAt: new Date() }
+      { isRead: true, readAt: new Date() },
     );
 
     return {

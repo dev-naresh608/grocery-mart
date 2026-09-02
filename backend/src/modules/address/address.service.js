@@ -60,10 +60,12 @@ export const addAddressSvc = async (userId, payload) => {
     }
   }
 
+  const cleanPhone = phone ? String(phone).trim().replace(/\D/g, "").slice(0, 10) : "";
+
   const addressData = {
     user_id: userId,
-    name: name,
-    phone: phone,
+    name: name ? String(name).trim() : "",
+    phone: cleanPhone,
     street: street,
     city: city,
     state: state,

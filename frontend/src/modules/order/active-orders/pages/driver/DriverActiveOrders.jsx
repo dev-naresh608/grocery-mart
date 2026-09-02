@@ -13,6 +13,7 @@ import {
   Clock,
   Navigation,
   Lock,
+  Loader2,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import {
@@ -28,6 +29,7 @@ function DriverActiveOrders() {
   const [activeOrders, setActiveOrders] = useState([]);
   const [availableRequests, setAvailableRequests] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [actionOrderId, setActionOrderId] = useState(null);
 
   const driverId = currentUser?._id || currentUser?.id;
 
@@ -63,6 +65,8 @@ function DriverActiveOrders() {
 
   // Handle Accept Request
   const handleAcceptRequest = async (orderId) => {
+    if (actionOrderId) return;
+    setActionOrderId(orderId);
     try {
       const data = await driverAcceptOrderApi(orderId, driverId);
       if (data.success) {
@@ -73,11 +77,15 @@ function DriverActiveOrders() {
       }
     } catch (error) {
       toast.error("Failed to accept delivery request");
+    } finally {
+      setActionOrderId(null);
     }
   };
 
   // Handle Reject Request
   const handleRejectRequest = async (orderId) => {
+    if (actionOrderId) return;
+    setActionOrderId(orderId);
     try {
       const data = await driverRejectOrderApi(orderId, driverId);
       if (data.success) {
@@ -86,11 +94,15 @@ function DriverActiveOrders() {
       }
     } catch (error) {
       toast.error("Failed to decline request");
+    } finally {
+      setActionOrderId(null);
     }
   };
 
   // Handle Update Status to Delivered
   const handleUpdateStatus = async (orderId, status) => {
+    if (actionOrderId) return;
+    setActionOrderId(orderId);
     try {
       const data = await updateOrderStatusApi(orderId, status);
       if (data && data.success) {
@@ -101,6 +113,8 @@ function DriverActiveOrders() {
       }
     } catch (error) {
       toast.error("Failed to update order status");
+    } finally {
+      setActionOrderId(null);
     }
   };
 
@@ -186,17 +200,29 @@ function DriverActiveOrders() {
                   <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
                     <button
                       type="button"
+                      disabled={actionOrderId === reqId}
                       onClick={() => handleRejectRequest(reqId)}
-                      className="flex-1 py-2 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold flex items-center justify-center gap-1 cursor-pointer"
+                      className="flex-1 py-2 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <X size={15} /> Decline
                     </button>
                     <button
                       type="button"
+                      disabled={actionOrderId === reqId}
                       onClick={() => handleAcceptRequest(reqId)}
-                      className="flex-1 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow flex items-center justify-center gap-1 cursor-pointer"
+                      className="flex-1 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
-                      <Check size={15} /> Accept Delivery
+                      {actionOrderId === reqId ? (
+                        <>
+                          <Loader2 size={14} className="animate-spin" />
+                          <span>Accepting...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Check size={15} />
+                          <span>Accept Delivery</span>
+                        </>
+                      )}
                     </button>
                   </div>
                 </div>
@@ -294,10 +320,21 @@ function DriverActiveOrders() {
                     {isOutForDelivery ? (
                       <button
                         type="button"
+                        disabled={actionOrderId === orderId}
                         onClick={() => handleUpdateStatus(orderId, "delivered")}
-                        className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors shadow cursor-pointer animate-bounce"
+                        className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-xl text-xs font-bold transition-colors shadow cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <CheckCircle2 size={16} /> Mark Delivered
+                        {actionOrderId === orderId ? (
+                          <>
+                            <Loader2 size={15} className="animate-spin" />
+                            <span>Updating...</span>
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle2 size={16} />
+                            <span>Mark Delivered</span>
+                          </>
+                        )}
                       </button>
                     ) : isReadyForPickup ? (
                       <span className="text-xs font-semibold text-blue-800 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-200 flex items-center gap-1.5">

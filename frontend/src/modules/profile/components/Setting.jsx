@@ -295,7 +295,8 @@ function Setting() {
                     name="phone"
                     value={accountData.phone}
                     onChange={onAccountChange}
-                    placeholder="Phone Number"
+                    placeholder="10-digit Phone"
+                    maxLength={10}
                     className="w-full bg-white border border-[#F59E0B] rounded-lg px-2 py-1 text-xs font-semibold text-[#1C1917] outline-none"
                     autoFocus
                   />

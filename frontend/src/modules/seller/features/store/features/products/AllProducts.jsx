@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import ProductBuyCard from "./ProductBuyCard";
 import api from "@/configs/api";
@@ -7,6 +7,7 @@ import { Store, ArrowLeft, ArrowUpRight } from "lucide-react";
 
 function AllProducts() {
   const { restId = null } = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
   const [totalProducts, setTotalProducts] = useState([]);
   const [storeInfo, setStoreInfo] = useState(null);
@@ -16,6 +17,30 @@ function AllProducts() {
 
   useEffect(() => {
     let isMounted = true;
+    const passedState = location.state;
+
+    // 1. If store details were passed from StoreCard navigation, reuse them instantly!
+    if (passedState && passedState.store_name) {
+      const isClosed = passedState.is_store_open === false;
+      if (isMounted) {
+        setStoreInfo({
+          store_name: passedState.store_name,
+          store_address: passedState.store_address,
+          store_type: passedState.store_type,
+          is_store_open: !isClosed,
+        });
+      }
+
+      // If store is closed, skip ALL network requests (0 API calls!)
+      if (isClosed) {
+        if (isMounted) {
+          setTotalProducts([]);
+          setIsLoading(false);
+        }
+        return;
+      }
+    }
+
     const fetchProductAndStore = async () => {
       if (!restId) {
         if (isMounted) {
@@ -24,21 +49,26 @@ function AllProducts() {
         }
         return;
       }
+
       try {
         setIsLoading(true);
-        const storeRes = await api.get(`/stores/${restId}`);
-        if (!isMounted) return;
 
-        const currentStore = storeRes.data?.store || null;
-        setStoreInfo(currentStore);
+        // 2. Only fetch store details if NOT already passed in location.state (e.g. direct URL / browser refresh)
+        if (!passedState || !passedState.store_name) {
+          const storeRes = await api.get(`/stores/${restId}`);
+          if (!isMounted) return;
 
-        // If store is closed, do not fetch or load products to prevent unnecessary data transfer
-        if (currentStore && currentStore.is_store_open === false) {
-          setTotalProducts([]);
-          setIsLoading(false);
-          return;
+          const currentStore = storeRes.data?.store || null;
+          setStoreInfo(currentStore);
+
+          if (currentStore && currentStore.is_store_open === false) {
+            setTotalProducts([]);
+            setIsLoading(false);
+            return;
+          }
         }
 
+        // 3. Exactly 1 API call for store menu products!
         const productsRes = await api.get(`/stores/allproducts/${restId}`);
         if (!isMounted) return;
 
@@ -53,11 +83,12 @@ function AllProducts() {
         if (isMounted) setIsLoading(false);
       }
     };
+
     fetchProductAndStore();
     return () => {
       isMounted = false;
     };
-  }, [productsList, restId]);
+  }, [productsList, restId, location.state]);
 
   const isStoreOpen = storeInfo ? storeInfo.is_store_open !== false : true;
 
@@ -110,8 +141,35 @@ function AllProducts() {
         </ol>
       </nav>
 
-      {/* CLOSED STORE VIEW: Prevents browsing and avoids unnecessary product loading */}
-      {!isLoading && !isStoreOpen ? (
+      {/* Loading Progress Bar */}
+      {isLoading && (
+        <div className="w-full bg-emerald-50 h-1.5 overflow-hidden rounded-full mb-6 border border-emerald-100/50">
+          <div className="h-full bg-gradient-to-r from-emerald-500 via-green-400 to-emerald-600 rounded-full animate-indeterminate"></div>
+        </div>
+      )}
+
+      {/* LOADING SKELETONS GRID */}
+      {isLoading ? (
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,270px))] gap-5">
+          {[...Array(6)].map((_, idx) => (
+            <div
+              key={idx}
+              className="bg-white border rounded-2xl shadow-md p-2 space-y-2 animate-pulse"
+            >
+              <div className="w-full h-36 bg-gray-200 rounded-2xl"></div>
+              <div className="px-2 my-2 space-y-1.5">
+                <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                <div className="h-3 bg-gray-100 rounded w-1/3"></div>
+                <div className="flex items-center justify-between mt-2 pt-1">
+                  <div className="h-4 bg-gray-200 rounded w-12"></div>
+                  <div className="h-7 bg-gray-200 rounded w-16"></div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : !isStoreOpen ? (
+        /* CLOSED STORE VIEW: Prevents browsing and avoids unnecessary product loading */
         <div className="bg-white rounded-3xl p-8 sm:p-14 text-center border border-gray-200/90 shadow-xs max-w-2xl mx-auto my-8">
           <div className="w-20 h-20 bg-amber-50 text-amber-600 border border-amber-200/80 rounded-3xl flex items-center justify-center mx-auto mb-5 shadow-xs">
             <Store size={38} strokeWidth={1.8} />
@@ -136,7 +194,7 @@ function AllProducts() {
             </button>
           </div>
         </div>
-      ) : !isLoading && (!totalProducts || totalProducts.length === 0) ? (
+      ) : !totalProducts || totalProducts.length === 0 ? (
         <div className="flex min-h-[50vh] flex-col items-center justify-center py-16 text-center">
           <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mb-3 text-gray-400">
             <Store size={30} />
@@ -150,7 +208,7 @@ function AllProducts() {
           <button
             type="button"
             onClick={() => navigate("/stores")}
-            className="mt-5 text-sm font-semibold text-emerald-700 hover:underline"
+            className="mt-5 text-sm font-semibold text-emerald-700 hover:underline cursor-pointer border-none bg-transparent"
           >
             ← Back to Stores
           </button>

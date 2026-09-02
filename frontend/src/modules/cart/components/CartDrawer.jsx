@@ -15,6 +15,7 @@ import {
   Plus,
   Minus,
   CheckCircle2,
+  Loader2,
 } from "lucide-react";
 import AddressSelector from "./address/AddressSelector";
 
@@ -37,6 +38,7 @@ export default function CartDrawer() {
     handlePaymentMethod,
     handlePlaceOrder,
     isCartEmpty,
+    isPlacingOrder,
   } = useCart();
 
   // Close drawer on ESC press
@@ -53,10 +55,12 @@ export default function CartDrawer() {
   if (typeof document === "undefined") return null;
 
   const handleClose = () => {
+    if (isPlacingOrder) return;
     dispatch(closeCartDrawer());
   };
 
   const handleCheckoutOrder = () => {
+    if (isPlacingOrder) return;
     if (!isLogin) {
       dispatch(closeCartDrawer());
     }
@@ -323,15 +327,27 @@ export default function CartDrawer() {
           <div className="p-4 border-t border-gray-100 bg-white shadow-lg">
             <button
               type="button"
+              disabled={isPlacingOrder}
               onClick={handleCheckoutOrder}
-              className="w-full flex items-center justify-between bg-green-700 hover:bg-green-800 text-white font-bold text-sm py-3.5 px-5 rounded-2xl shadow-lg shadow-green-700/25 transition-all cursor-pointer border-none active:scale-[0.99]"
+              className={`w-full flex items-center justify-between bg-green-700 hover:bg-green-800 text-white font-bold text-sm py-3.5 px-5 rounded-2xl shadow-lg shadow-green-700/25 transition-all border-none select-none ${
+                isPlacingOrder
+                  ? "opacity-75 cursor-not-allowed bg-green-800"
+                  : "active:scale-[0.99] cursor-pointer"
+              }`}
             >
-              <span>{isLogin ? "Place Order" : "Login to Place Order"}</span>
+              {isPlacingOrder ? (
+                <div className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Placing Order...</span>
+                </div>
+              ) : (
+                <span>{isLogin ? "Place Order" : "Login to Place Order"}</span>
+              )}
               <div className="flex items-center gap-2">
                 <span className="text-xs bg-white/20 px-2 py-0.5 rounded-md font-extrabold">
-                  ₹{orderPriceDetails?.finalPrice?.toFixed(2) || "0.00"}
+                  ₹{Number(orderPriceDetails?.finalPrice || 0).toFixed(2)}
                 </span>
-                <ArrowRight className="w-4 h-4" />
+                {!isPlacingOrder && <ArrowRight className="w-4 h-4" />}
               </div>
             </button>
           </div>

@@ -18,6 +18,7 @@ export default function OrderSummary({
   handlePaymentMethod,
   orderPriceDetails,
   onPlaceOrder,
+  isPlacingOrder,
 }) {
   return (
     <div className="w-full lg:w-[380px] rounded-2xl border p-5 shadow-sm bg-white">
@@ -50,6 +51,7 @@ export default function OrderSummary({
       <CheckoutButton
         isLogin={isLogin}
         onPlaceOrder={onPlaceOrder}
+        isPlacingOrder={isPlacingOrder}
       />
     </div>
   );

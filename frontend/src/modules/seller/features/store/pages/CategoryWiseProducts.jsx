@@ -33,16 +33,17 @@ function CategoryWiseProducts() {
   return (
     <>
       <p className="text-2xl font-semibold">Stores as per category: </p>
-      <div className="mt-5 grid grid-cols-[repeat(auto-fill,minmax(350px,1fr))] gap-4">
+      <div className="mt-5 grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-4 sm:gap-5">
         {selectedCategoryProduct.map((r, i) => {
           return (
             <StoreCard
-              key={i}
+              key={r._id || r.id || i}
               defaultRest={defaultRest}
               name={r.store_name}
               address={r.store_address}
-              productsLength={r.productList?.length || 0}
-              id={r.id}
+              id={r._id || r.id}
+              storeType={r.store_type}
+              is_store_open={r.is_store_open !== false}
             />
           );
         })}

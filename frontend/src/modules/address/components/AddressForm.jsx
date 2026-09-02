@@ -4,6 +4,7 @@ import { useDispatch } from "react-redux";
 import { updateUser } from "@/modules/auth/store/authSlice";
 import { handleAddAddressApi, handleUpdateAddressApi } from "../../index";
 import { useModal } from "../../../components";
+import { Loader2 } from "lucide-react";
 
 const initialFormData = {
   name: "",
@@ -25,6 +26,7 @@ function AddressForm({ closeBtnAction, userId, setAddress }) {
 
   // ==== STATE =======
   const [formData, setFormData] = useState(initialFormData);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (payload?.address) {
@@ -44,14 +46,40 @@ function AddressForm({ closeBtnAction, userId, setAddress }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    let processedValue = value;
+    if (name === "phone") {
+      processedValue = value.replace(/\D/g, "").slice(0, 10);
+    }
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: processedValue,
     }));
   };
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
+
     //  ===== validation =====
+    if (!formData.name || !formData.name.trim()) {
+      return toast.error("Name is required");
+    }
+
+    if (!formData.phone || formData.phone.length !== 10) {
+      return toast.error("Phone number must be exactly 10 digits");
+    }
+
+    if (!formData.street || !formData.street.trim()) {
+      return toast.error("Street address is required");
+    }
+
+    if (!formData.city || !formData.city.trim()) {
+      return toast.error("City is required");
+    }
+
+    if (!formData.state || !formData.state.trim()) {
+      return toast.error("State is required");
+    }
+
     if (!formData.pincode || Number(formData.pincode) <= 0) {
       return toast.error("Invalid pincode number");
     }
@@ -64,14 +92,15 @@ function AddressForm({ closeBtnAction, userId, setAddress }) {
     }
 
     const requestPayload = {
-      name: formData.name,
-      phone: formData.phone,
-      street: formData.street,
-      city: formData.city,
-      state: formData.state,
+      name: formData.name.trim(),
+      phone: formData.phone.trim(),
+      street: formData.street.trim(),
+      city: formData.city.trim(),
+      state: formData.state.trim(),
       pincode: Number(formData.pincode),
     };
 
+    setIsSubmitting(true);
     try {
       let data;
       if (payload?.address?._id) {
@@ -98,6 +127,8 @@ function AddressForm({ closeBtnAction, userId, setAddress }) {
     } catch (error) {
       console.error("Address Submit Error:", error);
       toast.error("Failed to save address");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -117,20 +148,23 @@ function AddressForm({ closeBtnAction, userId, setAddress }) {
             <input
               type="text"
               name="name"
-              placeholder="name"
+              placeholder="Full name"
               onChange={handleChange}
               value={formData?.name || ""}
               className="w-full bg-transparent outline-none text-gray-600 placeholder:text-gray-400 autofill:bg-transparent"
+              required
             />
           </div>
           <div className="rounded-xl border border-gray-300 bg-[#eef0f4] px-4 py-2">
             <input
-              type="text"
+              type="tel"
               name="phone"
               value={formData?.phone || ""}
-              placeholder="phone"
+              placeholder="10-digit phone number"
+              maxLength={10}
               onChange={handleChange}
               className="w-full bg-transparent outline-none text-gray-600 placeholder:text-gray-400 autofill:bg-transparent"
+              required
             />
           </div>
           <div className="rounded-xl border border-gray-300 bg-[#eef0f4] px-4 py-2">
@@ -177,14 +211,23 @@ function AddressForm({ closeBtnAction, userId, setAddress }) {
           <div className="flex justify-center items-center gap-3">
             <button
               type="submit"
-              className="px-4 py-2 text-sm font-semibold text-green-600 rounded-lg bg-green-200 active:scale-95 transition-colors"
+              disabled={isSubmitting}
+              className="px-5 py-2 text-sm font-semibold text-green-700 rounded-lg bg-green-200 hover:bg-green-300 active:scale-95 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer border-none"
             >
-              Add
+              {isSubmitting ? (
+                <>
+                  <Loader2 size={15} className="animate-spin" />
+                  <span>Saving...</span>
+                </>
+              ) : (
+                <span>{payload?.address?._id ? "Update" : "Add"}</span>
+              )}
             </button>
             <button
               type="reset"
+              disabled={isSubmitting}
               onClick={() => setFormData(initialFormData)}
-              className="px-4 py-2 text-sm font-semibold text-red-600 rounded-lg bg-red-200 active:scale-95 transition-colors"
+              className="px-4 py-2 text-sm font-semibold text-red-600 rounded-lg bg-red-100 hover:bg-red-200 active:scale-95 transition-colors cursor-pointer border-none disabled:opacity-50"
             >
               Reset
             </button>

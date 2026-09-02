@@ -72,7 +72,8 @@ function ShowAllNotifications() {
               </h1>
             </div>
             <p className="text-xs sm:text-sm text-gray-500 mt-1">
-              Stay updated with your latest orders, deliveries, and system announcements.
+              Stay updated with your latest orders, deliveries, and system
+              announcements.
             </p>
           </div>
 
@@ -236,7 +237,9 @@ function ShowAllNotifications() {
         {loading ? (
           <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center">
             <div className="w-8 h-8 border-3 border-green-600 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
-            <p className="text-xs text-gray-500">Loading your notifications...</p>
+            <p className="text-xs text-gray-500">
+              Loading your notifications...
+            </p>
           </div>
         ) : notifications.length > 0 ? (
           <>
@@ -266,25 +269,21 @@ function ShowAllNotifications() {
         ) : (
           <NotificationEmptyState
             type={
-              searchTerm
-                ? "search"
-                : filter === "unread"
-                ? "unread"
-                : "default"
+              searchTerm ? "search" : filter === "unread" ? "unread" : "default"
             }
             onAction={
               searchTerm
                 ? () => handleSearchChange("")
                 : filter !== "all"
-                ? () => handleFilterChange("all")
-                : undefined
+                  ? () => handleFilterChange("all")
+                  : undefined
             }
             actionLabel={
               searchTerm
                 ? "Clear Search"
                 : filter !== "all"
-                ? "View All Notifications"
-                : undefined
+                  ? "View All Notifications"
+                  : undefined
             }
           />
         )}

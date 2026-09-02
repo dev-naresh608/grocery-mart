@@ -11,12 +11,18 @@ import {
 import { serverError } from "../../utils/response.js";
 
 import {badRequest} from "../../utils/response.js";
-const getCookieOptions = () => ({
-  httpOnly: true,
-  secure: config.env === "production",
-  sameSite: "strict",
-  maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-});
+const getCookieOptions = () => {
+  const isProduction =
+    process.env.NODE_ENV === "production" || config.env === "production";
+
+  return {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    path: "/",
+  };
+};
 
 export const register = async (req, res) => {
   try {

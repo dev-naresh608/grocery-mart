@@ -20,6 +20,7 @@ if (missingEnv.length > 0) {
 }
 
 export const config = {
+  env: process.env.NODE_ENV || "development",
   database: {
     uri: process.env.DATABASE_URI,
   },

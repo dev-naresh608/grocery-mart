@@ -97,9 +97,10 @@ export default function Signup() {
           label="Phone"
           name="phone"
           type="tel"
-          placeholder="Enter phone number..."
+          placeholder="Enter 10-digit phone number..."
           value={formData.phone}
           onChange={handleChange}
+          maxLength={10}
           required
         />
 

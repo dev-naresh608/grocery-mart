@@ -43,7 +43,7 @@ function CustomerActiveOrders() {
     };
 
     fetchActiveOrders();
-  }, [currentUser]);
+  }, [currentUser?._id]);
 
   if (loading) {
     return (

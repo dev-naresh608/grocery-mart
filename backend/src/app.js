@@ -18,14 +18,36 @@ import driverRouter from "./modules/driver/driver.routes.js";
 
 const app = express();
 
+// Trust reverse proxy for Render/Vercel HTTPS secure cookies
+app.set("trust proxy", 1);
+
 // Middlewares
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "https://novexa-indol.vercel.app",
+  process.env.FRONTEND_URL,
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:3000",
-      "http://localhost:5173",
-      "https://novexa-indol.vercel.app",
-    ],
+    origin: (origin, callback) => {
+      // Allow requests with no origin (mobile apps, curl, postman)
+      if (!origin) return callback(null, true);
+
+      // Check if origin matches allowed list or vercel subdomains or localhost
+      const isAllowed =
+        allowedOrigins.includes(origin) ||
+        origin.endsWith(".vercel.app") ||
+        origin.startsWith("http://localhost:") ||
+        origin.startsWith("http://127.0.0.1:");
+
+      if (isAllowed) {
+        return callback(null, true);
+      }
+      return callback(null, true);
+    },
     credentials: true,
   }),
 );

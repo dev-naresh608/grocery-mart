@@ -25,6 +25,8 @@ import {
   Layout,
   useModal,
   MODAL_TYPES,
+  ErrorBoundary,
+  RouteErrorFallback,
 } from "./components";
 
 import {
@@ -95,14 +97,23 @@ const CategoryWiseRedirect = () => {
 };
 
 const ProtectedRoute = () => {
-  const { isAuthenticated, isLoading } = useSelector((state) => state.auth);
+  const { isAuthenticated, isCheckingAuth } = useSelector((state) => state.auth);
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!isAuthenticated && !isLoading) {
+    if (!isAuthenticated && !isCheckingAuth) {
       navigate("/", { replace: true });
     }
-  }, [isAuthenticated, isLoading, navigate]);
+  }, [isAuthenticated, isCheckingAuth, navigate]);
+
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3">
+        <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-xs font-semibold text-gray-400">Verifying session...</p>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return null;
@@ -130,7 +141,7 @@ function App() {
 
   const router = createBrowserRouter(
     createRoutesFromElements(
-      <Route path="/" element={<Layout />}>
+      <Route path="/" element={<Layout />} errorElement={<RouteErrorFallback />}>
         {/* ! general path */}
         <Route path="/login" element={<LoginRedirect />}></Route>
         <Route path="/signup" element={<SignupRedirect />}></Route>
@@ -201,6 +212,10 @@ function App() {
     ),
   );
 
-  return <RouterProvider router={router} />;
+  return (
+    <ErrorBoundary>
+      <RouterProvider router={router} />
+    </ErrorBoundary>
+  );
 }
 export default App;

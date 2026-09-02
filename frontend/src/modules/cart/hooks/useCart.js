@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { updateUser } from "@/modules/auth/store/authSlice";
@@ -36,6 +36,7 @@ export const useCart = () => {
   const [addressList, setAddressList] = useState(null);
   const [paymentMethod, setPaymentMethod] = useState("cashOnDelivery");
   const [isAddressFormOpen, setIsAddressFormOpen] = useState(false);
+  const [isPlacingOrder, setIsPlacingOrder] = useState(false);
 
   const cartItems = isLogin ? (currentUser?.myCart || []) : guestCart;
   const isCartEmpty = !cartItems || cartItems.length === 0;
@@ -81,63 +82,71 @@ export const useCart = () => {
     dispatch,
   ]);
 
-  // Compute subtotal, tax, delivery fee and final price reactively
-  const orderPriceDetails = calculateCartTotals(cartItems);
+  // Compute subtotal, tax, delivery fee and final price reactively with useMemo
+  const orderPriceDetails = useMemo(() => {
+    return calculateCartTotals(cartItems);
+  }, [cartItems]);
 
   // Update item quantity inside the cart
-  const onCartItemQtyChange = async (e) => {
-    const itemId = e.target.id;
-    const itemQty = Number(e.target.value);
+  const onCartItemQtyChange = useCallback(
+    async (e) => {
+      const itemId = e.target.id;
+      const itemQty = Number(e.target.value);
 
-    const updatedCart = cartItems.map((item) => {
-      if (item._id === itemId) {
-        return { ...item, product_qty: itemQty };
-      }
-      return item;
-    });
-
-    if (isLogin) {
-      dispatch(updateUser({ myCart: updatedCart }));
-      if (currentUser?._id) {
-        try {
-          await updateCartQtyApi(currentUser._id, itemId, itemQty);
-        } catch (error) {
-          console.error("Failed to update cart quantity in DB:", error);
+      const updatedCart = cartItems.map((item) => {
+        if (item._id === itemId) {
+          return { ...item, product_qty: itemQty };
         }
+        return item;
+      });
+
+      if (isLogin) {
+        dispatch(updateUser({ myCart: updatedCart }));
+        if (currentUser?._id) {
+          try {
+            await updateCartQtyApi(currentUser._id, itemId, itemQty);
+          } catch (error) {
+            console.error("Failed to update cart quantity in DB:", error);
+          }
+        }
+      } else {
+        dispatch(setGuestCart(updatedCart));
       }
-    } else {
-      dispatch(setGuestCart(updatedCart));
-    }
-  };
+    },
+    [cartItems, isLogin, currentUser?._id, dispatch]
+  );
 
   // Delete product from the cart
-  const onCartItemDeleteBtn = async (productId) => {
-    const updatedCart = cartItems.filter((p) => p._id !== productId);
+  const onCartItemDeleteBtn = useCallback(
+    async (productId) => {
+      const updatedCart = cartItems.filter((p) => p._id !== productId);
 
-    if (isLogin) {
-      dispatch(updateUser({ myCart: updatedCart }));
-      if (updatedCart.length === 0) {
-        dispatch(setStoreId(null));
-      }
-      if (currentUser?._id) {
-        try {
-          await removeFromCartApi(currentUser._id, productId);
-          toast.success("Item removed from cart");
-        } catch (error) {
-          console.error("Failed to remove cart item from DB:", error);
+      if (isLogin) {
+        dispatch(updateUser({ myCart: updatedCart }));
+        if (updatedCart.length === 0) {
+          dispatch(setStoreId(null));
         }
+        if (currentUser?._id) {
+          try {
+            await removeFromCartApi(currentUser._id, productId);
+            toast.success("Item removed from cart");
+          } catch (error) {
+            console.error("Failed to remove cart item from DB:", error);
+          }
+        }
+      } else {
+        dispatch(setGuestCart(updatedCart));
+        if (updatedCart.length === 0) {
+          dispatch(setStoreId(null));
+        }
+        toast.success("Item removed from cart");
       }
-    } else {
-      dispatch(setGuestCart(updatedCart));
-      if (updatedCart.length === 0) {
-        dispatch(setStoreId(null));
-      }
-      toast.success("Item removed from cart");
-    }
-  };
+    },
+    [cartItems, isLogin, currentUser?._id, dispatch]
+  );
 
   // Clear entire cart
-  const handleClearCart = async () => {
+  const handleClearCart = useCallback(async () => {
     dispatch(setStoreId(null));
 
     if (isLogin) {
@@ -154,36 +163,56 @@ export const useCart = () => {
       dispatch(clearGuestCart());
       toast.success("Cart cleared successfully");
     }
-  };
+  }, [isLogin, currentUser?._id, dispatch]);
 
   // Change payment method
-  const handlePaymentMethod = (e) => {
+  const handlePaymentMethod = useCallback((e) => {
     setPaymentMethod(e.target.value);
-  };
+  }, []);
 
-  // Submit order placement request
-  const handlePlaceOrder = () => {
+  // Submit order placement request with double-click prevention & loader
+  const handlePlaceOrder = useCallback(async () => {
+    if (isPlacingOrder) return;
+
     if (!isLogin) {
       toast.info("Please log in to place your order");
       openModal(MODAL_TYPES.LOGIN);
       return;
     }
 
-    onCartPlaceOrder(
-      currentUser,
-      (updatedUser) => dispatch(updateUser(updatedUser)),
-      storeId,
-      orderPriceDetails,
-      address,
-      paymentMethod,
-      navigate,
-      dispatch,
-    );
-  };
+    setIsPlacingOrder(true);
+    try {
+      await onCartPlaceOrder(
+        currentUser,
+        (updatedUser) => dispatch(updateUser(updatedUser)),
+        storeId,
+        orderPriceDetails,
+        address,
+        paymentMethod,
+        navigate,
+        dispatch,
+      );
+    } finally {
+      setIsPlacingOrder(false);
+    }
+  }, [
+    isPlacingOrder,
+    isLogin,
+    openModal,
+    currentUser,
+    storeId,
+    orderPriceDetails,
+    address,
+    paymentMethod,
+    navigate,
+    dispatch,
+  ]);
 
-  const effectiveUser = isLogin
-    ? currentUser
-    : { role: "customer", myCart: guestCart };
+  const effectiveUser = useMemo(() => {
+    return isLogin
+      ? currentUser
+      : { role: "customer", myCart: guestCart };
+  }, [isLogin, currentUser, guestCart]);
 
   return {
     currentUser: effectiveUser,
@@ -198,6 +227,7 @@ export const useCart = () => {
     isAddressFormOpen,
     setIsAddressFormOpen,
     isCartEmpty,
+    isPlacingOrder,
     orderPriceDetails,
     onCartItemQtyChange,
     onCartItemDeleteBtn,

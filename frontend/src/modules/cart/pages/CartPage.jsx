@@ -26,6 +26,7 @@ export default function CartPage() {
     handlePaymentMethod,
     handlePlaceOrder,
     isCartEmpty,
+    isPlacingOrder,
   } = useCart();
 
   if (isCartEmpty) {
@@ -96,6 +97,7 @@ export default function CartPage() {
           handlePaymentMethod={handlePaymentMethod}
           orderPriceDetails={orderPriceDetails}
           onPlaceOrder={handlePlaceOrder}
+          isPlacingOrder={isPlacingOrder}
         />
       </div>
     </section>

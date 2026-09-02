@@ -52,7 +52,7 @@ export const handleGetUnreadNotifications = async (req, res) => {
 
     const result = await getUnreadNotificationsSvc(
       userId,
-      limit ? parseInt(limit, 10) : 10
+      limit ? parseInt(limit, 10) : 10,
     );
 
     return res.status(200).json(result);
@@ -190,7 +190,8 @@ export const handleClearNotifications = async (req, res) => {
 
 export const handleCreateNotification = async (req, res) => {
   try {
-    const { recipient, sender, title, message, type, link, metadata } = req.body;
+    const { recipient, sender, title, message, type, link, metadata } =
+      req.body;
 
     if (!recipient || !title || !message) {
       return res.status(400).json({

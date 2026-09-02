@@ -41,7 +41,11 @@ export const useSetting = () => {
 
   const onAccountChange = (e) => {
     const { name, value } = e.target;
-    setAccountData((prev) => ({ ...prev, [name]: value }));
+    let processedValue = value;
+    if (name === "phone") {
+      processedValue = value.replace(/\D/g, "").slice(0, 10);
+    }
+    setAccountData((prev) => ({ ...prev, [name]: processedValue }));
   };
 
   const cancelEdit = (fieldName) => {
@@ -58,6 +62,10 @@ export const useSetting = () => {
     const val = (accountData[fieldName] || "").trim();
     if (!val) {
       return toast.error(`${fieldName.charAt(0).toUpperCase() + fieldName.slice(1)} cannot be empty`);
+    }
+
+    if (fieldName === "phone" && val.length !== 10) {
+      return toast.error("Phone number must be exactly 10 digits");
     }
 
     // Comparison Check: If unchanged, skip server request!

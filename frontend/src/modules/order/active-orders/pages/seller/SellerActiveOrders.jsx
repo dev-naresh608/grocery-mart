@@ -15,6 +15,7 @@ import {
   Bike,
   RotateCw,
   Search,
+  Loader2,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import {
@@ -27,6 +28,7 @@ function SellerActiveOrders() {
   const { user: currentUser } = useSelector((state) => state.auth);
   const [activeOrders, setActiveOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [actionOrderId, setActionOrderId] = useState(null);
 
   // ================= FETCH ACTIVE ORDERS =================
   const fetchActiveOrders = async () => {
@@ -51,10 +53,12 @@ function SellerActiveOrders() {
     fetchActiveOrders();
     const interval = setInterval(fetchActiveOrders, 5000);
     return () => clearInterval(interval);
-  }, [currentUser]);
+  }, [currentUser?._id]);
 
   // ================= CHANGE ORDER STATUS =================
   const changeOrderStatus = async (orderId, newStatus) => {
+    if (actionOrderId) return;
+    setActionOrderId(orderId);
     try {
       const data = await updateOrderStatusApi(orderId, newStatus);
       if (data && data.success) {
@@ -76,6 +80,8 @@ function SellerActiveOrders() {
     } catch (error) {
       console.error("Error updating status:", error);
       toast.error("Failed to update order status");
+    } finally {
+      setActionOrderId(null);
     }
   };
 
@@ -108,6 +114,8 @@ function SellerActiveOrders() {
   };
 
   const onRetryDriver = async (orderId) => {
+    if (actionOrderId) return;
+    setActionOrderId(orderId);
     try {
       const data = await retryDriverAllocationApi(orderId);
       if (data.success) {
@@ -116,6 +124,8 @@ function SellerActiveOrders() {
       }
     } catch (error) {
       toast.error("Failed to retry driver search");
+    } finally {
+      setActionOrderId(null);
     }
   };
 
@@ -383,18 +393,30 @@ function SellerActiveOrders() {
                             <div className="flex items-center gap-2">
                               <button
                                 type="button"
+                                disabled={actionOrderId === orderId}
                                 onClick={() => onOrderReject(orderId)}
-                                className="flex-1 py-1.5 px-3 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                                className="flex-1 py-1.5 px-3 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold transition-colors flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                               >
-                                <XCircle size={14} /> Reject
+                                {actionOrderId === orderId ? (
+                                  <Loader2 size={13} className="animate-spin" />
+                                ) : (
+                                  <XCircle size={14} />
+                                )}
+                                Reject
                               </button>
 
                               <button
                                 type="button"
+                                disabled={actionOrderId === orderId}
                                 onClick={() => onOrderAccept(orderId)}
-                                className="flex-1 py-1.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors shadow-sm flex items-center justify-center gap-1 cursor-pointer"
+                                className="flex-1 py-1.5 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors shadow-sm flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                               >
-                                Accept <ArrowRight size={14} />
+                                {actionOrderId === orderId ? (
+                                  <Loader2 size={13} className="animate-spin" />
+                                ) : (
+                                  <span>Accept</span>
+                                )}
+                                {!actionOrderId && <ArrowRight size={14} />}
                               </button>
                             </div>
                           )}
@@ -404,16 +426,27 @@ function SellerActiveOrders() {
                               {driverAllocStatus === "assigned" ? (
                                 <button
                                   type="button"
+                                  disabled={actionOrderId === orderId}
                                   onClick={() => onMarkReady(order)}
-                                  className="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
+                                  className="w-full py-2 px-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition-colors shadow-sm flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                  <Flame size={15} /> Mark Ready for Pickup{" "}
-                                  <ArrowRight size={14} />
+                                  {actionOrderId === orderId ? (
+                                    <>
+                                      <Loader2 size={14} className="animate-spin" />
+                                      <span>Updating...</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Flame size={15} />
+                                      <span>Mark Ready for Pickup</span>
+                                      <ArrowRight size={14} />
+                                    </>
+                                  )}
                                 </button>
                               ) : (
                                 <button
                                   type="button"
-                                  onClick={() => onMarkReady(order)}
+                                  disabled
                                   className="w-full py-2 px-3 rounded-lg bg-gray-200 text-gray-400 text-xs font-semibold cursor-not-allowed flex items-center justify-center gap-1.5"
                                   title="Waiting for driver assignment before marking ready"
                                 >
@@ -423,10 +456,16 @@ function SellerActiveOrders() {
 
                               <button
                                 type="button"
+                                disabled={actionOrderId === orderId}
                                 onClick={() => onOrderReject(orderId)}
-                                className="w-full py-1.5 px-3 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold transition-colors flex items-center justify-center gap-1 cursor-pointer"
+                                className="w-full py-1.5 px-3 rounded-lg border border-red-200 text-red-600 hover:bg-red-50 text-xs font-semibold transition-colors flex items-center justify-center gap-1 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                               >
-                                <XCircle size={13} /> Reject Order
+                                {actionOrderId === orderId ? (
+                                  <Loader2 size={13} className="animate-spin" />
+                                ) : (
+                                  <XCircle size={13} />
+                                )}
+                                Reject Order
                               </button>
                             </div>
                           )}
@@ -435,14 +474,24 @@ function SellerActiveOrders() {
                             <button
                               type="button"
                               onClick={() => onCompleteHandoff(order)}
-                              disabled={driverAllocStatus !== "assigned"}
+                              disabled={driverAllocStatus !== "assigned" || actionOrderId === orderId}
                               className={`w-full py-2 px-3 rounded-lg text-white text-xs font-semibold transition-colors shadow-sm flex items-center justify-center gap-1.5 ${
-                                driverAllocStatus === "assigned"
+                                driverAllocStatus === "assigned" && actionOrderId !== orderId
                                   ? "bg-blue-600 hover:bg-blue-700 cursor-pointer"
                                   : "bg-gray-300 text-gray-500 cursor-not-allowed"
                               }`}
                             >
-                              <Bike size={15} /> Hand Over to Driver (Out for Delivery)
+                              {actionOrderId === orderId ? (
+                                <>
+                                  <Loader2 size={14} className="animate-spin" />
+                                  <span>Handoff in progress...</span>
+                                </>
+                              ) : (
+                                <>
+                                  <Bike size={15} />
+                                  <span>Hand Over to Driver (Out for Delivery)</span>
+                                </>
+                              )}
                             </button>
                           )}
                         </div>

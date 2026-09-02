@@ -95,6 +95,16 @@ function Orders() {
     setPage(1);
   };
 
+  // Memoize dashboardCards at top level according to React Rules of Hooks
+  const dashboardCards = useMemo(() => {
+    return dashboardCardsConfig(
+      currentUser,
+      setActiveCard,
+      allOrders,
+      summaryStats
+    );
+  }, [currentUser, setActiveCard, allOrders, summaryStats]);
+
   // ===================== 1. LOADING STATE =====================
   // While fetching data, show a centered spinner with zero card flashing
   if (loading && allOrders.length === 0 && !searchValue) {
@@ -117,13 +127,6 @@ function Orders() {
   }
 
   // ===================== 3. FULL ORDER HISTORY LAYOUT =====================
-  const dashboardCards = dashboardCardsConfig(
-    currentUser,
-    setActiveCard,
-    allOrders,
-    summaryStats
-  );
-
   const commonCss = "bg-white rounded-2xl border border-gray-200/90 shadow-xs";
 
   return (

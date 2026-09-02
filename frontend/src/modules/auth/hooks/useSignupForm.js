@@ -45,9 +45,14 @@ export function useSignupForm() {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
+    let processedValue = value;
+    if (name === "phone") {
+      processedValue = value.replace(/\D/g, "").slice(0, 10);
+    }
+
     setFormData((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: processedValue,
     }));
 
     setFormErrors((prev) => {
@@ -100,6 +105,15 @@ export function useSignupForm() {
     e.preventDefault();
 
     setFormErrors({});
+
+    // Enforce exact 10-digit phone number validation
+    if (!formData.phone || formData.phone.length !== 10) {
+      setFormErrors((prev) => ({
+        ...prev,
+        phone: "Phone number must be exactly 10 digits",
+      }));
+      return toast.error("Phone number must be exactly 10 digits");
+    }
 
     try {
       await dispatch(register(buildPayload())).unwrap();

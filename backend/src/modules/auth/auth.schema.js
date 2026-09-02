@@ -17,8 +17,7 @@ const baseSignupSchema = {
   phone: z
     .string()
     .trim()
-    .min(6, "Invalid phone number")
-    .max(15, "Invalid phone number"),
+    .regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
 };
 
 export const registerSchema = z.discriminatedUnion("role", [

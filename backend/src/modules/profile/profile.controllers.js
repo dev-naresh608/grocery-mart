@@ -310,17 +310,25 @@ export const updateAccountInfo = async (req, res) => {
     }
 
     if (phone !== undefined) {
-      const cleanPhone = phone ? phone.trim() : "";
-      if (cleanPhone && cleanPhone !== user.phone) {
-        const existingPhoneUser = await User.findOne({
-          phone: cleanPhone,
-          _id: { $ne: targetUserId },
-        });
-        if (existingPhoneUser) {
+      const cleanPhone = phone ? phone.trim().replace(/\D/g, "") : "";
+      if (cleanPhone) {
+        if (!/^\d{10}$/.test(cleanPhone)) {
           return res.status(400).json({
             success: false,
-            message: "This phone number is already registered to another account",
+            message: "Phone number must be exactly 10 digits",
           });
+        }
+        if (cleanPhone !== user.phone) {
+          const existingPhoneUser = await User.findOne({
+            phone: cleanPhone,
+            _id: { $ne: targetUserId },
+          });
+          if (existingPhoneUser) {
+            return res.status(400).json({
+              success: false,
+              message: "This phone number is already registered to another account",
+            });
+          }
         }
       }
       updateFields.phone = cleanPhone;

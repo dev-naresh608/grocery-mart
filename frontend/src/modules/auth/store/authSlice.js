@@ -61,6 +61,7 @@ const initialState = {
   accessToken: null,
   isAuthenticated: false,
   isLoading: false,
+  isCheckingAuth: true,
   error: null,
 };
 
@@ -74,6 +75,7 @@ const authSlice = createSlice({
       state.accessToken = null;
       state.isAuthenticated = false;
       state.isLoading = false;
+      state.isCheckingAuth = false;
       state.error = null;
       clearGuestLocalStorage();
     },
@@ -98,6 +100,7 @@ const authSlice = createSlice({
       })
       .addCase(register.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.isCheckingAuth = false;
 
         const { user, accessToken } = action.payload;
 
@@ -107,6 +110,7 @@ const authSlice = createSlice({
       })
       .addCase(register.rejected, (state, action) => {
         state.isLoading = false;
+        state.isCheckingAuth = false;
         state.error = action.payload;
       })
 
@@ -117,6 +121,7 @@ const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.isCheckingAuth = false;
 
         const { user, accessToken } = action.payload;
 
@@ -126,6 +131,7 @@ const authSlice = createSlice({
       })
       .addCase(login.rejected, (state, action) => {
         state.isLoading = false;
+        state.isCheckingAuth = false;
         state.error = action.payload;
       })
 
@@ -136,12 +142,14 @@ const authSlice = createSlice({
       })
       .addCase(getMe.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.isCheckingAuth = false;
         state.user = action.payload.user;
         state.isAuthenticated = true;
         clearGuestLocalStorage();
       })
       .addCase(getMe.rejected, (state, action) => {
         state.isLoading = false;
+        state.isCheckingAuth = false;
         state.error = action.payload;
         state.user = null;
         state.accessToken = null;
@@ -155,6 +163,7 @@ const authSlice = createSlice({
       })
       .addCase(rotateToken.fulfilled, (state, action) => {
         state.isLoading = false;
+        state.isCheckingAuth = false;
         state.accessToken = action.payload.accessToken;
         state.user = action.payload.user;
         state.isAuthenticated = true;
@@ -162,6 +171,7 @@ const authSlice = createSlice({
       })
       .addCase(rotateToken.rejected, (state, action) => {
         state.isLoading = false;
+        state.isCheckingAuth = false;
         state.error = action.payload;
         state.user = null;
         state.accessToken = null;
@@ -178,6 +188,7 @@ const authSlice = createSlice({
         state.accessToken = null;
         state.isAuthenticated = false;
         state.isLoading = false;
+        state.isCheckingAuth = false;
         state.error = null;
         clearGuestLocalStorage();
       })
@@ -186,6 +197,7 @@ const authSlice = createSlice({
         state.accessToken = null;
         state.isAuthenticated = false;
         state.isLoading = false;
+        state.isCheckingAuth = false;
         state.error = null;
         clearGuestLocalStorage();
       });

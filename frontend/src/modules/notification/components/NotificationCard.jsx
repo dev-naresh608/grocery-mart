@@ -27,7 +27,7 @@ export const formatRelativeTime = (dateInput) => {
   if (diffInHours < 24) return `${diffInHours}h ago`;
   const diffInDays = Math.floor(diffInHours / 24);
   if (diffInDays < 7) return `${diffInDays}d ago`;
-  
+
   return date.toLocaleDateString("en-IN", {
     month: "short",
     day: "numeric",
@@ -82,16 +82,8 @@ function NotificationCard({
   onDelete,
   onCloseDropdown,
 }) {
-  const {
-    _id,
-    id,
-    title,
-    message,
-    type,
-    link,
-    isRead,
-    createdAt,
-  } = notification;
+  const { _id, id, title, message, type, link, isRead, createdAt } =
+    notification;
 
   const notifId = _id || id;
   const config = getTypeConfig(type);
