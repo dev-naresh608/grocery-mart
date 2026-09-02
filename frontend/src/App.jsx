@@ -123,7 +123,7 @@ const ProtectedRoute = () => {
 };
 
 // Customer / Guest browsing route guard - blocks logged in drivers and sellers from shopping/browsing routes
-const CustomerBrowsingRoute = () => {
+const CustomerOnlyBrowsingRoute = () => {
   const { isAuthenticated, user, isCheckingAuth } = useSelector((state) => state.auth);
 
   if (isCheckingAuth) {
@@ -137,6 +137,27 @@ const CustomerBrowsingRoute = () => {
 
   // If authenticated as driver or seller, redirect away to dashboard
   if (isAuthenticated && (user?.role === "driver" || user?.role === "seller")) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <Outlet />;
+};
+
+// Route guard that blocks only driver role (allows guest, customer, and seller)
+const DriverBlockedRoute = () => {
+  const { isAuthenticated, user, isCheckingAuth } = useSelector((state) => state.auth);
+
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3">
+        <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-xs font-semibold text-gray-400">Loading...</p>
+      </div>
+    );
+  }
+
+  // If authenticated as driver, redirect away to dashboard
+  if (isAuthenticated && user?.role === "driver") {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -204,7 +225,7 @@ function App() {
           <Route index element={<HomeIndexRoute />} />
 
           {/* Customer / Guest Browsing Routes (Blocked for Driver & Seller) */}
-          <Route element={<CustomerBrowsingRoute />}>
+          <Route element={<CustomerOnlyBrowsingRoute />}>
             <Route
               path="categories"
               element={<Navigate to="/stores" replace />}
@@ -222,6 +243,10 @@ function App() {
               path="/allproducts/searchproduct/:searchValue"
               element={<SearchProduct />}
             />
+          </Route>
+
+          {/* Product Detail Page (Accessible by Customer, Guest & Seller - Blocked for Driver) */}
+          <Route element={<DriverBlockedRoute />}>
             <Route
               path="product/:productId"
               element={<ProductDetailPage />}
