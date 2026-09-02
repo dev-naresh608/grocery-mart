@@ -127,10 +127,8 @@ function App() {
   const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      dispatch(rotateToken());
-    }
-  }, [dispatch, isAuthenticated]);
+    dispatch(rotateToken());
+  }, [dispatch]);
 
   useEffect(() => {
     const userId = user?._id || user?.id;

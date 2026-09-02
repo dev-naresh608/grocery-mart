@@ -38,6 +38,7 @@ const addressSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+addressSchema.index({ user_id: 1, updatedAt: -1 });
 addressSchema.index({ location: "2dsphere" });
 const Address = mongoose.model("Address", addressSchema);
 export default Address;

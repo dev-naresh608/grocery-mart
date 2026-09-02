@@ -48,6 +48,8 @@ driverSchema.pre("validate", function () {
   }
 });
 
+driverSchema.index({ user_id: 1 });
+driverSchema.index({ status: 1, is_busy: 1 });
 driverSchema.index({ currentLocation: "2dsphere" });
 
 const Driver = mongoose.model("Driver", driverSchema);

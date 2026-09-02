@@ -18,6 +18,8 @@ const customerSchema = new mongoose.Schema({
   ],
 });
 
+customerSchema.index({ user_id: 1 });
+
 const Customer = mongoose.model("Customer", customerSchema);
 
 export default Customer;

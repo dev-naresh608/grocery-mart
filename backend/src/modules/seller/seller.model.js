@@ -47,6 +47,7 @@ sellerSchema.pre("validate", function () {
   }
 });
 
+sellerSchema.index({ user_id: 1 });
 sellerSchema.index({ location: "2dsphere" });
 
 const Seller = mongoose.model("Seller", sellerSchema);

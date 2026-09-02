@@ -23,5 +23,8 @@ const cartSchema = new mongoose.Schema({
   },
 });
 
+cartSchema.index({ customer_id: 1 });
+cartSchema.index({ customer_id: 1, product_id: 1 });
+
 const Cart = mongoose.model("Cart", cartSchema);
 export default Cart;

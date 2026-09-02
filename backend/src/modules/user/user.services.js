@@ -6,19 +6,22 @@ export const createUserSvc = async (payload, session) => {
 };
 
 export const findUserByEmail = async (email) => {
+  if (!email) return null;
   return await User.findOne({
-    email,
-  });
+    email: email.toLowerCase().trim(),
+  }).lean();
 };
 
 export const findUserByPhone = async (phone) => {
+  if (!phone) return null;
   return await User.findOne({
-    phone,
-  });
+    phone: phone.trim(),
+  }).lean();
 };
 
 export const findUserById = async (userId) => {
-  return await User.findById(userId);
+  if (!userId) return null;
+  return await User.findById(userId).lean();
 };
 
 // export const checkIsUserExistSvc = async => {

@@ -2,14 +2,18 @@ import Cart from "./cart.model.js";
 import Product from "../product/product.model.js";
 
 export const getCartByUserIdSvc = async (userId) => {
-  const items = await Cart.find({ customer_id: userId }).populate("product_id");
+  if (!userId) return [];
+  const items = await Cart.find({ customer_id: userId })
+    .populate("product_id")
+    .lean();
 
   const formattedItems = [];
+  const orphanedIds = [];
 
   for (const item of items) {
     // If the product was deleted by the seller, cleanup the orphaned cart item
     if (!item.product_id) {
-      await Cart.findByIdAndDelete(item._id);
+      orphanedIds.push(item._id);
       continue;
     }
 
@@ -25,6 +29,13 @@ export const getCartByUserIdSvc = async (userId) => {
       product_qty: item.quantity,
       store_id: item.store_id,
     });
+  }
+
+  // Non-blocking cleanup of orphaned items
+  if (orphanedIds.length > 0) {
+    Cart.deleteMany({ _id: { $in: orphanedIds } }).catch((err) =>
+      console.error("Cleanup orphaned cart items error:", err),
+    );
   }
 
   return formattedItems;

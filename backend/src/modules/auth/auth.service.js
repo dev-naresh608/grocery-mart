@@ -27,7 +27,7 @@ const getUserWithRoleDetails = async (user) => {
 
   try {
     if (user.role === "seller") {
-      const seller = await Seller.findOne({ user_id: user._id });
+      const seller = await Seller.findOne({ user_id: user._id }).lean();
       if (seller) {
         roleDetails = {
           store_id: seller._id,
@@ -39,7 +39,7 @@ const getUserWithRoleDetails = async (user) => {
         };
       }
     } else if (user.role === "driver") {
-      const driver = await Driver.findOne({ user_id: user._id });
+      const driver = await Driver.findOne({ user_id: user._id }).lean();
       if (driver) {
         roleDetails = {
           driver_status: driver.status ?? driver.driver_status ?? true,
@@ -52,11 +52,10 @@ const getUserWithRoleDetails = async (user) => {
       }
     } else if (user.role === "customer") {
       const [customer, latestAddress, cartItems] = await Promise.all([
-        Customer.findOne({ user_id: user._id }),
-        Address.findOne({ user_id: user._id }).sort({
-          updatedAt: -1,
-          createdAt: -1,
-        }),
+        Customer.findOne({ user_id: user._id }).lean(),
+        Address.findOne({ user_id: user._id })
+          .sort({ updatedAt: -1, createdAt: -1 })
+          .lean(),
         getCartByUserIdSvc(user._id).catch(() => []),
       ]);
 
@@ -105,14 +104,14 @@ export const registerSvc = async (payload) => {
     };
   }
 
-  const hashedPassword = await bcrypt.hash(payload.password, 12);
+  const hashedPassword = await bcrypt.hash(payload.password, 10);
 
   const userPayload = {
     username: payload.username,
-    email: payload.email,
+    email: payload.email?.toLowerCase()?.trim(),
     password: hashedPassword,
     role: payload.role,
-    phone: payload.phone,
+    phone: payload.phone?.trim(),
   };
 
   const dbSession = await mongoose.startSession();
@@ -164,7 +163,8 @@ export const registerSvc = async (payload) => {
 };
 
 export const loginSvc = async ({ email, password }) => {
-  const user = await findUserByEmail(email);
+  const normalizedEmail = email?.toLowerCase()?.trim();
+  const user = await findUserByEmail(normalizedEmail);
 
   if (!user) {
     return {
@@ -213,7 +213,7 @@ export const getMeSvc = async (userId) => {
 };
 
 export const rotateTokenSvc = async (userId) => {
-  const user = await User.findById(userId);
+  const user = await findUserById(userId);
 
   if (!user) {
     return { success: false, message: "User not found" };
