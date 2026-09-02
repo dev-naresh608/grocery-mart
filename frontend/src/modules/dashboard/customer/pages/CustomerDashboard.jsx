@@ -75,7 +75,7 @@ function CustomerDashboard() {
   const commonCss = "bg-white rounded-2xl border border-gray-200/90 p-4 sm:p-5 shadow-xs";
 
   return (
-    <div className="bg-white/40 p-2.5 sm:p-6 lg:p-7 space-y-3.5 sm:space-y-5 max-w-7xl mx-auto font-sans">
+    <div className="bg-white/40 p-2.5 sm:p-6 lg:p-7 space-y-3.5 sm:space-y-5 max-w-7xl mx-auto font-sans pb-24 md:pb-8">
       {/* ===== TOP WELCOME BANNER ===== */}
       <div className={commonCss}>
         <div className="flex items-center justify-between gap-2.5 sm:gap-3">

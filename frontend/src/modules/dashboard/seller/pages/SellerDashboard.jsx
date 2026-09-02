@@ -14,16 +14,16 @@ function SellerDashboard() {
   } = useSellerDashboard();
 
   return (
-    <div className="bg-white/40 p-4 sm:p-7 space-y-5 max-w-7xl mx-auto">
+    <div className="bg-white/40 p-2.5 sm:p-6 lg:p-7 space-y-3.5 sm:space-y-5 max-w-7xl mx-auto font-sans pb-24 md:pb-8">
       {/* ===== HEADER WITH STORE STATUS TOGGLE ===== */}
       <div className="bg-white rounded-2xl p-4 sm:p-6 border border-gray-200/90 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3.5 sm:gap-4">
           {/* Left: Store Info */}
-          <div className="flex items-center gap-3.5">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
             <div className="flex items-center justify-center h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-100/80 shadow-xs shrink-0">
               <Store size={26} strokeWidth={2.2} />
             </div>
-            <div>
+            <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-[10px] font-bold text-gray-400 tracking-wider uppercase">
                   Seller Dashboard
@@ -34,14 +34,14 @@ function SellerDashboard() {
                   </span>
                 )}
               </div>
-              <h1 className="text-xl sm:text-2xl font-black text-gray-900 tracking-tight mt-0.5">
+              <h1 className="text-lg sm:text-2xl font-black text-gray-900 tracking-tight mt-0.5 truncate">
                 {currentUser?.store_name || "My Store"}
               </h1>
             </div>
           </div>
 
           {/* Right: Interactive Store Status (Active / Deactive) Switch */}
-          <div className="flex items-center gap-3 bg-gray-50/90 border border-gray-200/80 p-2.5 sm:px-4 sm:py-2.5 rounded-2xl self-start sm:self-auto">
+          <div className="flex items-center justify-between sm:justify-end gap-3 bg-gray-50/90 border border-gray-200/80 p-2.5 sm:px-4 sm:py-2.5 rounded-2xl shrink-0 self-stretch sm:self-auto">
             <div className="flex flex-col items-start sm:items-end">
               <div className="flex items-center gap-1.5">
                 <span
@@ -89,19 +89,19 @@ function SellerDashboard() {
       <DashboardCards cards={dashboardCards.seller} stats={sellerStats} />
 
       {/* ===== CHART + ORDERS ===== */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3.5 sm:gap-5">
         {/* SALES CHART */}
-        <div className="lg:col-span-2 min-h-[350px] rounded-2xl border border-gray-200/90 p-5 bg-white shadow-xs">
-          <h2 className="text-lg font-bold text-gray-800 mb-4">Sales Overview</h2>
-          <div className="flex items-center justify-center h-52 text-gray-400 text-sm font-medium">
+        <div className="lg:col-span-2 min-h-[250px] sm:min-h-[350px] rounded-2xl border border-gray-200/90 p-4 sm:p-5 bg-white shadow-xs">
+          <h2 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4">Sales Overview</h2>
+          <div className="flex items-center justify-center h-40 sm:h-52 text-gray-400 text-xs sm:text-sm font-medium">
             Chart analytics will appear as you receive orders
           </div>
         </div>
 
         {/* RECENT ORDERS */}
-        <div className="min-h-[350px] rounded-2xl border border-gray-200/90 p-5 bg-white shadow-xs">
-          <h2 className="text-lg font-bold text-gray-800 mb-4">Recent Orders</h2>
-          <div className="flex items-center justify-center h-52 text-gray-400 text-sm font-medium">
+        <div className="min-h-[250px] sm:min-h-[350px] rounded-2xl border border-gray-200/90 p-4 sm:p-5 bg-white shadow-xs">
+          <h2 className="text-base sm:text-lg font-bold text-gray-800 mb-3 sm:mb-4">Recent Orders</h2>
+          <div className="flex items-center justify-center h-40 sm:h-52 text-gray-400 text-xs sm:text-sm font-medium">
             No recent orders
           </div>
         </div>

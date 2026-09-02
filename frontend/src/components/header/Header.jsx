@@ -409,20 +409,22 @@ function Header() {
 
       {/* right nav */}
       <div ref={rightNavRef} className="flex gap-3 items-center">
-        {/* Cart Toggle */}
-        <button
-          type="button"
-          onClick={() => dispatch(openCartDrawer())}
-          className="relative p-2 rounded-xl text-gray-700 hover:text-green-700 hover:bg-gray-100/70 transition-all cursor-pointer border-none bg-transparent outline-none"
-          aria-label="Open cart"
-        >
-          <ShoppingCart className="w-6 h-6" />
-          {cartCount > 0 && (
-            <span className="absolute -top-1 -right-1 bg-green-600 text-white text-[10px] font-extrabold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1 shadow-sm shadow-green-600/30">
-              {cartCount}
-            </span>
-          )}
-        </button>
+        {/* Cart Toggle - Only visible for customers and guest visitors */}
+        {(!isLogin || currentUser?.role === "customer") && (
+          <button
+            type="button"
+            onClick={() => dispatch(openCartDrawer())}
+            className="relative p-2 rounded-xl text-gray-700 hover:text-green-700 hover:bg-gray-100/70 transition-all cursor-pointer border-none bg-transparent outline-none"
+            aria-label="Open cart"
+          >
+            <ShoppingCart className="w-6 h-6" />
+            {cartCount > 0 && (
+              <span className="absolute -top-1 -right-1 bg-green-600 text-white text-[10px] font-extrabold min-w-[18px] h-[18px] flex items-center justify-center rounded-full px-1 shadow-sm shadow-green-600/30">
+                {cartCount}
+              </span>
+            )}
+          </button>
+        )}
         {/* Notification */}
         <NotificationToggle 
           isOpen={activeDropdown === "notification"}
