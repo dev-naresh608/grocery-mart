@@ -150,8 +150,8 @@ function ProductSpecsCard({
               <span
                 className={`px-2.5 py-1 rounded-full text-[10px] font-bold ${
                   product?.show_in_menu !== false
-                    ? "bg-emerald-100 text-emerald-800 border border-emerald-200"
-                    : "bg-gray-100 text-gray-700 border border-gray-200"
+                    ? "bg-emerald-100 text-emerald-800 border border-emerald-200 whitespace-nowrap"
+                    : "bg-gray-100 text-gray-700 border border-gray-200 whitespace-nowrap"
                 }`}
               >
                 {product?.show_in_menu !== false ? "Visible in Menu" : "Hidden"}

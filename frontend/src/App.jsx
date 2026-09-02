@@ -122,6 +122,59 @@ const ProtectedRoute = () => {
   return <Outlet />;
 };
 
+// Customer / Guest browsing route guard - blocks logged in drivers and sellers from shopping/browsing routes
+const CustomerBrowsingRoute = () => {
+  const { isAuthenticated, user, isCheckingAuth } = useSelector((state) => state.auth);
+
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3">
+        <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-xs font-semibold text-gray-400">Loading...</p>
+      </div>
+    );
+  }
+
+  // If authenticated as driver or seller, redirect away to dashboard
+  if (isAuthenticated && (user?.role === "driver" || user?.role === "seller")) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <Outlet />;
+};
+
+// Strict Role Guard for role-specific routes
+const RoleRoute = ({ allowedRoles = [] }) => {
+  const { isAuthenticated, user, isCheckingAuth } = useSelector((state) => state.auth);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!isAuthenticated && !isCheckingAuth) {
+      navigate("/", { replace: true });
+    }
+  }, [isAuthenticated, isCheckingAuth, navigate]);
+
+  if (isCheckingAuth) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center gap-3">
+        <div className="w-8 h-8 border-3 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-xs font-semibold text-gray-400">Verifying session...</p>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
+
+  const role = user?.role || "customer";
+  if (allowedRoles.length > 0 && !allowedRoles.includes(role)) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  return <Outlet />;
+};
+
 function App() {
   const dispatch = useDispatch();
   const { isAuthenticated, user } = useSelector((state) => state.auth);
@@ -147,45 +200,61 @@ function App() {
 
         {/* ! show in panel  */}
         <Route path="/" element={<Home />}>
-          {/* Public Routes */}
+          {/* Dashboard root */}
           <Route index element={<HomeIndexRoute />} />
-          <Route
-            path="categories"
-            element={<Navigate to="/stores" replace />}
-          />
-          <Route
-            path="categories/categoryWiseProducts/:catName"
-            element={<CategoryWiseRedirect />}
-          />
-          <Route path="cart" element={<CartPage />}></Route>
-          <Route path="stores" element={<AllStores />}></Route>
-          <Route path="/stores/menu/:restId" element={<AllProducts />} />
-          <Route path="/stores/allproducts/:restId" element={<AllProducts />} />
-          <Route path="allproduct" element={<AllProducts />}></Route>
-          <Route
-            path="/allproducts/searchproduct/:searchValue"
-            element={<SearchProduct />}
-          />
-          <Route
-            path="product/:productId"
-            element={<ProductDetailPage />}
-          ></Route>
 
-          {/* Protected Routes */}
+          {/* Customer / Guest Browsing Routes (Blocked for Driver & Seller) */}
+          <Route element={<CustomerBrowsingRoute />}>
+            <Route
+              path="categories"
+              element={<Navigate to="/stores" replace />}
+            />
+            <Route
+              path="categories/categoryWiseProducts/:catName"
+              element={<CategoryWiseRedirect />}
+            />
+            <Route path="cart" element={<CartPage />}></Route>
+            <Route path="stores" element={<AllStores />}></Route>
+            <Route path="/stores/menu/:restId" element={<AllProducts />} />
+            <Route path="/stores/allproducts/:restId" element={<AllProducts />} />
+            <Route path="allproduct" element={<AllProducts />}></Route>
+            <Route
+              path="/allproducts/searchproduct/:searchValue"
+              element={<SearchProduct />}
+            />
+            <Route
+              path="product/:productId"
+              element={<ProductDetailPage />}
+            ></Route>
+          </Route>
+
+          {/* General Protected Routes (All authenticated users) */}
           <Route element={<ProtectedRoute />}>
-            <Route path="favourite" element={<Wishlist />}></Route>
+            <Route path="dashboard" element={<Dashboard />}></Route>
             <Route path="orders" element={<Orders />}></Route>
             <Route path="orders/:orderId" element={<OrderDetail />} />
-            <Route path="wishlist" element={<Wishlist />}></Route>
-            <Route path="setting" element={<Setting />}></Route>
-            <Route path="dashboard" element={<Dashboard />}></Route>
-            <Route path="addproducts" element={<AddProduct />}></Route>
-            <Route path="product-list" element={<ProductListPage />}></Route>
             <Route path="active-orders" element={<ActiveOrders />}></Route>
             <Route
               path="allnotifications"
               element={<ShowAllNotifications />}
             ></Route>
+            <Route path="setting" element={<Setting />}></Route>
+          </Route>
+
+          {/* Customer-Only Protected Routes */}
+          <Route element={<RoleRoute allowedRoles={["customer"]} />}>
+            <Route path="favourite" element={<Wishlist />}></Route>
+            <Route path="wishlist" element={<Wishlist />}></Route>
+          </Route>
+
+          {/* Seller-Only Protected Routes */}
+          <Route element={<RoleRoute allowedRoles={["seller"]} />}>
+            <Route path="addproducts" element={<AddProduct />}></Route>
+            <Route path="product-list" element={<ProductListPage />}></Route>
+          </Route>
+
+          {/* Driver-Only Protected Routes */}
+          <Route element={<RoleRoute allowedRoles={["driver"]} />}>
             <Route path="deliveryHistory" element={<Orders />}></Route>
             <Route path="earnings" element={<Earnings />}></Route>
             <Route path="vehicleDetails" element={<VehicleDetails />}></Route>
@@ -200,7 +269,9 @@ function App() {
               path="personalinformation"
               element={<PersonalInfo />}
             ></Route>
-            <Route path="payments" element={<Payments />}></Route>
+            <Route element={<RoleRoute allowedRoles={["customer"]} />}>
+              <Route path="payments" element={<Payments />}></Route>
+            </Route>
             <Route path="setting" element={<Setting />}></Route>
           </Route>
         </Route>

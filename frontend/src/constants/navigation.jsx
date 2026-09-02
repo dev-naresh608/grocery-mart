@@ -41,7 +41,7 @@ export const leftPanelItems = [
     to: "/stores",
     svg: <Store size={18} />,
     showToCustomer: true,
-    showToSeller: true,
+    showToSeller: false,
     showToAdmin: false,
     showToDriver: false,
   },

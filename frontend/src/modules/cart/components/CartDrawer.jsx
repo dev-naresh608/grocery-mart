@@ -54,6 +54,11 @@ export default function CartDrawer() {
 
   if (typeof document === "undefined") return null;
 
+  const userRole = currentUser?.role || "customer";
+  if (isLogin && (userRole === "driver" || userRole === "seller")) {
+    return null;
+  }
+
   const handleClose = () => {
     if (isPlacingOrder) return;
     dispatch(closeCartDrawer());
