@@ -4,7 +4,6 @@ dotenv.config();
 
 const requiredEnv = [
   "DATABASE_URI",
-  "PORT",
   "JWT_ACCESS_TOKEN_SECRET",
   "JWT_REFRESH_TOKEN_SECRET",
   "JWT_ACCESS_TOKEN_EXPIRE",
@@ -26,7 +25,7 @@ export const config = {
   },
 
   server: {
-    port: Number(process.env.PORT),
+    port: Number(process.env.PORT) || 5000,
   },
 
   auth: {
@@ -37,7 +36,8 @@ export const config = {
   },
 
   cloudinary: {
-    cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+    cloudName:
+      process.env.CLOUDINARY_CLOUD_NAME || process.env.CLOUDINARY_CLOUDE_NAME,
     apiKey: process.env.CLOUDINARY_API_KEY,
     apiSecret: process.env.CLOUDINARY_API_SECRET,
   },

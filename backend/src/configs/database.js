@@ -4,14 +4,13 @@ import { config } from "./config.js";
 const connectDB = async () => {
   try {
     await mongoose.connect(config.database.uri, {
-      serverSelectionTimeoutMS: 5000,
+      serverSelectionTimeoutMS: 10000,
     });
 
-    console.log(`DB Connected: ${mongoose.connection.host}`);
+    console.log(`✅ DB Connected: ${mongoose.connection.host}`);
   } catch (error) {
-    console.error("❌ MongoDB Connection Failed");
-    console.error(error);
-    process.exit(1);
+    console.error("❌ MongoDB Connection Failed:", error.message);
+    console.error("👉 Please verify your DATABASE_URI in Render environment variables and ensure MongoDB Atlas Network Access allows 0.0.0.0/0 (anywhere).");
   }
 };
 
