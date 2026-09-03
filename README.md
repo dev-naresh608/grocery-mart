@@ -1,28 +1,26 @@
-# 🛒 Novexa — Hyperlocal Multi-Vendor Marketplace
+<div align="center">
+  <img src="./frontend/src/assets/novexa-logo-one.svg" alt="Novexa Logo" width="220" />
 
-<p align="center">
-  <img src="frontend/src/assets/images/novexa-logo-one.svg" alt="Novexa Logo" width="160" />
-</p>
+  # Novexa — Hyperlocal Multi-Vendor Marketplace
 
-<p align="center">
-  <strong>A full-stack hyperlocal e-commerce ecosystem connecting Customers, Local Sellers, and Delivery Drivers.</strong>
-</p>
+  <p><strong>A full-stack hyperlocal e-commerce ecosystem connecting Customers, Local Sellers, and Delivery Drivers.</strong></p>
 
-<p align="center">
-  <a href="https://novexa-indol.vercel.app" target="_blank">🌐 <strong>Live Demo</strong></a> •
-  <a href="https://novexa-6zyt.onrender.com" target="_blank">⚡ <strong>API Endpoint</strong></a> •
-  <a href="#-quick-start">🚀 <strong>Quick Start</strong></a>
-</p>
+  <p>
+    <a href="https://novexa-indol.vercel.app" target="_blank">🌐 <strong>Live Demo</strong></a> •
+    <a href="https://novexa-6zyt.onrender.com" target="_blank">⚡ <strong>API Endpoint</strong></a> •
+    <a href="#-quick-start">🚀 <strong>Quick Start</strong></a>
+  </p>
 
-<p align="center">
-  <img src="https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React" />
-  <img src="https://img.shields.io/badge/Redux_Toolkit-764ABC?style=flat-square&logo=redux&logoColor=white" alt="Redux" />
-  <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node" />
-  <img src="https://img.shields.io/badge/Express_5-000000?style=flat-square&logo=express&logoColor=white" alt="Express" />
-  <img src="https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white" alt="MongoDB" />
-  <img src="https://img.shields.io/badge/TailwindCSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind" />
-  <img src="https://img.shields.io/badge/Cloudinary-3448C5?style=flat-square&logo=cloudinary&logoColor=white" alt="Cloudinary" />
-</p>
+  <p>
+    <img src="https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React" />
+    <img src="https://img.shields.io/badge/Redux_Toolkit-764ABC?style=flat-square&logo=redux&logoColor=white" alt="Redux" />
+    <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node" />
+    <img src="https://img.shields.io/badge/Express_5-000000?style=flat-square&logo=express&logoColor=white" alt="Express" />
+    <img src="https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white" alt="MongoDB" />
+    <img src="https://img.shields.io/badge/TailwindCSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind" />
+    <img src="https://img.shields.io/badge/Cloudinary-3448C5?style=flat-square&logo=cloudinary&logoColor=white" alt="Cloudinary" />
+  </p>
+</div>
 
 ---
 
