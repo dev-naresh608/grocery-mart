@@ -1,32 +1,19 @@
 <div align="center">
-  <img src="./frontend/src/assets/novexa-logo-one.svg" alt="Novexa Logo" width="220" />
+  <img src="./assets/novexa-logo.svg" alt="Novexa Logo" width="220" />
 
   # Novexa — Hyperlocal Multi-Vendor Marketplace
 
   <p><strong>A full-stack hyperlocal e-commerce ecosystem connecting Customers, Local Sellers, and Delivery Drivers.</strong></p>
-
-  <p>
-    <a href="https://novexa-indol.vercel.app" target="_blank">🌐 <strong>Live Demo</strong></a> •
-    <a href="https://novexa-6zyt.onrender.com" target="_blank">⚡ <strong>API Endpoint</strong></a> •
-    <a href="#-quick-start">🚀 <strong>Quick Start</strong></a>
-  </p>
-
-  <p>
-    <img src="https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React" />
-    <img src="https://img.shields.io/badge/Redux_Toolkit-764ABC?style=flat-square&logo=redux&logoColor=white" alt="Redux" />
-    <img src="https://img.shields.io/badge/Node.js-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node" />
-    <img src="https://img.shields.io/badge/Express_5-000000?style=flat-square&logo=express&logoColor=white" alt="Express" />
-    <img src="https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white" alt="MongoDB" />
-    <img src="https://img.shields.io/badge/TailwindCSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind" />
-    <img src="https://img.shields.io/badge/Cloudinary-3448C5?style=flat-square&logo=cloudinary&logoColor=white" alt="Cloudinary" />
-  </p>
 </div>
 
 ---
 
 ## 🌟 Overview
 
-**Novexa** is built to power modern on-demand commerce. It bridges the gap between nearby brick-and-mortar stores, local consumers, and delivery partners through dedicated role-based dashboards, automated geospatial radius matching, and secure token rotation.
+**Novexa** is an on-demand hyperlocal marketplace platform that bridges the gap between nearby brick-and-mortar stores, local consumers, and delivery partners through dedicated role-based dashboards, automated geospatial radius matching, and secure token rotation.
+
+- 🌐 **Live Application:** [novexa-indol.vercel.app](https://novexa-indol.vercel.app)
+- ⚡ **API Server:** [novexa-6zyt.onrender.com](https://novexa-6zyt.onrender.com)
 
 ---
 
