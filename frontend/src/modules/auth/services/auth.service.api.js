@@ -29,3 +29,10 @@ export const logout = async () => {
 
   return data;
 };
+
+// Aliases for compatibility
+export const registerUserApi = registerUser;
+export const loginUserApi = loginUser;
+export const getMeApi = getMe;
+export const rotateTokenApi = rotateToken;
+export const logoutApi = logout;
