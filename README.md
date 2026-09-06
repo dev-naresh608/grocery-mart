@@ -13,8 +13,6 @@
 **Novexa** is an on-demand hyperlocal marketplace platform that bridges the gap between nearby brick-and-mortar stores, local consumers, and delivery partners through dedicated role-based dashboards, automated geospatial radius matching, and secure token rotation.
 
 - 🌐 **Live Application:** [novexa-indol.vercel.app](https://novexa-indol.vercel.app)
-- ⚡ **API Server:** [novexa-6zyt.onrender.com](https://novexa-6zyt.onrender.com)
-
 ---
 
 ## 🎭 Role-Based Workflows
